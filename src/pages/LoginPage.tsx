@@ -1,35 +1,43 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { api } from "../services/api";
+import { useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 export default function LoginPage() {
 
+    const [identificador, setIdentificador] = useState("");
+    const [senha, setSenha] = useState("");
+
+    const { login } = useAuth();
+
     const navigate = useNavigate();
-    const [identificador, setIdentificador] = useState('');
-    const [senha, setSenha] = useState('');
 
-
-    async function entrar(event: React.FormEvent<HTMLFormElement>) {
-
+    async function entrar(
+        event: React.SubmitEvent<HTMLFormElement>
+    ) {
         event.preventDefault();
 
         try {
 
-            const response = await api.post("/auth/login", {
-                identificador: identificador,
-                senha: senha
+            const response = await login({
+                identificador,
+                senha
             });
 
-            console.log("Login realizado com sucesso!!");
-            console.log(response.data);
+            console.log(response);
+
+            // if(response.primeiroAcesso){
+            //     navigate("/alterar-senha")
+            //     return;
+            // }
+
+            navigate("/eventos")
 
         } catch (error) {
 
-            console.log("Erro ao realizar o login");
+            console.log("Erro ao fazer login");
             console.log(error);
 
         }
-
     }
 
     return (
