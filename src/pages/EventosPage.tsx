@@ -17,7 +17,7 @@ export default function EventosPage() {
     useEffect(() => {
         async function carregarEventos() {
             try {
-                const eventos = await eventoService.buscarTodos();
+                const eventos = await eventoService.buscarMeusEventos();
 
                 setEventos(eventos)
 
