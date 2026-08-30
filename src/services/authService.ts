@@ -12,6 +12,25 @@ async function login(dados: LoginRequest): Promise<LoginResponse> {
 
 }
 
+async function logout():Promise<void> {
+    await api.post("/auth/logout")
+}
+
+async function me(): Promise<LoginResponse> {
+    
+    const respose = await api.get<LoginResponse>("/auth/me");
+
+    return respose.data;
+
+}
+
+async function csrf(): Promise<void>{
+    await api.get("/auth/csrf")
+}
+
 export const authService = {
-    login
+    login,
+    logout,
+    me,
+    csrf
 }

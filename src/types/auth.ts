@@ -10,8 +10,6 @@ export type LoginRequest = {
 };
 
 export type LoginResponse = {
-    token: string;
-    tipo: string;
     perfil: PerfilUsuario;
     primeiroAcesso: boolean;
 };

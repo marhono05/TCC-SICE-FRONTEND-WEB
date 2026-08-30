@@ -1,8 +1,7 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { AuthContext } from "../contexts/AuthContext";
 import { authService } from "../services/authService";
-import { setToken } from "../services/api";
 
 import type { LoginRequest, LoginResponse } from "../types/auth";
 
@@ -13,22 +12,56 @@ type AuthProviderProps = {
 function AuthProvider({ children }: AuthProviderProps) {
 
   const [usuario, setUsuario] = useState<LoginResponse | null>(null);
+  const [loading, setLoading] = useState(true)
 
   const isAuthenticated = usuario !== null;
+
+  useEffect(() => {
+
+    async function inicializarAuth() {
+
+      try{
+        
+        await authService.csrf();
+
+        const response = await authService.me();
+
+        setUsuario(response);
+
+      }catch(error) {
+
+        setUsuario(null);
+
+      }finally{
+
+        setLoading(false)
+      
+      }
+    }
+
+    inicializarAuth();
+
+  }, [])
 
   async function login(dados: LoginRequest) {
 
     const response = await authService.login(dados);
 
-    setToken(response.token);
+    await authService.csrf();
+
     setUsuario(response);
 
     return response;
   }
 
-  function logout() {
-    setToken(null);
+  async function logout() {
+    
+    await authService.logout();
+
     setUsuario(null);
+
+    await authService.csrf();
+
   }
 
   return (
@@ -40,7 +73,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         logout
       }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }

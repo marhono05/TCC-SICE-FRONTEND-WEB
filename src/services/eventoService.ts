@@ -7,7 +7,7 @@ async function buscarTodos():Promise<Evento[]> {
 }
 
 async function buscarMeusEventos():Promise<Evento[]> {
-    const response = await api.get<Evento[]>("/eventos/listarMeusEventos");
+    const response = await api.get<Evento[]>("/eventos/listarEventosPerfil");
     return response.data;
 }
 

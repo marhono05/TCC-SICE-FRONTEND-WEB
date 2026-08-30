@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { api } from "../services/api";
-import type { Evento } from "../types/evento";
-import { eventoService } from "../services/eventoService";
+import type { Evento } from "../../../types/evento";
+import { eventoService } from "../../../services/eventoService";
+import { usuarioService } from "../../../services/usuarioService";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function EventosPage() {
 
-    const { usuario, isAuthenticated, logout } = useAuth();
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [loading, setLoading] = useState(true)
+    const { logout } = useAuth();
 
-    async function sair() {
-        logout();
+
+    async function testarListagem() {
+        try {
+            const usuarios = await usuarioService.listarPorPerfil("ALUNO");
+
+            console.log(usuarios);
+        } catch (error) {
+            console.log("Erro ao listar usuários");
+            console.log(error);
+        }
     }
 
     useEffect(() => {
@@ -31,7 +39,7 @@ export default function EventosPage() {
         carregarEventos();
     }, []);
 
-    if(loading){
+    if (loading) {
         return <p>Carregando eventos...</p>
     }
 
@@ -46,6 +54,14 @@ export default function EventosPage() {
                     <p>{evento.dataHoraInicio}</p>
                 </div>
             ))}
+
+            <button onClick={logout}>
+                Sair
+            </button>
+
+            <button onClick={testarListagem}>
+                Teste
+            </button>
 
         </div>
     )
