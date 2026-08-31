@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import type { Evento } from "../../../types/evento";
 import { eventoService } from "../../../services/eventoService";
 import { usuarioService } from "../../../services/usuarioService";
-import { useAuth } from "../../../hooks/useAuth";
 
 export default function EventosPage() {
 
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [loading, setLoading] = useState(true)
-    const { logout } = useAuth();
 
 
     async function testarListagem() {
@@ -54,10 +52,6 @@ export default function EventosPage() {
                     <p>{evento.dataHoraInicio}</p>
                 </div>
             ))}
-
-            <button onClick={logout}>
-                Sair
-            </button>
 
             <button onClick={testarListagem}>
                 Teste

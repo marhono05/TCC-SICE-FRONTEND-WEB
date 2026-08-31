@@ -7,4 +7,5 @@ export type Usuario = {
     perfil: PerfilUsuario;
     turmasIds: number[];
     identificador: string;
+    ativo: boolean;
 }
