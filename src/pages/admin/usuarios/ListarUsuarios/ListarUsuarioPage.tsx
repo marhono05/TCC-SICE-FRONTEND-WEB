@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate, NavLink } from "react-router";
 import type { Usuario } from "../../../../types/usuario";
-import { isPerfilUsuario } from "../../../../utils/perfilUsuario";
+import { isPerfilUsuario, PERFIL_LABEL_PLURAL, PERFIL_LABEL_SINGULAR } from "../../../../utils/perfilUsuario";
 import { usuarioService } from "../../../../services/usuarioService";
 
 export default function ListarUsuariosPage() {
 
     const { perfil } = useParams();
+    const titulo = perfil && isPerfilUsuario(perfil) ? PERFIL_LABEL_PLURAL[perfil] : "Usuários";
+    const perfilFormat = perfil && isPerfilUsuario(perfil) ? PERFIL_LABEL_SINGULAR[perfil] : "Usuário";
 
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -29,6 +33,25 @@ export default function ListarUsuariosPage() {
 
     return (
         <div>
+            <h2>Gerenciar {titulo}</h2>
+            <nav className="usuarios-tabs">
+                <NavLink to="/gerenciarUsuarios/ALUNO">
+                    Alunos
+                </NavLink>
+
+                <NavLink to="/gerenciarUsuarios/PROFESSOR">
+                    Professores
+                </NavLink>
+
+                <NavLink to="/gerenciarUsuarios/SECRETARIA">
+                    Secretaria
+                </NavLink>
+            </nav>
+
+            <NavLink to={`/cadastrarUsuario/${perfil}` }>
+                Cadastrar {perfilFormat}
+            </NavLink>
+
             <table>
                 <thead>
                     <tr>

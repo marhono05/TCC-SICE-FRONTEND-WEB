@@ -6,7 +6,9 @@ import LayoutPrincipal from './layouts/LayoutPrincipal/LayoutPrincipal';
 import LoginPage from './pages/auth/Login/LoginPage';
 import AdminDashboard from './pages/admin/dashboard/DashBoardPage';
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
-import LayoutUsuarios from './layouts/LayoutUsuarios/LayoutUsuarios';
+import CadastrarUsuarioPage from './pages/admin/usuarios/CadastrarUsuario/CadastrarUsuarioPage';
+import ListarCursosPage from './pages/admin/cursos/ListarCursos/ListarCursosPage';
+import CadastrarCursosPage from './pages/admin/cursos/CadastrarCursos/CadastrarCursosPage';
 
 function App() {
 
@@ -33,17 +35,23 @@ function App() {
             />
 
             <Route
-              path='/gerenciarUsuarios'
-              element={<LayoutUsuarios />}
-            >
+              path="/gerenciarUsuarios/:perfil"
+              element={<ListarUsuariosPage />}
+            />
 
-              <Route
-                path=':perfil'
-                element={<ListarUsuariosPage />}
-              />
+            <Route
+              path="/cadastrarUsuario/:perfil"
+              element={<CadastrarUsuarioPage />}
+            />
 
-            </Route>
-
+            <Route
+              path='/gerenciarCursos'
+              element={<ListarCursosPage/>}
+            />
+            <Route
+              path='/cadastrarCursos'
+              element={<CadastrarCursosPage/>}
+            />
 
           </Route>
 

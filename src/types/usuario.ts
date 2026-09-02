@@ -9,3 +9,12 @@ export type Usuario = {
     identificador: string;
     ativo: boolean;
 }
+
+export type CriarUsuario = {
+    identificador: string;
+    senha: string;
+    nome: string;
+    email: string;
+    perfil: PerfilUsuario;
+    turmasIds?: number[];
+}
