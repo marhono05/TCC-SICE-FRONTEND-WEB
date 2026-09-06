@@ -3,7 +3,7 @@ import { listarCurso } from "../../../../services/cursoService";
 import type { Curso } from "../../../../types/curso";
 import { NavLink } from "react-router";
 
-export default function ListarUsuariosPage() {
+export default function ListarCursosPage() {
     const [ cursos, setCursos ] = useState<Curso[]>([])
    
     useEffect(() => {
@@ -28,7 +28,7 @@ export default function ListarUsuariosPage() {
                     <tr>
                         <th>Id</th>
                         <th>Nome</th>
-                        <th>Modalidade</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,11 +36,9 @@ export default function ListarUsuariosPage() {
                         <tr>
                             <td>{curso.id}</td>
                             <td>{curso.nome}</td>
-                            <td>{curso.modalidade}</td>
+                            <td>{curso.ativo ? 'Ativo' : 'Inativo'}</td>
                         </tr>
-                    ))
-
-                    }
+                    ))}
                     <tr>
 
                     </tr>

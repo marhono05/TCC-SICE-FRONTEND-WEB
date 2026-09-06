@@ -1,14 +1,9 @@
-export type ModalidadeEnsino = 
-    | "MEDIO"
-    | "TECNICO";
-
 export type Curso = {
     id: number;
     nome: string;
-    modalidade: ModalidadeEnsino;
+    ativo: boolean;
 }
 
 export type CriarCurso = {
     nome: string;
-    modalidade: ModalidadeEnsino;
 }
