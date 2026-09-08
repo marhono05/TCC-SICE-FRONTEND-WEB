@@ -9,6 +9,7 @@ import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsua
 import CadastrarUsuarioPage from './pages/admin/usuarios/CadastrarUsuario/CadastrarUsuarioPage';
 import ListarCursosPage from './pages/admin/cursos/ListarCursos/ListarCursosPage';
 import CadastrarCursosPage from './pages/admin/cursos/CadastrarCursos/CadastrarCursosPage';
+import EditarCursosPage from './pages/admin/cursos/EditarCursos/EditarCursosPage';
 import ListarTurmasPage from './pages/admin/turmas/ListarTurmas/ListarTurmasPage';
 import CadastrarTurmasPage from './pages/admin/turmas/CadastrarTurmas/CadastrarTurmasPage';
 
@@ -52,6 +53,10 @@ function App() {
             <Route
               path='/cadastrarCursos'
               element={<CadastrarCursosPage/>}
+            />
+            <Route
+              path='/editarCursos/:id'
+              element={<EditarCursosPage/>}
             />
 
             <Route

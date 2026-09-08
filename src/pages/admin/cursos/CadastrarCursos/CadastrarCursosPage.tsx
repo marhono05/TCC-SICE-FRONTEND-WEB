@@ -1,48 +1,30 @@
-import { useState, type SubmitEvent } from "react";
+import type { CriarCurso } from "../../../../types/curso";
 import { cadastrarCurso } from "../../../../services/cursoService";
+import FormCurso from "../../../../components/FormCurso";
 
 export default function CadastrarCursosPage() {
-    const [nome, setNome] = useState('');
 
-
-    async function cadastrar(
-        event: SubmitEvent<HTMLFormElement>
-    ) {
-        event.preventDefault();
+    async function cadastrar(dados: CriarCurso) {
 
         try {
 
-            const curso = await cadastrarCurso({
-                nome
-            });
+            const curso = await cadastrarCurso(dados);
 
         } catch (error) {
 
-            console.log("Erro ao cadastrar curso")
-            console.log(error)
+            console.log("Erro ao cadastrar curso");
+            console.log(error);
 
         }
-
     }
 
     return (
         <div>
             <h1>Cadastrar Curso</h1>
 
-            <form onSubmit={cadastrar}>
-                <label>Nome: </label>
-                <input
-                    type="text"
-                    placeholder="Digite o nome do curso"
-                    value={nome}
-                    onChange={(event) => setNome(event.target.value)}
-                />
-                <br/><br/>
-                <input
-                    type="submit"
-                />
-            </form>
-
+            <FormCurso
+                onSubmit={cadastrar}
+            />
         </div>
-    )
+    );
 }

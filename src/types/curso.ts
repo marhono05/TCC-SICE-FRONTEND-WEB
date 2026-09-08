@@ -7,3 +7,7 @@ export type Curso = {
 export type CriarCurso = {
     nome: string;
 }
+
+export type EditarCurso = {
+    nome: string;
+}
