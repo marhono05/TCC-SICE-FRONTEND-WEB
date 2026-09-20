@@ -3,7 +3,7 @@ import type { CriarCurso, Curso } from "../types/curso";
 
 interface FormCursoProps {
     curso?: Curso;
-    onSubmit: (dados: CriarCurso) => void
+    onSubmit: (dados: CriarCurso) => void;
 }
 
 export default function FormCurso({curso, onSubmit}: FormCursoProps ) {

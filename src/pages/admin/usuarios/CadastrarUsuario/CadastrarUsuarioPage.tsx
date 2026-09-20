@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { isPerfilUsuario, PERFIL_LABEL_PLURAL } from "../../../../utils/perfilUsuario";
 import { useEffect, useState, type SubmitEvent } from "react";
-import { usuarioService } from "../../../../services/usuarioService";
+import { cadastrarUsuario } from "../../../../services/usuarioService";
 import type { CriarUsuario } from "../../../../types/usuario";
 import type { Turma } from "../../../../types/turmas";
 import { listarTurma } from "../../../../services/turmaService";
@@ -73,7 +73,7 @@ export default function CadastrarUsuarioPage() {
             };
 
             const usuarioCriado =
-                await usuarioService.cadastrarUsuario(dados);
+                await cadastrarUsuario(dados);
 
             console.log(usuarioCriado);
 

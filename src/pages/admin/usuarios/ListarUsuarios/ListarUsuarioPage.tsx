@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, NavLink } from "react-router";
 import type { Usuario } from "../../../../types/usuario";
 import { isPerfilUsuario, PERFIL_LABEL_PLURAL, PERFIL_LABEL_SINGULAR } from "../../../../utils/perfilUsuario";
-import { usuarioService } from "../../../../services/usuarioService";
+import { listarPorPerfil } from "../../../../services/usuarioService";
 
 export default function ListarUsuariosPage() {
 
@@ -22,7 +22,7 @@ export default function ListarUsuariosPage() {
                 return;
             }
 
-            const dados = await usuarioService.listarPorPerfil(perfil);
+            const dados = await listarPorPerfil(perfil);
 
             setUsuarios(dados);
         }

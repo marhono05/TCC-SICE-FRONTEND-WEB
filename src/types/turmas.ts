@@ -1,12 +1,12 @@
-export type ModalidadeEnsino = 
-    | "MEDIO"
-    | "TECNICO";
-
+import type {
+    Etapa,
+    ModalidadeEnsino
+} from "../schemas/turmaSchemas";
 
 export type Turma = {
     id: number;
     anoLetivo: number;
-    etapa: string;
+    etapa: Etapa;
     modalidade: ModalidadeEnsino;
     cursoId: number;
     cursoNome: string;

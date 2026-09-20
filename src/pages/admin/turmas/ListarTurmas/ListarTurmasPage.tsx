@@ -38,7 +38,7 @@ export default function ListarTurmasPage() {
                 </thead>
                 <tbody>
                     {turmas.map((turma) => (
-                        <tr>
+                        <tr key={turma.id}>
                             <td>{turma.id}</td>
                             <td>{turma.anoLetivo}</td>
                             <td>{turma.cursoNome}</td>

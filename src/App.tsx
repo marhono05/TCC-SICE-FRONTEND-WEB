@@ -1,8 +1,14 @@
 import { Route, Routes } from 'react-router';
-import EventosPage from './pages/eventos/Eventos/EventosPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AdminRoute from './routes/AdminRoute';
+import SecretariaRoute from './routes/SecretariaRoute';
+
 import LayoutPrincipal from './layouts/LayoutPrincipal/LayoutPrincipal';
+
+import EventosPage from './pages/eventos/Eventos/EventosPage';
+import ListarEventosPage from './pages/admin/eventos/ListarEventos/ListarEventosPage';
+import CadastrarEventosPage from './pages/admin/eventos/CadastrarEventos/CadastrarEventosPage';
+import EditarEventosPage from './pages/admin/eventos/EditarEventos/EditarEventosPage';
 import LoginPage from './pages/auth/Login/LoginPage';
 import AdminDashboard from './pages/admin/dashboard/DashBoardPage';
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
@@ -30,43 +36,62 @@ function App() {
             element={<EventosPage />}
           />
 
-          <Route element={<AdminRoute />} >
+          <Route element={<SecretariaRoute />}>
 
             <Route
-              path='/admin'
-              element={<AdminDashboard />}
-            />
-
-            <Route
-              path="/gerenciarUsuarios/:perfil"
-              element={<ListarUsuariosPage />}
-            />
-            <Route
-              path="/cadastrarUsuario/:perfil"
-              element={<CadastrarUsuarioPage />}
+              path='/gerenciarEventos'
+              element={<ListarEventosPage/>}
             />
 
             <Route
-              path='/gerenciarCursos'
-              element={<ListarCursosPage/>}
-            />
-            <Route
-              path='/cadastrarCursos'
-              element={<CadastrarCursosPage/>}
-            />
-            <Route
-              path='/editarCursos/:id'
-              element={<EditarCursosPage/>}
+              path='/cadastrarEventos'
+              element={<CadastrarEventosPage/>}
             />
 
             <Route
-              path='/gerenciarTurmas'
-              element={<ListarTurmasPage/>}
+              path='/editarEventos/:id'
+              element={<EditarEventosPage/>}
             />
-            <Route
-              path='/cadastrarTurmas'
-              element={<CadastrarTurmasPage/>}
-            />
+
+            <Route element={<AdminRoute />} >
+
+              <Route
+                path='/admin'
+                element={<AdminDashboard />}
+              />
+
+              <Route
+                path='/gerenciarUsuarios/:perfil'
+                element={<ListarUsuariosPage />}
+              />
+              <Route
+                path='/cadastrarUsuario/:perfil'
+                element={<CadastrarUsuarioPage />}
+              />
+
+              <Route
+                path='/gerenciarCursos'
+                element={<ListarCursosPage />}
+              />
+              <Route
+                path='/cadastrarCursos'
+                element={<CadastrarCursosPage />}
+              />
+              <Route
+                path='/editarCursos/:id'
+                element={<EditarCursosPage />}
+              />
+
+              <Route
+                path='/gerenciarTurmas'
+                element={<ListarTurmasPage />}
+              />
+              <Route
+                path='/cadastrarTurmas'
+                element={<CadastrarTurmasPage />}
+              />
+
+            </Route>
 
           </Route>
 

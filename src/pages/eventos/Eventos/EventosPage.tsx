@@ -1,29 +1,16 @@
 import { useState, useEffect } from "react";
 import type { Evento } from "../../../types/evento";
-import { eventoService } from "../../../services/eventoService";
-import { usuarioService } from "../../../services/usuarioService";
+import { listarMeusEventos } from "../../../services/eventoService";
 
 export default function EventosPage() {
 
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [loading, setLoading] = useState(true)
 
-
-    async function testarListagem() {
-        try {
-            const usuarios = await usuarioService.listarPorPerfil("ALUNO");
-
-            console.log(usuarios);
-        } catch (error) {
-            console.log("Erro ao listar usuários");
-            console.log(error);
-        }
-    }
-
     useEffect(() => {
         async function carregarEventos() {
             try {
-                const eventos = await eventoService.buscarMeusEventos();
+                const eventos = await listarMeusEventos();
 
                 setEventos(eventos)
 
@@ -52,11 +39,7 @@ export default function EventosPage() {
                     <p>{evento.dataHoraInicio}</p>
                 </div>
             ))}
-
-            <button onClick={testarListagem}>
-                Teste
-            </button>
-
+            
         </div>
     )
 }

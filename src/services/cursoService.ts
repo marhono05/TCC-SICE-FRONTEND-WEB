@@ -30,11 +30,3 @@ export async function alterarStatusCurso(id: number, ativo: boolean) {
 
     return response.data;
 }
-
-export const cursoService = {
-    buscarCursoPorId,
-    listarCurso,
-    cadastrarCurso,
-    editarCurso,
-    alterarStatusCurso
-};
