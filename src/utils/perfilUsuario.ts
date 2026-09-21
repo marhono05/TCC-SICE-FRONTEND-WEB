@@ -1,4 +1,4 @@
-import type { PerfilUsuario } from "../types/auth";
+import type { PerfilUsuario } from "../schemas/perfilUsuarioSchema";
 
 export const PERFIS_USUARIO: PerfilUsuario[] = [
     "ALUNO",

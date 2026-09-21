@@ -1,8 +1,4 @@
-export type PerfilUsuario =
-    | "ALUNO"
-    | "PROFESSOR"
-    | "SECRETARIA"
-    | "ADMIN";
+import type { PerfilUsuario } from "../schemas/perfilUsuarioSchema";
 
 export type LoginRequest = {
     identificador: string;

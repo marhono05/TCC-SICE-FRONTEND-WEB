@@ -17,6 +17,7 @@ import EditarEventosPage from './pages/admin/eventos/EditarEventos/EditarEventos
 
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
 import CadastrarUsuarioPage from './pages/admin/usuarios/CadastrarUsuario/CadastrarUsuarioPage';
+import EditarUsuarioPage from './pages/admin/usuarios/EditarUsuario/EditarUsuariosPage';
 
 import ListarCursosPage from './pages/admin/cursos/ListarCursos/ListarCursosPage';
 import CadastrarCursosPage from './pages/admin/cursos/CadastrarCursos/CadastrarCursosPage';
@@ -77,6 +78,10 @@ function App() {
               <Route
                 path='/cadastrarUsuario/:perfil'
                 element={<CadastrarUsuarioPage />}
+              />
+              <Route
+                path='/editarUsuario/:id'
+                element={<EditarUsuarioPage/>}
               />
 
 

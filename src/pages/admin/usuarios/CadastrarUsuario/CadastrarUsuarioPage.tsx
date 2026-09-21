@@ -1,168 +1,189 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { isPerfilUsuario, PERFIL_LABEL_PLURAL } from "../../../../utils/perfilUsuario";
-import { useEffect, useState, type SubmitEvent } from "react";
+
+import FormUsuario from "../../../../components/FormUsuario";
+
 import { cadastrarUsuario } from "../../../../services/usuarioService";
-import type { CriarUsuario } from "../../../../types/usuario";
-import type { Turma } from "../../../../types/turmas";
 import { listarTurma } from "../../../../services/turmaService";
+
+import type { Turma } from "../../../../types/turmas";
+import type { CriarUsuario } from "../../../../types/usuario";
+
+import type { UsuarioFormData } from "../../../../schemas/usuarioSchema";
+
+import {
+    isPerfilUsuario,
+    PERFIL_LABEL_PLURAL
+} from "../../../../utils/perfilUsuario";
+
 
 export default function CadastrarUsuarioPage() {
 
     const { perfil } = useParams();
 
-    const titulo =
+    const [turmas, setTurmas] =
+        useState<Turma[]>([]);
+
+    const [loading, setLoading] =
+        useState(true);
+
+    const [salvando, setSalvando] =
+        useState(false);
+
+
+    /*
+     * Valida o perfil recebido pela URL.
+     */
+    const perfilValido =
         perfil && isPerfilUsuario(perfil)
-            ? PERFIL_LABEL_PLURAL[perfil]
+            ? perfil
+            : null;
+
+
+    const titulo =
+        perfilValido
+            ? PERFIL_LABEL_PLURAL[perfilValido]
             : "Usuários";
 
-    const [identificador, setIdentificador] = useState("");
-    const [senha, setSenha] = useState("");
-    const [nome, setNome] = useState("");
-    const [email, setEmail] = useState("");
 
-    const [turmas, setTurmas] = useState<Turma[]>([]);
-    const [turmasSelecionadas, setTurmasSelecionadas] = useState<number[]>([]);
-    const [pesquisa, setPesquisa] = useState("");
-
-    const turmasFiltradas = turmas.filter((turma) => {
-        const texto = `
-            ${turma.cursoNome}
-            ${turma.etapa}
-            ${turma.modalidade}
-            ${turma.anoLetivo}
-        `.toLowerCase();
-
-        return texto.includes(pesquisa.toLowerCase());
-    });
-
+    /*
+     * Só precisamos carregar as turmas
+     * quando estivermos cadastrando ALUNO.
+     */
     useEffect(() => {
+
         async function carregarTurmas() {
-            const dados = await listarTurma();
-            setTurmas(dados);
-        }
 
-        carregarTurmas();
-    }, []);
+            if (perfilValido !== "ALUNO") {
 
-    function selecionarTurma(id: number) {
-        setTurmasSelecionadas((atuais) =>
-            atuais.includes(id)
-                ? atuais.filter((turmaId) => turmaId !== id)
-                : [...atuais, id]
-        );
-    }
+                setLoading(false);
 
-    async function cadastrar(
-        event: SubmitEvent<HTMLFormElement>
-    ) {
-        event.preventDefault();
-
-        try {
-
-            if (!perfil || !isPerfilUsuario(perfil)) {
                 return;
             }
 
-            const dados: CriarUsuario = {
-                identificador,
-                senha,
-                nome,
-                email,
-                perfil,
-                turmasIds: turmasSelecionadas
-            };
+
+            try {
+
+                setLoading(true);
+
+                const dados =
+                    await listarTurma();
+
+                setTurmas(dados);
+
+            } catch (error) {
+
+                console.log(
+                    "Erro ao carregar turmas"
+                );
+
+                console.log(error);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+        }
+
+
+        carregarTurmas();
+
+    }, [perfilValido]);
+
+
+    async function cadastrar(
+        dados: UsuarioFormData
+    ) {
+
+        const novoUsuario: CriarUsuario = {
+            identificador: dados.identificador,
+            nome: dados.nome,
+            email: dados.email,
+            perfil: dados.perfil,
+            turmasIds: dados.turmasIds
+        };
+
+
+        try {
+
+            setSalvando(true);
 
             const usuarioCriado =
-                await cadastrarUsuario(dados);
+                await cadastrarUsuario(
+                    novoUsuario
+                );
 
-            console.log(usuarioCriado);
+            console.log(
+                "Usuário criado:",
+                usuarioCriado
+            );
 
         } catch (error) {
-            console.log(`Erro ao cadastrar um ${perfil}`);
+
+            console.log(
+                `Erro ao cadastrar ${perfilValido}`
+            );
+
             console.log(error);
+
+        } finally {
+
+            setSalvando(false);
+
         }
     }
 
+
+    /*
+     * Caso alguém acesse uma URL com um
+     * perfil inválido.
+     */
+    if (!perfilValido) {
+
+        return (
+            <p>
+                Perfil de usuário inválido.
+            </p>
+        );
+
+    }
+
+
+    if (loading) {
+
+        return (
+            <p>
+                Carregando...
+            </p>
+        );
+
+    }
+
+
     return (
+
         <div>
-            <h1>Cadastrar {titulo}</h1>
 
-            <form onSubmit={cadastrar}>
+            <h1>
+                Cadastrar {titulo}
+            </h1>
 
-                <input
-                    type="text"
-                    placeholder="Digite o nome do usuário..."
-                    value={nome}
-                    onChange={(event) => setNome(event.target.value)}
-                />
 
-                <input
-                    type="email"
-                    placeholder="Digite o email do usuário..."
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                />
+            <FormUsuario
+                perfil={perfilValido}
+                turmas={turmas}
+                onSubmit={cadastrar}
+            />
 
-                <input
-                    type="text"
-                    placeholder="Digite o identificador do usuário..."
-                    value={identificador}
-                    onChange={(event) =>
-                        setIdentificador(event.target.value)
-                    }
-                />
 
-                <input
-                    type="text"
-                    placeholder="Digite a senha do usuário..."
-                    value={senha}
-                    onChange={(event) =>
-                        setSenha(event.target.value)
-                    }
-                />
+            {salvando && (
+                <p>
+                    Cadastrando usuário...
+                </p>
+            )}
 
-                {perfil === "ALUNO" && (
-                    <div>
-
-                        <input
-                            type="text"
-                            placeholder="Pesquisar turma..."
-                            value={pesquisa}
-                            onChange={(event) =>
-                                setPesquisa(event.target.value)
-                            }
-                        />
-
-                        {turmasFiltradas.map((turma) => (
-                            <div key={turma.id}>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        value={turma.id}
-                                        checked={turmasSelecionadas.includes(
-                                            turma.id
-                                        )}
-                                        onChange={() =>
-                                            selecionarTurma(turma.id)
-                                        }
-                                    />
-
-                                    {turma.cursoNome} -{" "}
-                                    {turma.etapa} -{" "}
-                                    {turma.modalidade} -{" "}
-                                    {turma.anoLetivo}
-                                </label>
-                            </div>
-                        ))}
-
-                    </div>
-                )}
-
-                <button type="submit">
-                    Cadastrar
-                </button>
-
-            </form>
         </div>
+
     );
 }

@@ -1,4 +1,4 @@
-import type { PerfilUsuario } from "./auth";
+import type { PerfilUsuario } from "../schemas/perfilUsuarioSchema";
 
 export type Usuario = {
     id: number;
@@ -12,9 +12,15 @@ export type Usuario = {
 
 export type CriarUsuario = {
     identificador: string;
-    senha: string;
     nome: string;
     email: string;
     perfil: PerfilUsuario;
-    turmasIds?: number[];
+    turmasIds: number[];
+}
+
+export type EditarUsuario = {
+    identificador: string;
+    nome: string;
+    email: string;
+    turmasIds: number[];
 }
