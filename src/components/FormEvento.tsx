@@ -281,30 +281,22 @@ export default function FormEvento({
     return (
 
         <form onSubmit={handleSubmit(onSubmit)}>
-
-            {/* TÍTULO */}
-
             <label>
                 Título:
             </label>
-
+            
             <input
                 type="text"
                 placeholder="Digite o título..."
                 {...register("titulo")}
             />
-
             {errors.titulo && (
                 <span>
                     {errors.titulo.message}
                 </span>
             )}
-
             <br />
             <br />
-
-
-            {/* DESCRIÇÃO */}
 
             <label>
                 Descrição:
@@ -314,18 +306,13 @@ export default function FormEvento({
                 placeholder="Digite a descrição..."
                 {...register("descricao")}
             />
-
             {errors.descricao && (
                 <span>
                     {errors.descricao.message}
                 </span>
             )}
-
             <br />
             <br />
-
-
-            {/* DATA */}
 
             <label>
                 Data:
@@ -341,12 +328,8 @@ export default function FormEvento({
                     {errors.dataInicio.message}
                 </span>
             )}
-
             <br />
             <br />
-
-
-            {/* HORA */}
 
             <label>
                 Hora:
@@ -356,23 +339,17 @@ export default function FormEvento({
                 type="time"
                 {...register("horaInicio")}
             />
-
             {errors.horaInicio && (
                 <span>
                     {errors.horaInicio.message}
                 </span>
             )}
-
             <br />
             <br />
-
-
-            {/* DESTINAÇÕES */}
 
             <h2>
                 Selecione as destinações do evento:
             </h2>
-
 
             <div>
 
@@ -390,11 +367,8 @@ export default function FormEvento({
                             )
                         }
                     />
-
                     Alunos
-
                 </label>
-
 
                 <label>
 
@@ -410,14 +384,10 @@ export default function FormEvento({
                             )
                         }
                     />
-
                     Professores
-
                 </label>
 
             </div>
-
-
             {errors.destinos?.message && (
                 <span>
                     {errors.destinos.message}
@@ -458,14 +428,10 @@ export default function FormEvento({
                         );
                     });
 
-
                 return (
 
                     <div key={field.id}>
-
                         <hr />
-
-
                         <h3>
                             Destino: {
                                 perfil === "ALUNO"
@@ -482,9 +448,7 @@ export default function FormEvento({
                         />
 
                         {perfil === "ALUNO" && (
-
                             <>
-
                                 <label>
 
                                     <input
@@ -499,22 +463,16 @@ export default function FormEvento({
                                             )
                                         }
                                     />
-
                                     Adicionar especificações para alunos
-
                                 </label>
 
-
                                 {especificarAlunos && (
-
                                     <>
-
                                         <div>
 
                                             <h4>
                                                 Modalidades
                                             </h4>
-
 
                                             <label>
 
@@ -525,14 +483,10 @@ export default function FormEvento({
                                                         `destinos.${index}.modalidades`
                                                     )}
                                                 />
-
                                                 Ensino Médio
-
                                             </label>
 
-
                                             <label>
-
                                                 <input
                                                     type="checkbox"
                                                     value="TECNICO"
@@ -540,22 +494,14 @@ export default function FormEvento({
                                                         `destinos.${index}.modalidades`
                                                     )}
                                                 />
-
                                                 Ensino Técnico
-
                                             </label>
-
                                         </div>
 
-
-                                        {/* ETAPAS */}
-
                                         <div>
-
                                             <h4>
                                                 Etapas
                                             </h4>
-
 
                                             <label>
 
@@ -566,14 +512,10 @@ export default function FormEvento({
                                                         `destinos.${index}.etapas`
                                                     )}
                                                 />
-
                                                 Primeiro
-
                                             </label>
 
-
                                             <label>
-
                                                 <input
                                                     type="checkbox"
                                                     value="SEGUNDA"
@@ -581,14 +523,10 @@ export default function FormEvento({
                                                         `destinos.${index}.etapas`
                                                     )}
                                                 />
-
                                                 Segundo
-
                                             </label>
 
-
                                             <label>
-
                                                 <input
                                                     type="checkbox"
                                                     value="TERCEIRA"
@@ -596,22 +534,15 @@ export default function FormEvento({
                                                         `destinos.${index}.etapas`
                                                     )}
                                                 />
-
                                                 Terceiro
-
                                             </label>
-
                                         </div>
-
-
-                                        {/* TURMAS */}
 
                                         <div>
 
                                             <h4>
                                                 Turmas
                                             </h4>
-
 
                                             <input
                                                 type="text"
@@ -623,21 +554,15 @@ export default function FormEvento({
                                                     )
                                                 }
                                             />
-
-
                                             <br />
                                             <br />
-
 
                                             {turmasFiltradas.map(
                                                 (turma) => (
-
                                                     <div
                                                         key={turma.id}
                                                     >
-
                                                         <label>
-
                                                             <input
                                                                 type="checkbox"
                                                                 checked={
@@ -652,8 +577,6 @@ export default function FormEvento({
                                                                     )
                                                                 }
                                                             />
-
-
                                                             {turma.cursoNome}
                                                             {" - "}
                                                             {turma.anoLetivo}
@@ -661,40 +584,24 @@ export default function FormEvento({
                                                             {turma.modalidade}
                                                             {" - "}
                                                             {turma.etapa}
-
                                                         </label>
-
                                                     </div>
-
                                                 )
                                             )}
-
                                         </div>
-
                                     </>
-
                                 )}
-
                             </>
-
                         )}
-
                     </div>
-
                 );
-
             })}
-
-
             <br />
             <br />
-
 
             <button type="submit">
                 Salvar
             </button>
-
         </form>
-
     );
 }

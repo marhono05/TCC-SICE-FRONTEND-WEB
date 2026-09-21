@@ -1,39 +1,86 @@
-import { useState, type SubmitEvent } from "react"
-import type { CriarCurso, Curso } from "../types/curso";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import type { Curso } from "../types/curso";
+import {
+    cursoSchema,
+    type CursoFormData
+} from "../schemas/cursoSchema";
+
 
 interface FormCursoProps {
     curso?: Curso;
-    onSubmit: (dados: CriarCurso) => void;
+    onSubmit: (dados: CursoFormData) => Promise<void> | void;
 }
 
-export default function FormCurso({curso, onSubmit}: FormCursoProps ) {
+
+export default function FormCurso({
+    curso,
+    onSubmit
+}: FormCursoProps) {
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<CursoFormData>({
+        resolver: zodResolver(cursoSchema),
+
+        defaultValues: {
+            nome: curso?.nome ?? ""
+        }
+    });
 
 
-    const [nome, setNome] = useState(curso?.nome ?? "");
+    /*
+     * Importante principalmente para edição:
+     * se o curso vier da API depois que o
+     * componente já foi renderizado.
+     */
+    useEffect(() => {
 
-    const handleSubmit = (
-        event: SubmitEvent<HTMLFormElement>
-    ) => {
-        event.preventDefault();
+        if (curso) {
+            reset({
+                nome: curso.nome
+            });
+        }
 
-        onSubmit({
-            nome
-        });
-    };
+    }, [curso, reset]);
 
-    return(
-        <form onSubmit={handleSubmit}>
-                <label>Nome: </label>
-                <input
-                    type="text"
-                    placeholder="Digite o nome do curso"
-                    value={nome}
-                    onChange={(event) => setNome(event.target.value)}
-                />
-                <br/><br/>
-                <input
-                    type="submit"
-                />
-            </form>
-    )
+
+    return (
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+
+            <label>
+                Nome:
+            </label>
+
+            <input
+                type="text"
+                placeholder="Digite o nome do curso"
+                {...register("nome")}
+            />
+
+
+            {errors.nome && (
+                <span>
+                    {errors.nome.message}
+                </span>
+            )}
+
+
+            <br />
+            <br />
+
+
+            <button type="submit">
+                Salvar
+            </button>
+
+        </form>
+
+    );
 }

@@ -3,6 +3,7 @@ import type {
     ModalidadeEnsino
 } from "../schemas/turmaSchemas";
 
+
 export type Turma = {
     id: number;
     anoLetivo: number;
@@ -11,11 +12,20 @@ export type Turma = {
     cursoId: number;
     cursoNome: string;
     ativo: boolean;
-}
+};
+
 
 export type CriarTurma = {
     anoLetivo: number;
-    etapa: string;
+    etapa: Etapa;
     modalidade: ModalidadeEnsino;
     cursoId: number;
-}
+};
+
+
+export type EditarTurma = {
+    anoLetivo: number;
+    etapa: Etapa;
+    modalidade: ModalidadeEnsino;
+    cursoId: number;
+};

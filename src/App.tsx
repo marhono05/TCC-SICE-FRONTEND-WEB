@@ -5,19 +5,26 @@ import SecretariaRoute from './routes/SecretariaRoute';
 
 import LayoutPrincipal from './layouts/LayoutPrincipal/LayoutPrincipal';
 
+import LoginPage from './pages/auth/Login/LoginPage';
+
+import AdminDashboard from './pages/admin/dashboard/DashBoardPage';
+
 import EventosPage from './pages/eventos/Eventos/EventosPage';
 import ListarEventosPage from './pages/admin/eventos/ListarEventos/ListarEventosPage';
 import CadastrarEventosPage from './pages/admin/eventos/CadastrarEventos/CadastrarEventosPage';
 import EditarEventosPage from './pages/admin/eventos/EditarEventos/EditarEventosPage';
-import LoginPage from './pages/auth/Login/LoginPage';
-import AdminDashboard from './pages/admin/dashboard/DashBoardPage';
+
+
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
 import CadastrarUsuarioPage from './pages/admin/usuarios/CadastrarUsuario/CadastrarUsuarioPage';
+
 import ListarCursosPage from './pages/admin/cursos/ListarCursos/ListarCursosPage';
 import CadastrarCursosPage from './pages/admin/cursos/CadastrarCursos/CadastrarCursosPage';
 import EditarCursosPage from './pages/admin/cursos/EditarCursos/EditarCursosPage';
+
 import ListarTurmasPage from './pages/admin/turmas/ListarTurmas/ListarTurmasPage';
 import CadastrarTurmasPage from './pages/admin/turmas/CadastrarTurmas/CadastrarTurmasPage';
+import EditarTurmasPage from './pages/admin/turmas/EditarTurmas/EditarTurmasPage';
 
 function App() {
 
@@ -28,37 +35,40 @@ function App() {
       <Route path='/login' element={<LoginPage />} />
 
       <Route element={<ProtectedRoute />} >
-
         <Route element={<LayoutPrincipal />}>
+
 
           <Route
             path='/eventos'
             element={<EventosPage />}
           />
 
+
           <Route element={<SecretariaRoute />}>
+
 
             <Route
               path='/gerenciarEventos'
               element={<ListarEventosPage/>}
             />
-
             <Route
               path='/cadastrarEventos'
               element={<CadastrarEventosPage/>}
             />
-
             <Route
               path='/editarEventos/:id'
               element={<EditarEventosPage/>}
             />
 
+
             <Route element={<AdminRoute />} >
+
 
               <Route
                 path='/admin'
                 element={<AdminDashboard />}
               />
+
 
               <Route
                 path='/gerenciarUsuarios/:perfil'
@@ -68,6 +78,7 @@ function App() {
                 path='/cadastrarUsuario/:perfil'
                 element={<CadastrarUsuarioPage />}
               />
+
 
               <Route
                 path='/gerenciarCursos'
@@ -82,6 +93,7 @@ function App() {
                 element={<EditarCursosPage />}
               />
 
+
               <Route
                 path='/gerenciarTurmas'
                 element={<ListarTurmasPage />}
@@ -90,14 +102,16 @@ function App() {
                 path='/cadastrarTurmas'
                 element={<CadastrarTurmasPage />}
               />
+              <Route
+                path='/editarTurmas/:id'
+                element={<EditarTurmasPage/>}
+              />
+
 
             </Route>
-
           </Route>
-
         </Route>
       </Route>
-
     </Routes>
   )
 }

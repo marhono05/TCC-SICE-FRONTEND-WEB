@@ -1,30 +1,54 @@
 import { useEffect, useState } from "react";
-import type { Curso, CriarCurso } from "../../../../types/curso";
-import { buscarCursoPorId, editarCurso } from "../../../../services/cursoService";
-import FormCurso from "../../../../components/FormCurso";
 import { useParams } from "react-router";
+
+import FormCurso from "../../../../components/FormCurso";
+
+import {
+    buscarCursoPorId,
+    editarCurso
+} from "../../../../services/cursoService";
+
+import type {
+    Curso,
+    EditarCurso
+} from "../../../../types/curso";
+
+import type {
+    CursoFormData
+} from "../../../../schemas/cursoSchema";
+
 
 export default function EditarCursosPage() {
 
     const { id } = useParams();
 
-    const [curso, setCurso] = useState<Curso | null>(null);
+    const [curso, setCurso] =
+        useState<Curso | null>(null);
+
 
     useEffect(() => {
 
         async function buscarCurso() {
 
-            if (!id) return;
+            if (!id) {
+                return;
+            }
 
             try {
 
-                const cursoEncontrado = await buscarCursoPorId(Number(id));
+                const cursoEncontrado =
+                    await buscarCursoPorId(
+                        Number(id)
+                    );
 
                 setCurso(cursoEncontrado);
 
             } catch (error) {
 
-                console.log("Erro ao buscar curso");
+                console.log(
+                    "Erro ao buscar curso"
+                );
+
                 console.log(error);
 
             }
@@ -35,17 +59,34 @@ export default function EditarCursosPage() {
     }, [id]);
 
 
-    async function editar(dados: CriarCurso) {
+    async function editar(
+        dados: CursoFormData
+    ) {
 
-        if (!curso) return;
+        if (!curso) {
+            return;
+        }
+
+        const cursoEditado: EditarCurso = {
+            nome: dados.nome
+        };
 
         try {
 
-            await editarCurso(curso.id, dados);
+            const cursoAtualizado =
+                await editarCurso(
+                    curso.id,
+                    cursoEditado
+                );
+
+            setCurso(cursoAtualizado);
 
         } catch (error) {
 
-            console.log("Erro ao editar curso");
+            console.log(
+                "Erro ao editar curso"
+            );
+
             console.log(error);
 
         }
@@ -53,18 +94,30 @@ export default function EditarCursosPage() {
 
 
     if (!curso) {
-        return <p>Carregando...</p>;
+
+        return (
+            <p>
+                Carregando...
+            </p>
+        );
+
     }
 
 
     return (
+
         <div>
-            <h1>Editar Curso</h1>
+
+            <h1>
+                Editar Curso
+            </h1>
 
             <FormCurso
                 curso={curso}
                 onSubmit={editar}
             />
+
         </div>
+
     );
 }
