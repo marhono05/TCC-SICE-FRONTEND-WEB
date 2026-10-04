@@ -46,6 +46,9 @@ export default function LayoutPrincipal() {
                             <NavLink to="/gerenciarCursos">
                                 Gerenciar Cursos
                             </NavLink>
+                            <NavLink to="/gerenciarGruposWhatsapp">
+                                Gerenciar Grupos Whatsapp
+                            </NavLink>
                         </>
                     )}
                 </nav>

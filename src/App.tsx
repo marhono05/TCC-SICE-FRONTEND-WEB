@@ -27,6 +27,10 @@ import ListarTurmasPage from './pages/admin/turmas/ListarTurmas/ListarTurmasPage
 import CadastrarTurmasPage from './pages/admin/turmas/CadastrarTurmas/CadastrarTurmasPage';
 import EditarTurmasPage from './pages/admin/turmas/EditarTurmas/EditarTurmasPage';
 
+import CadastrarGrupoWhatsappPage from './pages/admin/grupos/CadastrarGrupos/CadastrarGrupoWhatsappPage';
+import EditarGrupoWhatsappPage from './pages/admin/grupos/EditarGrupos/EditarGrupoWhatsappPage';
+import ListarGruposWhatsappPage from './pages/admin/grupos/ListarGrupos/ListarGruposWhatsappPage';
+
 function App() {
 
   return (
@@ -50,15 +54,15 @@ function App() {
 
             <Route
               path='/gerenciarEventos'
-              element={<ListarEventosPage/>}
+              element={<ListarEventosPage />}
             />
             <Route
               path='/cadastrarEventos'
-              element={<CadastrarEventosPage/>}
+              element={<CadastrarEventosPage />}
             />
             <Route
               path='/editarEventos/:id'
-              element={<EditarEventosPage/>}
+              element={<EditarEventosPage />}
             />
 
 
@@ -81,7 +85,7 @@ function App() {
               />
               <Route
                 path='/editarUsuario/:id'
-                element={<EditarUsuarioPage/>}
+                element={<EditarUsuarioPage />}
               />
 
 
@@ -109,9 +113,22 @@ function App() {
               />
               <Route
                 path='/editarTurmas/:id'
-                element={<EditarTurmasPage/>}
+                element={<EditarTurmasPage />}
               />
 
+
+              <Route
+                path="/gerenciarGruposWhatsapp"
+                element={<ListarGruposWhatsappPage />}
+              />
+              <Route
+                path="/grupos-whatsapp/cadastrar"
+                element={<CadastrarGrupoWhatsappPage />}
+              />
+              <Route
+                path="/grupos-whatsapp/editar/:id"
+                element={<EditarGrupoWhatsappPage />}
+              />
 
             </Route>
           </Route>
