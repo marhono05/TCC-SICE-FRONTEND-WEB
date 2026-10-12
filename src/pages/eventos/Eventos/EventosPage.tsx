@@ -36,7 +36,8 @@ export default function EventosPage() {
                 <div key={evento.id}>
                     <h2>{evento.titulo}</h2>
                     <p>{evento.descricao}</p>
-                    <p>{evento.dataHoraInicio}</p>
+                    <p>{evento.dataInicio} - {evento.horaInicio}</p>
+                    <p>{evento.status}</p>
                 </div>
             ))}
             

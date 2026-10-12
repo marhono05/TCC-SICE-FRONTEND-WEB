@@ -27,7 +27,11 @@ export default function LoginPage() {
             if (usuario.perfil === "ADMIN") {
                 navigate("/admin", { replace: true })
             } else {
-                navigate("/eventos", { replace: true })
+                if (usuario.primeiroAcesso) {
+                    navigate("/alterar-senha", { replace: true })
+                } else {
+                    navigate("/eventos", { replace: true })
+                }
             }
 
         } catch (error) {

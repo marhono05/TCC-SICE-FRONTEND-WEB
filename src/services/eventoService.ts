@@ -37,6 +37,12 @@ export async function cancelarEvento(id: number): Promise<Evento> {
     return response.data;
 }
 
+export async function desativarEvento(id: number): Promise<Evento> {
+    const response = await api.patch<Evento>(`/eventos/${id}/desativar`);
+
+    return response.data;
+}
+
 export async function reativarEvento(id: number): Promise<Evento> {
     const response = await api.patch<Evento>(`/eventos/${id}/reativar`);
 

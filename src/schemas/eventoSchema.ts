@@ -11,7 +11,8 @@ export const perfilDestinacaoSchema = z.enum([
 
 export const statusEventoSchema = z.enum([
     "ATIVO",
-    "CANCELADO"
+    "CANCELADO",
+    "DESATIVADO"
 ]);
 
 export type PerfilDestinacao =

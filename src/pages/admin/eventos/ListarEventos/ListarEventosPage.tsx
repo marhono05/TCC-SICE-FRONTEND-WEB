@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 
 import type { Evento } from "../../../../types/evento";
-import { cancelarEvento, listarTodos, reativarEvento } from "../../../../services/eventoService";
+import { cancelarEvento, listarTodos, reativarEvento, desativarEvento } from "../../../../services/eventoService";
 
 export default function ListarEventosPage() {
 
@@ -39,8 +39,13 @@ export default function ListarEventosPage() {
 
     }, []);
 
-    async function desativar(id: number) {
+    async function cancelar(id: number) {
         await cancelarEvento(id);
+        listarEventos();
+    }
+
+    async function desativar(id: number) {
+        await desativarEvento(id);
         listarEventos();
     }
 
@@ -148,15 +153,17 @@ export default function ListarEventosPage() {
 
                                     {" | "}
 
-                                    {evento.status === "ATIVO" ? (
-                                        <button onClick={() => desativar(evento.id)}>
+                                        <button onClick={() => desativar(evento.id)} disabled={evento.status === "DESATIVADO"}>
+                                            Desativar
+                                        </button>
+
+                                        <button onClick={() => cancelar(evento.id)} disabled={evento.status === "CANCELADO" || evento.status === "DESATIVADO"}>
                                             Cancelar
                                         </button>
-                                    ) : (
-                                        <button onClick={() => reativar(evento.id)}>
+                                        
+                                        <button onClick={() => reativar(evento.id)} disabled={evento.status === "ATIVO"} >
                                             Reativar
                                         </button>
-                                    )}
 
                                 </td>
                             </tr>
