@@ -1,87 +1,47 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { NavLink, useLocation } from "react-router";
+import { useListagemAdmin } from "../../../../hooks/useListagemAdmin";
 import { alterarStatusCurso, listarCurso } from "../../../../services/cursoService";
 import type { Curso } from "../../../../types/curso";
-import { NavLink } from "react-router";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function ListarCursosPage() {
+    const location = useLocation();
+    const aviso = (location.state as { aviso?: string } | null)?.aviso;
+    const buscar = useCallback(() => listarCurso(), []);
+    const { itens: cursos, carregando, erro, carregar } = useListagemAdmin(buscar);
+    const [processando, setProcessando] = useState<number | null>(null);
+    const [erroAcao, setErroAcao] = useState("");
+    const [sucesso, setSucesso] = useState("");
 
-    const [loading, setLoading] = useState(true);
-    const [cursos, setCursos] = useState<Curso[]>([])
-
-    async function carregarCursos() {
-        
-        //setLoading(true);
+    async function alterarStatus(curso: Curso) {
+        if (processando !== null) return;
+        if (!window.confirm(`Deseja ${curso.ativo ? "desativar" : "reativar"} o curso ${curso.nome}?`)) return;
+        setProcessando(curso.id); setErroAcao(""); setSucesso("");
         try {
-            const dados = await listarCurso();
-            setCursos(dados);
-
-        } catch (error) {
-            console.log('Erro ao carregar os cursos ' + error);
-        } finally {
-            setLoading(false);
-        }
-
+            await alterarStatusCurso(curso.id, !curso.ativo);
+            await carregar();
+            setSucesso("Status do curso atualizado com sucesso.");
+        } catch (falha) {
+            setErroAcao(mensagemErroApi(falha, "Não foi possível alterar o status do curso."));
+        } finally { setProcessando(null); }
     }
 
-    useEffect(() => {
-        carregarCursos();
-    }, [])
-
-    async function alterarStatus(id: number, ativo: boolean) {
-        try {
-            await alterarStatusCurso(id, ativo);
-            await carregarCursos();
-        } catch (error) {
-            console.log("Erro ao alterar status", error);
-        }
-    }
-
-    return (
-        <div>
-            <h2>Gerenciar Cursos</h2>
-            <NavLink to="/cadastrarCursos" >
-                Cadastrar Curso
-            </NavLink>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Nome</th>
-                        <th>Status</th>
-                        <th colSpan={2} >Ações</th>
-                    </tr>
-                </thead>
-                {(loading ? (
-                    <tbody>
-                        <tr>
-                            <td colSpan={4}>Carregando Cursos</td>
-                        </tr>
-                    </tbody>
-                ) : (
-                    <tbody>
-                        {cursos.map((curso) => (
-                            <tr key={curso.id}>
-                                <td>{curso.id}</td>
-                                <td>{curso.nome}</td>
-                                <td>{curso.ativo ? 'Ativo' : 'Inativo'}</td>
-                                <td>
-                                    <NavLink to={`/editarCursos/${curso.id}`}>
-                                        Editar
-                                    </NavLink>
-                                </td>
-                                <td>
-                                    <button
-                                        onClick={() => alterarStatus(curso.id, !curso.ativo)}
-                                    >
-                                        {curso.ativo ? 'Desativar' : 'Reativar'}
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                ))}
-            </table>
-
-        </div>
-    )
+    return <main>
+        <h1>Gerenciar Cursos</h1>
+        <p><NavLink to="/cadastrarCursos">Cadastrar curso</NavLink></p>
+        {aviso && <p role="status">{aviso}</p>}{sucesso && <p role="status">{sucesso}</p>}
+        {erroAcao && <p role="alert">{erroAcao}</p>}
+        {erro && <div role="alert"><p>{erro}</p><button type="button" onClick={() => void carregar()}>Tentar novamente</button></div>}
+        <table><thead><tr><th>ID</th><th>Nome</th><th>Status</th><th>Ações</th></tr></thead><tbody>
+            {carregando ? <tr><td colSpan={4}>Carregando cursos...</td></tr>
+                : erro ? null : cursos.length === 0 ? <tr><td colSpan={4}>Nenhum curso cadastrado.</td></tr>
+                : cursos.map(curso => <tr key={curso.id}><td>{curso.id}</td><td>{curso.nome}</td>
+                    <td>{curso.ativo ? "Ativo" : "Inativo"}</td><td>
+                        <NavLink to={`/editarCursos/${curso.id}`}>Editar</NavLink>{" | "}
+                        <button type="button" disabled={processando !== null} onClick={() => void alterarStatus(curso)}>
+                            {processando === curso.id ? "Atualizando..." : curso.ativo ? "Desativar" : "Reativar"}
+                        </button></td></tr>)}
+        </tbody></table>
+    </main>;
 }

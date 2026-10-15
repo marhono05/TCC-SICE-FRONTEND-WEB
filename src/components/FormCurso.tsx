@@ -11,13 +11,15 @@ import {
 
 interface FormCursoProps {
     curso?: Curso;
+    salvando?: boolean;
     onSubmit: (dados: CursoFormData) => Promise<void> | void;
 }
 
 
 export default function FormCurso({
     curso,
-    onSubmit
+    onSubmit,
+    salvando = false
 }: FormCursoProps) {
 
     const {
@@ -33,12 +35,6 @@ export default function FormCurso({
         }
     });
 
-
-    /*
-     * Importante principalmente para edição:
-     * se o curso vier da API depois que o
-     * componente já foi renderizado.
-     */
     useEffect(() => {
 
         if (curso) {
@@ -76,8 +72,8 @@ export default function FormCurso({
             <br />
 
 
-            <button type="submit">
-                Salvar
+            <button type="submit" disabled={salvando}>
+                {salvando ? "Salvando..." : "Salvar"}
             </button>
 
         </form>

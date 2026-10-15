@@ -16,6 +16,7 @@ type FormUsuarioProps = {
     usuario?: Usuario;
     perfil: PerfilUsuario;
     turmas: Turma[];
+    salvando?: boolean;
     onSubmit: (dados: UsuarioFormData) => Promise<void> | void;
 };
 
@@ -24,7 +25,8 @@ export default function FormUsuario({
     usuario,
     perfil,
     turmas,
-    onSubmit
+    onSubmit,
+    salvando = false
 }: FormUsuarioProps) {
 
     const {
@@ -57,11 +59,6 @@ export default function FormUsuario({
     const turmasSelecionadas =
         watch("turmasIds") ?? [];
 
-        
-    /*
-     * Importante para edição ou caso o perfil/usuário
-     * seja carregado depois da primeira renderização.
-     */
     useEffect(() => {
 
         reset({
@@ -77,11 +74,6 @@ export default function FormUsuario({
 
     }, [usuario, perfil, reset]);
 
-
-    /*
-     * Caso não seja aluno, garantimos que
-     * nenhuma turma fique selecionada.
-     */
     useEffect(() => {
 
         if (perfil !== "ALUNO") {
@@ -163,13 +155,6 @@ export default function FormUsuario({
 
         <form onSubmit={handleSubmit(onSubmit)}>
 
-            {/* PERFIL */}
-
-            {/*
-                O perfil não precisa aparecer como campo
-                editável porque ele já vem da rota/página.
-            */}
-
             <input
                 type="hidden"
                 {...register("perfil")}
@@ -197,9 +182,6 @@ export default function FormUsuario({
             <br />
             <br />
 
-
-            {/* EMAIL */}
-
             <label>
                 E-mail:
             </label>
@@ -219,9 +201,6 @@ export default function FormUsuario({
             <br />
             <br />
 
-
-            {/* IDENTIFICADOR */}
-
             <label>
                 Identificador:
             </label>
@@ -240,9 +219,6 @@ export default function FormUsuario({
 
             <br />
             <br />
-
-
-            {/* TURMAS - SOMENTE ALUNO */}
 
             {perfil === "ALUNO" && (
 
@@ -322,8 +298,8 @@ export default function FormUsuario({
             <br />
 
 
-            <button type="submit">
-                Salvar
+            <button type="submit" disabled={salvando}>
+                {salvando ? "Salvando..." : "Salvar"}
             </button>
 
         </form>

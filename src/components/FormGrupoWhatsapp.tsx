@@ -14,6 +14,7 @@ import {
 type FormGrupoWhatsappProps = {
     grupo?: GrupoWhatsapp;
     turmas: Turma[];
+    salvando?: boolean;
     onSubmit: (dados: GrupoWhatsappFormData) => Promise<void> | void;
 };
 
@@ -21,7 +22,8 @@ type FormGrupoWhatsappProps = {
 export default function FormGrupoWhatsapp({
     grupo,
     turmas,
-    onSubmit
+    onSubmit,
+    salvando = false
 }: FormGrupoWhatsappProps) {
 
     const {
@@ -218,8 +220,8 @@ export default function FormGrupoWhatsapp({
             )}
 
 
-            <button type="submit">
-                Salvar
+            <button type="submit" disabled={salvando}>
+                {salvando ? "Salvando..." : "Salvar"}
             </button>
 
         </form>

@@ -1,148 +1,51 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-
+import { Link, useNavigate, useParams } from "react-router";
 import FormGrupoWhatsapp from "../../../../components/FormGrupoWhatsapp";
-
+import type { GrupoWhatsappFormData } from "../../../../schemas/grupoWhatsappSchema";
+import { buscarGrupoPorId, editarGrupo } from "../../../../services/grupoWhatsappService";
+import { listarTurma } from "../../../../services/turmaService";
 import type { GrupoWhatsapp } from "../../../../types/grupoWhatsapp";
 import type { Turma } from "../../../../types/turmas";
-
-import type { GrupoWhatsappFormData } from "../../../../schemas/grupoWhatsappSchema";
-
-import {
-    buscarGrupoPorId,
-    editarGrupo
-} from "../../../../services/grupoWhatsappService";
-import { listarTurma } from "../../../../services/turmaService";
-
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function EditarGrupoWhatsappPage() {
-
     const { id } = useParams();
-
     const navigate = useNavigate();
-
-    const [grupo, setGrupo] =
-        useState<GrupoWhatsapp | null>(null);
-
-    const [turmas, setTurmas] =
-        useState<Turma[]>([]);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [salvando, setSalvando] =
-        useState(false);
-
-
+    const [grupo, setGrupo] = useState<GrupoWhatsapp | null>(null);
+    const [turmas, setTurmas] = useState<Turma[]>([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
     useEffect(() => {
-
-        async function carregarDados() {
-
+        async function carregar() {
+            if (!id || !Number.isSafeInteger(Number(id)) || Number(id) < 1) {
+                setErroCarregamento("Identificador do grupo inválido."); setCarregando(false); return;
+            }
             try {
-
-                setLoading(true);
-
-                if (!id) {
-                    return;
-                }
-
-                const grupoId = Number(id);
-
-                const [
-                    grupoEncontrado,
-                    turmasEncontradas
-                ] = await Promise.all([
-                    buscarGrupoPorId(grupoId),
-                    listarTurma()
-                ]);
-
+                const [grupoEncontrado, turmasEncontradas] = await Promise.all([buscarGrupoPorId(Number(id)), listarTurma()]);
                 setGrupo(grupoEncontrado);
-                setTurmas(turmasEncontradas);
-
-            } catch (error) {
-
-                console.error(error);
-
-            } finally {
-
-                setLoading(false);
-            }
-
+                setTurmas(turmasEncontradas.filter(turma => turma.ativo || turma.id === grupoEncontrado.turmaId));
+            } catch (falha) { setErroCarregamento(mensagemErroApi(falha, "Não foi possível carregar o grupo e as turmas.")); }
+            finally { setCarregando(false); }
         }
-
-        carregarDados();
-
+        void carregar();
     }, [id]);
-
-
-    async function handleSubmit(
-        dados: GrupoWhatsappFormData
-    ) {
-
+    async function editar(dados: GrupoWhatsappFormData) {
+        if (!grupo || salvando) return;
+        setErro(""); setSalvando(true);
         try {
-
-            if (!id) {
-                return;
-            }
-
-            setSalvando(true);
-
-            await editarGrupo(
-                Number(id),
-                dados
-            );
-
-        } catch (error) {
-
-            console.error(error);
-
-        } finally {
-
-            setSalvando(false);
-        }
-
+            await editarGrupo(grupo.id, dados);
+            navigate("/gerenciarGruposWhatsapp", { state: { aviso: "Grupo atualizado com sucesso." } });
+        } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível editar o grupo. Verifique se já existe outro grupo com esse identificador ou tipo.")); }
+        finally { setSalvando(false); }
     }
-
-
-    if (loading) {
-        return (
-            <p>
-                Carregando...
-            </p>
-        );
-    }
-
-
-    if (!grupo) {
-        return (
-            <p>
-                Grupo não encontrado.
-            </p>
-        );
-    }
-
-
-    return (
-        <div>
-
-            <h1>
-                Editar Grupo do WhatsApp
-            </h1>
-
-
-            <FormGrupoWhatsapp
-                grupo={grupo}
-                turmas={turmas}
-                onSubmit={handleSubmit}
-            />
-
-
-            {salvando && (
-                <p>
-                    Salvando...
-                </p>
-            )}
-
-        </div>
-    );
+    return <main>
+        <h1>Editar Grupo do WhatsApp</h1>
+        <p><Link to="/gerenciarGruposWhatsapp">Voltar à listagem</Link></p>
+        {carregando ? <p>Carregando grupo...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !grupo ? <p role="alert">Grupo não encontrado.</p> : <>
+            {erro && <p role="alert">{erro}</p>}
+            <FormGrupoWhatsapp grupo={grupo} turmas={turmas} onSubmit={editar} salvando={salvando} />
+        </>}
+    </main>;
 }

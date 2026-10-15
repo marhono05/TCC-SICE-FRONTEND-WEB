@@ -1,87 +1,42 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-
+import { Link, useNavigate } from "react-router";
 import FormGrupoWhatsapp from "../../../../components/FormGrupoWhatsapp";
-
-import type { Turma } from "../../../../types/turmas";
 import type { GrupoWhatsappFormData } from "../../../../schemas/grupoWhatsappSchema";
-
 import { cadastrarGrupo } from "../../../../services/grupoWhatsappService";
 import { listarTurma } from "../../../../services/turmaService";
-
+import type { Turma } from "../../../../types/turmas";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function CadastrarGrupoWhatsappPage() {
-
     const navigate = useNavigate();
-
     const [turmas, setTurmas] = useState<Turma[]>([]);
-    const [loading, setLoading] = useState(false);
-
-
+    const [carregando, setCarregando] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
     useEffect(() => {
-
-        async function carregarTurmas() {
-
-            try {
-
-                const dados = await listarTurma();
-
-                setTurmas(dados);
-
-            } catch (error) {
-
-                console.error(error);
-
-            }
-
+        async function carregar() {
+            try { setTurmas((await listarTurma()).filter(turma => turma.ativo)); }
+            catch (falha) { setErroCarregamento(mensagemErroApi(falha, "Não foi possível carregar as turmas.")); }
+            finally { setCarregando(false); }
         }
-
-        carregarTurmas();
-
+        void carregar();
     }, []);
-
-
-    async function handleSubmit(
-        dados: GrupoWhatsappFormData
-    ) {
-
+    async function cadastrar(dados: GrupoWhatsappFormData) {
+        if (salvando) return;
+        setSalvando(true); setErro("");
         try {
-
-            setLoading(true);
-
             await cadastrarGrupo(dados);
-
-        } catch (error) {
-
-            console.error(error);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-
+            navigate("/gerenciarGruposWhatsapp", { state: { aviso: "Grupo cadastrado com sucesso." } });
+        } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível cadastrar o grupo. Verifique se já existe outro grupo com esse identificador ou tipo.")); }
+        finally { setSalvando(false); }
     }
-
-
-    return (
-        <div>
-
-            <h1>
-                Cadastrar Grupo do WhatsApp
-            </h1>
-
-            <FormGrupoWhatsapp
-                turmas={turmas}
-                onSubmit={handleSubmit}
-            />
-
-            {loading && (
-                <p>
-                    Salvando...
-                </p>
-            )}
-
-        </div>
-    );
+    return <main>
+        <h1>Cadastrar Grupo do WhatsApp</h1>
+        <p><Link to="/gerenciarGruposWhatsapp">Voltar à listagem</Link></p>
+        {carregando ? <p>Carregando turmas...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : <>
+            {erro && <p role="alert">{erro}</p>}
+            <FormGrupoWhatsapp turmas={turmas} onSubmit={cadastrar} salvando={salvando} />
+        </>}
+    </main>;
 }

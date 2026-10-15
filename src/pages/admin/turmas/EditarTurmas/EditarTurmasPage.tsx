@@ -1,182 +1,51 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-
+import { Link, useNavigate, useParams } from "react-router";
 import FormTurma from "../../../../components/FormTurma";
-
-import {
-    buscarTurmaPorId,
-    editarTurma
-} from "../../../../services/turmaService";
-
-import {
-    listarCurso
-} from "../../../../services/cursoService";
-
-import type {
-    Turma,
-    EditarTurma
-} from "../../../../types/turmas";
-
-import type {
-    Curso
-} from "../../../../types/curso";
-
-import type {
-    TurmaFormData
-} from "../../../../schemas/turmaSchemas";
-
+import type { TurmaFormData } from "../../../../schemas/turmaSchemas";
+import { listarCurso } from "../../../../services/cursoService";
+import { buscarTurmaPorId, editarTurma } from "../../../../services/turmaService";
+import type { Curso } from "../../../../types/curso";
+import type { Turma } from "../../../../types/turmas";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function EditarTurmasPage() {
-
     const { id } = useParams();
-
-    const [turma, setTurma] =
-        useState<Turma | null>(null);
-
-    const [cursos, setCursos] =
-        useState<Curso[]>([]);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [salvando, setSalvando] =
-        useState(false);
-
-
+    const navigate = useNavigate();
+    const [turma, setTurma] = useState<Turma | null>(null);
+    const [cursos, setCursos] = useState<Curso[]>([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
     useEffect(() => {
-
-        async function carregarDados() {
-
-            if (!id) {
-                return;
+        async function carregar() {
+            if (!id || !Number.isSafeInteger(Number(id)) || Number(id) < 1) {
+                setErroCarregamento("Identificador da turma inválido."); setCarregando(false); return;
             }
-
             try {
-
-                setLoading(true);
-
-                const [
-                    turmaEncontrada,
-                    cursosEncontrados
-                ] = await Promise.all([
-                    buscarTurmaPorId(Number(id)),
-                    listarCurso()
-                ]);
-
+                const [turmaEncontrada, cursosEncontrados] = await Promise.all([buscarTurmaPorId(Number(id)), listarCurso()]);
                 setTurma(turmaEncontrada);
-                setCursos(cursosEncontrados);
-
-            } catch (error) {
-
-                console.log(
-                    "Erro ao carregar turma"
-                );
-
-                console.log(error);
-
-            } finally {
-
-                setLoading(false);
-
-            }
+                setCursos(cursosEncontrados.filter(curso => curso.ativo || curso.id === turmaEncontrada.cursoId));
+            } catch (falha) { setErroCarregamento(mensagemErroApi(falha, "Não foi possível carregar a turma e os cursos.")); }
+            finally { setCarregando(false); }
         }
-
-
-        carregarDados();
-
+        void carregar();
     }, [id]);
-
-
-    async function editar(
-        dados: TurmaFormData
-    ) {
-
-        if (!turma) {
-            return;
-        }
-
-
-        const turmaEditada: EditarTurma = {
-            anoLetivo: dados.anoLetivo,
-            etapa: dados.etapa,
-            modalidade: dados.modalidade,
-            cursoId: dados.cursoId
-        };
-
-
+    async function editar(dados: TurmaFormData) {
+        if (!turma || salvando) return;
+        setErro(""); setSalvando(true);
         try {
-
-            setSalvando(true);
-
-            const turmaAtualizada =
-                await editarTurma(
-                    turma.id,
-                    turmaEditada
-                );
-
-            setTurma(turmaAtualizada);
-
-        } catch (error) {
-
-            console.log(
-                "Erro ao editar turma"
-            );
-
-            console.log(error);
-
-        } finally {
-
-            setSalvando(false);
-
-        }
+            await editarTurma(turma.id, dados);
+            navigate("/gerenciarTurmas", { state: { aviso: "Turma atualizada com sucesso." } });
+        } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível editar a turma.")); }
+        finally { setSalvando(false); }
     }
-
-
-    if (loading) {
-
-        return (
-            <p>
-                Carregando...
-            </p>
-        );
-
-    }
-
-
-    if (!turma) {
-
-        return (
-            <p>
-                Turma não encontrada.
-            </p>
-        );
-
-    }
-
-
-    return (
-
-        <div>
-
-            <h1>
-                Editar Turma
-            </h1>
-
-
-            <FormTurma
-                turma={turma}
-                cursos={cursos}
-                onSubmit={editar}
-            />
-
-
-            {salvando && (
-                <p>
-                    Salvando alterações...
-                </p>
-            )}
-
-        </div>
-
-    );
+    return <main>
+        <h1>Editar Turma</h1>
+        <p><Link to="/gerenciarTurmas">Voltar à listagem</Link></p>
+        {carregando ? <p>Carregando turma...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !turma ? <p role="alert">Turma não encontrada.</p> : <>
+            {erro && <p role="alert">{erro}</p>}
+            <FormTurma turma={turma} cursos={cursos} onSubmit={editar} salvando={salvando} />
+        </>}
+    </main>;
 }

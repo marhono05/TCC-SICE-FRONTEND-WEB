@@ -1,123 +1,45 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-
+import { Link, useNavigate, useParams } from "react-router";
 import FormCurso from "../../../../components/FormCurso";
-
-import {
-    buscarCursoPorId,
-    editarCurso
-} from "../../../../services/cursoService";
-
-import type {
-    Curso,
-    EditarCurso
-} from "../../../../types/curso";
-
-import type {
-    CursoFormData
-} from "../../../../schemas/cursoSchema";
-
+import type { CursoFormData } from "../../../../schemas/cursoSchema";
+import { buscarCursoPorId, editarCurso } from "../../../../services/cursoService";
+import type { Curso } from "../../../../types/curso";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function EditarCursosPage() {
-
     const { id } = useParams();
-
-    const [curso, setCurso] =
-        useState<Curso | null>(null);
-
-
+    const navigate = useNavigate();
+    const [curso, setCurso] = useState<Curso | null>(null);
+    const [carregando, setCarregando] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
     useEffect(() => {
-
-        async function buscarCurso() {
-
-            if (!id) {
-                return;
+        async function carregar() {
+            if (!id || !Number.isSafeInteger(Number(id)) || Number(id) < 1) {
+                setErroCarregamento("Identificador do curso inválido."); setCarregando(false); return;
             }
-
-            try {
-
-                const cursoEncontrado =
-                    await buscarCursoPorId(
-                        Number(id)
-                    );
-
-                setCurso(cursoEncontrado);
-
-            } catch (error) {
-
-                console.log(
-                    "Erro ao buscar curso"
-                );
-
-                console.log(error);
-
-            }
+            try { setCurso(await buscarCursoPorId(Number(id))); }
+            catch (falha) { setErroCarregamento(mensagemErroApi(falha, "Não foi possível carregar o curso.")); }
+            finally { setCarregando(false); }
         }
-
-        buscarCurso();
-
+        void carregar();
     }, [id]);
-
-
-    async function editar(
-        dados: CursoFormData
-    ) {
-
-        if (!curso) {
-            return;
-        }
-
-        const cursoEditado: EditarCurso = {
-            nome: dados.nome
-        };
-
+    async function editar(dados: CursoFormData) {
+        if (!curso || salvando) return;
+        setErro(""); setSalvando(true);
         try {
-
-            const cursoAtualizado =
-                await editarCurso(
-                    curso.id,
-                    cursoEditado
-                );
-
-            setCurso(cursoAtualizado);
-
-        } catch (error) {
-
-            console.log(
-                "Erro ao editar curso"
-            );
-
-            console.log(error);
-
-        }
+            await editarCurso(curso.id, dados);
+            navigate("/gerenciarCursos", { state: { aviso: "Curso atualizado com sucesso." } });
+        } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível editar o curso.")); }
+        finally { setSalvando(false); }
     }
-
-
-    if (!curso) {
-
-        return (
-            <p>
-                Carregando...
-            </p>
-        );
-
-    }
-
-
-    return (
-
-        <div>
-
-            <h1>
-                Editar Curso
-            </h1>
-
-            <FormCurso
-                curso={curso}
-                onSubmit={editar}
-            />
-
-        </div>
-
-    );
+    return <main>
+        <h1>Editar Curso</h1>
+        <p><Link to="/gerenciarCursos">Voltar à listagem</Link></p>
+        {carregando ? <p>Carregando curso...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !curso ? <p role="alert">Curso não encontrado.</p> : <>
+            {erro && <p role="alert">{erro}</p>}
+            <FormCurso curso={curso} onSubmit={editar} salvando={salvando} />
+        </>}
+    </main>;
 }

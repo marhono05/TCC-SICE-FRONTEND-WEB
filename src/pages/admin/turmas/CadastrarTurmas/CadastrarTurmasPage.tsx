@@ -1,122 +1,42 @@
 import { useEffect, useState } from "react";
-
+import { Link, useNavigate } from "react-router";
 import FormTurma from "../../../../components/FormTurma";
-
+import type { TurmaFormData } from "../../../../schemas/turmaSchemas";
 import { listarCurso } from "../../../../services/cursoService";
 import { cadastrarTurma } from "../../../../services/turmaService";
-
 import type { Curso } from "../../../../types/curso";
-import type { CriarTurma } from "../../../../types/turmas";
-
-import type {
-    TurmaFormData
-} from "../../../../schemas/turmaSchemas";
-
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function CadastrarTurmasPage() {
-
-    const [cursos, setCursos] =
-        useState<Curso[]>([]);
-
-    const [loading, setLoading] =
-        useState(true);
-
-
+    const navigate = useNavigate();
+    const [cursos, setCursos] = useState<Curso[]>([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
     useEffect(() => {
-
-        async function carregarCursos() {
-
-            try {
-
-                setLoading(true);
-
-                const dados =
-                    await listarCurso();
-
-                setCursos(dados);
-
-            } catch (error) {
-
-                console.log(
-                    "Erro ao carregar cursos"
-                );
-
-                console.log(error);
-
-            } finally {
-
-                setLoading(false);
-
-            }
+        async function carregar() {
+            try { setCursos((await listarCurso()).filter(curso => curso.ativo)); }
+            catch (falha) { setErroCarregamento(mensagemErroApi(falha, "Não foi possível carregar os cursos.")); }
+            finally { setCarregando(false); }
         }
-
-
-        carregarCursos();
-
+        void carregar();
     }, []);
-
-
-    async function cadastrar(
-        dados: TurmaFormData
-    ) {
-
-        const novaTurma: CriarTurma = {
-            anoLetivo: dados.anoLetivo,
-            etapa: dados.etapa,
-            modalidade: dados.modalidade,
-            cursoId: dados.cursoId
-        };
-
-
+    async function cadastrar(dados: TurmaFormData) {
+        if (salvando) return;
+        setErro(""); setSalvando(true);
         try {
-
-            const turma =
-                await cadastrarTurma(
-                    novaTurma
-                );
-
-            console.log(
-                "Turma cadastrada:",
-                turma
-            );
-
-        } catch (error) {
-
-            console.log(
-                "Erro ao cadastrar turma"
-            );
-
-            console.log(error);
-
-        }
+            await cadastrarTurma(dados);
+            navigate("/gerenciarTurmas", { state: { aviso: "Turma cadastrada com sucesso." } });
+        } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível cadastrar a turma.")); }
+        finally { setSalvando(false); }
     }
-
-
-    if (loading) {
-
-        return (
-            <p>
-                Carregando cursos...
-            </p>
-        );
-
-    }
-
-
-    return (
-
-        <div>
-
-            <h2>
-                Cadastrar Turma
-            </h2>
-
-            <FormTurma
-                cursos={cursos}
-                onSubmit={cadastrar}
-            />
-
-        </div>
-
-    );
+    return <main>
+        <h1>Cadastrar Turma</h1>
+        <p><Link to="/gerenciarTurmas">Voltar à listagem</Link></p>
+        {carregando ? <p>Carregando cursos...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : cursos.length === 0 ? <p role="alert">Cadastre ou ative um curso antes de cadastrar turmas.</p> : <>
+            {erro && <p role="alert">{erro}</p>}
+            <FormTurma cursos={cursos} onSubmit={cadastrar} salvando={salvando} />
+        </>}
+    </main>;
 }

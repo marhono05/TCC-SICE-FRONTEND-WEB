@@ -1,189 +1,48 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-
+import { Link, useNavigate, useParams } from "react-router";
 import FormUsuario from "../../../../components/FormUsuario";
-
+import type { UsuarioFormData } from "../../../../schemas/usuarioSchema";
 import { cadastrarUsuario } from "../../../../services/usuarioService";
 import { listarTurma } from "../../../../services/turmaService";
-
 import type { Turma } from "../../../../types/turmas";
-import type { CriarUsuario } from "../../../../types/usuario";
-
-import type { UsuarioFormData } from "../../../../schemas/usuarioSchema";
-
-import {
-    isPerfilUsuario,
-    PERFIL_LABEL_PLURAL
-} from "../../../../utils/perfilUsuario";
-
+import { isPerfilUsuario, PERFIL_LABEL_SINGULAR } from "../../../../utils/perfilUsuario";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function CadastrarUsuarioPage() {
-
     const { perfil } = useParams();
-
-    const [turmas, setTurmas] =
-        useState<Turma[]>([]);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [salvando, setSalvando] =
-        useState(false);
-
-
-    /*
-     * Valida o perfil recebido pela URL.
-     */
-    const perfilValido =
-        perfil && isPerfilUsuario(perfil)
-            ? perfil
-            : null;
-
-
-    const titulo =
-        perfilValido
-            ? PERFIL_LABEL_PLURAL[perfilValido]
-            : "Usuários";
-
-
-    /*
-     * Só precisamos carregar as turmas
-     * quando estivermos cadastrando ALUNO.
-     */
+    const perfilValido = perfil && isPerfilUsuario(perfil) ? perfil : null;
+    const navigate = useNavigate();
+    const [turmas, setTurmas] = useState<Turma[]>([]);
+    const [carregando, setCarregando] = useState(perfilValido === "ALUNO");
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
     useEffect(() => {
-
-        async function carregarTurmas() {
-
-            if (perfilValido !== "ALUNO") {
-
-                setLoading(false);
-
-                return;
-            }
-
-
-            try {
-
-                setLoading(true);
-
-                const dados =
-                    await listarTurma();
-
-                setTurmas(dados);
-
-            } catch (error) {
-
-                console.log(
-                    "Erro ao carregar turmas"
-                );
-
-                console.log(error);
-
-            } finally {
-
-                setLoading(false);
-
-            }
+        if (perfilValido !== "ALUNO") return;
+        async function carregar() {
+            setCarregando(true); setErroCarregamento("");
+            try { setTurmas((await listarTurma()).filter(turma => turma.ativo)); }
+            catch (falha) { setErroCarregamento(mensagemErroApi(falha, "Não foi possível carregar as turmas.")); }
+            finally { setCarregando(false); }
         }
-
-
-        carregarTurmas();
-
+        void carregar();
     }, [perfilValido]);
-
-
-    async function cadastrar(
-        dados: UsuarioFormData
-    ) {
-
-        const novoUsuario: CriarUsuario = {
-            identificador: dados.identificador,
-            nome: dados.nome,
-            email: dados.email,
-            perfil: dados.perfil,
-            turmasIds: dados.turmasIds
-        };
-
-
+    async function cadastrar(dados: UsuarioFormData) {
+        if (!perfilValido || salvando) return;
+        setErro(""); setSalvando(true);
         try {
-
-            setSalvando(true);
-
-            const usuarioCriado =
-                await cadastrarUsuario(
-                    novoUsuario
-                );
-
-            console.log(
-                "Usuário criado:",
-                usuarioCriado
-            );
-
-        } catch (error) {
-
-            console.log(
-                `Erro ao cadastrar ${perfilValido}`
-            );
-
-            console.log(error);
-
-        } finally {
-
-            setSalvando(false);
-
-        }
+            await cadastrarUsuario({ ...dados, perfil: perfilValido, turmasIds: perfilValido === "ALUNO" ? dados.turmasIds : [] });
+            navigate(`/gerenciarUsuarios/${perfilValido}`, { state: { aviso: "Usuário cadastrado com sucesso." } });
+        } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível cadastrar o usuário.")); }
+        finally { setSalvando(false); }
     }
-
-
-    /*
-     * Caso alguém acesse uma URL com um
-     * perfil inválido.
-     */
-    if (!perfilValido) {
-
-        return (
-            <p>
-                Perfil de usuário inválido.
-            </p>
-        );
-
-    }
-
-
-    if (loading) {
-
-        return (
-            <p>
-                Carregando...
-            </p>
-        );
-
-    }
-
-
-    return (
-
-        <div>
-
-            <h1>
-                Cadastrar {titulo}
-            </h1>
-
-
-            <FormUsuario
-                perfil={perfilValido}
-                turmas={turmas}
-                onSubmit={cadastrar}
-            />
-
-
-            {salvando && (
-                <p>
-                    Cadastrando usuário...
-                </p>
-            )}
-
-        </div>
-
-    );
+    if (!perfilValido) return <p role="alert">Perfil de usuário inválido.</p>;
+    return <main>
+        <h1>Cadastrar {PERFIL_LABEL_SINGULAR[perfilValido]}</h1>
+        <p><Link to={`/gerenciarUsuarios/${perfilValido}`}>Voltar à listagem</Link></p>
+        {carregando ? <p>Carregando turmas...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : perfilValido === "ALUNO" && turmas.length === 0 ? <p role="alert">Cadastre ou ative uma turma antes de cadastrar alunos.</p> : <>
+            {erro && <p role="alert">{erro}</p>}
+            <FormUsuario perfil={perfilValido} turmas={turmas} onSubmit={cadastrar} salvando={salvando} />
+        </>}
+    </main>;
 }

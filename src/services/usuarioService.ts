@@ -1,9 +1,9 @@
 import type { PerfilUsuario } from "../schemas/perfilUsuarioSchema";
-import type { Usuario, CriarUsuario, EditarUsuario, AlterarSenhaRequest } from "../types/usuario";
+import type { Usuario, CriarUsuario, EditarUsuario } from "../types/usuario";
 import { api } from "./api";
 
-export async function buscarUsuarioPorId(id: number) {
-  const response = await api.get(`/usuarios/${id}`);
+export async function buscarUsuarioPorId(id: number): Promise<Usuario> {
+  const response = await api.get<Usuario>(`/usuarios/${id}`);
 
   return response.data;
 }
@@ -46,6 +46,11 @@ export async function alterarStatusUsuario(id: number, ativo: boolean) {
 
     return response.data;
 }
+
+export type AlterarSenhaRequest = {
+  senhaAtual: string;
+  novaSenha: string;
+};
 
 export async function alterarSenha(dados: AlterarSenhaRequest): Promise<void> {
   await api.patch("/usuarios/alterarSenha", dados);

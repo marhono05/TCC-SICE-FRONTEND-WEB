@@ -14,6 +14,7 @@ import {
 type FormTurmaProps = {
     turma?: Turma;
     cursos: Curso[];
+    salvando?: boolean;
     onSubmit: (dados: TurmaFormData) => Promise<void> | void;
 };
 
@@ -21,7 +22,8 @@ type FormTurmaProps = {
 export default function FormTurma({
     turma,
     cursos,
-    onSubmit
+    onSubmit,
+    salvando = false
 }: FormTurmaProps) {
 
     const {
@@ -61,8 +63,6 @@ export default function FormTurma({
 
         <form onSubmit={handleSubmit(onSubmit)}>
 
-            {/* ANO LETIVO */}
-
             <label>
                 Ano Letivo:
             </label>
@@ -83,9 +83,6 @@ export default function FormTurma({
 
             <br />
             <br />
-
-
-            {/* ETAPA */}
 
             <h3>
                 Etapa
@@ -139,9 +136,6 @@ export default function FormTurma({
 
             <br />
             <br />
-
-
-            {/* CURSO */}
 
             <label>
                 Curso:
@@ -221,8 +215,8 @@ export default function FormTurma({
             <br />
 
 
-            <button type="submit">
-                Salvar
+            <button type="submit" disabled={salvando}>
+                {salvando ? "Salvando..." : "Salvar"}
             </button>
 
         </form>

@@ -1,8 +1,8 @@
 import type { CriarCurso, Curso, EditarCurso } from "../types/curso";
 import { api } from "./api";
 
-export async function buscarCursoPorId(id: number) {
-    const response = await api.get(`/cursos/${id}`)
+export async function buscarCursoPorId(id: number): Promise<Curso> {
+    const response = await api.get<Curso>(`/cursos/${id}`)
 
     return response.data;
 }
