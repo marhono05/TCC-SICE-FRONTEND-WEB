@@ -15,6 +15,8 @@ import ListarEventosPage from './pages/admin/eventos/ListarEventos/ListarEventos
 import CadastrarEventosPage from './pages/admin/eventos/CadastrarEventos/CadastrarEventosPage';
 import EditarEventosPage from './pages/admin/eventos/EditarEventos/EditarEventosPage';
 import DetalhesEventoPage from './pages/admin/eventos/DetalhesEvento/DetalhesEventoPage';
+import ListarAvisosPage from './pages/admin/avisos/ListarAvisos/ListarAvisosPage';
+import DetalhesEnvioPage from './pages/admin/avisos/DetalhesEnvio/DetalhesEnvioPage';
 
 
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
@@ -73,6 +75,9 @@ function App() {
               element={<EditarEventosPage />}
             />
 
+
+            <Route path='/avisos' element={<ListarAvisosPage />} />
+            <Route path='/avisos/envios/:id' element={<DetalhesEnvioPage />} />
 
             <Route element={<AdminRoute />} >
 

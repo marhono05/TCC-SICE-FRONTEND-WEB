@@ -28,6 +28,10 @@ export default function LayoutPrincipal() {
                         <NavLink to="/gerenciarEventos">Gerenciar Eventos</NavLink>
                     )}
 
+                    {podeGerenciarEventos && (
+                        <NavLink to="/avisos">Gerenciar Avisos</NavLink>
+                    )}
+
                     {(estaLogado && ehAdmin) && (
                         <>
                             <NavLink to="/gerenciarUsuarios/ALUNO">
