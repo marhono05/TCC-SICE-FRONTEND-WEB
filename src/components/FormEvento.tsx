@@ -18,12 +18,14 @@ type EventoFormProps = {
     evento?: Evento;
     turmas: Turma[];
     onSubmit: (dados: EventoFormData) => Promise<void>;
+    salvando?: boolean;
 };
 
 export default function FormEvento({
     evento,
     turmas,
-    onSubmit
+    onSubmit,
+    salvando = false
 }: EventoFormProps) {
 
     const {
@@ -34,7 +36,7 @@ export default function FormEvento({
         setValue,
         getValues,
         reset,
-        formState: { errors }
+        formState: { errors, isSubmitting }
     } = useForm<EventoFormData>({
         resolver: zodResolver(eventoSchema),
 
@@ -281,6 +283,7 @@ export default function FormEvento({
     return (
 
         <form onSubmit={handleSubmit(onSubmit)}>
+            <fieldset disabled={salvando || isSubmitting} style={{ border: "none", padding: 0, margin: 0 }}>
             <label>
                 Título:
             </label>
@@ -584,6 +587,7 @@ export default function FormEvento({
                                                             {turma.modalidade}
                                                             {" - "}
                                                             {turma.etapa}
+                                                            {!turma.ativo && " (inativa)"}
                                                         </label>
                                                     </div>
                                                 )
@@ -600,8 +604,9 @@ export default function FormEvento({
             <br />
 
             <button type="submit">
-                Salvar
+                {salvando || isSubmitting ? "Salvando..." : "Salvar"}
             </button>
+            </fieldset>
         </form>
     );
 }

@@ -24,3 +24,8 @@ export type EditarUsuario = {
     email: string;
     turmasIds: number[];
 }
+
+export type AlterarSenhaRequest = {
+  senhaAtual: string;
+  novaSenha: string;
+};

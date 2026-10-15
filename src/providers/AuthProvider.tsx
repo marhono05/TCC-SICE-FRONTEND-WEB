@@ -54,6 +54,12 @@ function AuthProvider({ children }: AuthProviderProps) {
     return response;
   }
 
+  async function atualizarSessao(): Promise<LoginResponse> {
+    const response = await authService.me();
+    setUsuario(response);
+    return response;
+  }
+
   async function logout() {
     
     await authService.logout();
@@ -70,7 +76,8 @@ function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated,
         usuario,
         login,
-        logout
+        logout,
+        atualizarSessao
       }}
     >
       {!loading && children}

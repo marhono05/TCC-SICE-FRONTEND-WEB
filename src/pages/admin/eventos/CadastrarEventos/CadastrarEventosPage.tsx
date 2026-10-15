@@ -1,30 +1,43 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
 
 import FormEvento from "../../../../components/FormEvento";
-
 import { listarTurma } from "../../../../services/turmaService";
 import { cadastrarEvento } from "../../../../services/eventoService";
-
 import type { Turma } from "../../../../types/turmas";
 import type { CriarEvento } from "../../../../types/evento";
 import type { EventoFormData } from "../../../../schemas/eventoSchema";
-
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function CadastrarEventosPage() {
-
+    const navigate = useNavigate();
     const [turmas, setTurmas] = useState<Turma[]>([]);
+    const [carregandoTurmas, setCarregandoTurmas] = useState(true);
+    const [erroTurmas, setErroTurmas] = useState("");
+    const [erroCadastro, setErroCadastro] = useState("");
+    const [salvando, setSalvando] = useState(false);
+    const [tentativa, setTentativa] = useState(0);
 
-    const [carregandoTurmas, setCarregandoTurmas] =
-        useState(true);
+    useEffect(() => {
+        let ativo = true;
+        async function carregarTurmas() {
+            setCarregandoTurmas(true);
+            setErroTurmas("");
+            try {
+                const dados = await listarTurma();
+                if (ativo) setTurmas(dados);
+            } catch (erro) {
+                if (ativo) setErroTurmas(mensagemErroApi(erro, "Não foi possível carregar as turmas."));
+            } finally {
+                if (ativo) setCarregandoTurmas(false);
+            }
+        }
+        void carregarTurmas();
+        return () => { ativo = false; };
+    }, [tentativa]);
 
-    const [salvando, setSalvando] =
-        useState(false);
-
-
-    async function cadastrar(
-        dados: EventoFormData
-    ) {
-
+    async function cadastrar(dados: EventoFormData) {
+        setErroCadastro("");
         const novoEvento: CriarEvento = {
             titulo: dados.titulo,
             descricao: dados.descricao,
@@ -32,78 +45,37 @@ export default function CadastrarEventosPage() {
             horaInicio: dados.horaInicio,
             destinos: dados.destinos
         };
-
         try {
             setSalvando(true);
-
-            const eventoCriado =
-                await cadastrarEvento(novoEvento);
-
-            console.log(
-                "Evento criado:",
-                eventoCriado
-            );
-
-        } catch (error) {
-            console.error(
-                "Erro ao cadastrar evento:",
-                error
-            );
-
+            const evento = await cadastrarEvento(novoEvento);
+            navigate(`/eventos/${evento.id}`, {
+                replace: true,
+                state: { aviso: "Evento cadastrado com sucesso!" }
+            });
+        } catch (erro) {
+            setErroCadastro(mensagemErroApi(erro, "Não foi possível cadastrar o evento."));
         } finally {
             setSalvando(false);
         }
     }
 
-
-    useEffect(() => {
-        async function carregarTurmas() {
-
-            try {
-                setCarregandoTurmas(true);
-
-                const dados =
-                    await listarTurma();
-
-                setTurmas(dados);
-            } catch (error) {
-                console.error(
-                    "Erro ao carregar turmas:",
-                    error
-                );
-            } finally {
-
-                setCarregandoTurmas(false);
-            }
-        }
-        carregarTurmas();
-    }, []);
-
-
     return (
-        <div>
-            <h1>
-                Cadastro de Eventos
-            </h1>
-
-            {carregandoTurmas ? (
-                <p>
-                    Carregando turmas...
-                </p>
-            ) : (
+        <main>
+            <h1>Cadastro de eventos</h1>
+            <p><Link to="/gerenciarEventos">Voltar para a listagem</Link></p>
+            {carregandoTurmas && <p role="status">Carregando turmas...</p>}
+            {!carregandoTurmas && erroTurmas && (
+                <div role="alert">
+                    <p>{erroTurmas}</p>
+                    <button type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button>
+                </div>
+            )}
+            {!carregandoTurmas && !erroTurmas && (
                 <>
-                    <FormEvento
-                        turmas={turmas}
-                        onSubmit={cadastrar}
-                    />
-
-                    {salvando && (
-                        <p>
-                            Salvando evento...
-                        </p>
-                    )}
+                    {erroCadastro && <p role="alert">{erroCadastro}</p>}
+                    <FormEvento turmas={turmas} onSubmit={cadastrar} salvando={salvando} />
                 </>
             )}
-        </div>
+        </main>
     );
 }

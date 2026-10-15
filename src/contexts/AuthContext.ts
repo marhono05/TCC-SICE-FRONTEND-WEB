@@ -6,7 +6,8 @@ export type AuthContextType = {
   usuario: LoginResponse | null;
 
   login: (dados: LoginRequest) => Promise<LoginResponse>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  atualizarSessao: () => Promise<LoginResponse>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);

@@ -6,6 +6,7 @@ import SecretariaRoute from './routes/SecretariaRoute';
 import LayoutPrincipal from './layouts/LayoutPrincipal/LayoutPrincipal';
 
 import LoginPage from './pages/auth/Login/LoginPage';
+import AlterarSenhaPage from './pages/auth/AlterarSenha/AlterarSenhaPage';
 
 import AdminDashboard from './pages/admin/dashboard/DashBoardPage';
 
@@ -13,6 +14,7 @@ import EventosPage from './pages/eventos/Eventos/EventosPage';
 import ListarEventosPage from './pages/admin/eventos/ListarEventos/ListarEventosPage';
 import CadastrarEventosPage from './pages/admin/eventos/CadastrarEventos/CadastrarEventosPage';
 import EditarEventosPage from './pages/admin/eventos/EditarEventos/EditarEventosPage';
+import DetalhesEventoPage from './pages/admin/eventos/DetalhesEvento/DetalhesEventoPage';
 
 
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
@@ -40,6 +42,7 @@ function App() {
       <Route path='/login' element={<LoginPage />} />
 
       <Route element={<ProtectedRoute />} >
+        <Route path='/alterar-senha' element={<AlterarSenhaPage />} />
         <Route element={<LayoutPrincipal />}>
 
 
@@ -60,6 +63,7 @@ function App() {
               path='/cadastrarEventos'
               element={<CadastrarEventosPage />}
             />
+            <Route path='/eventos/:id' element={<DetalhesEventoPage />} />
             <Route
               path='/editarEventos/:id'
               element={<EditarEventosPage />}

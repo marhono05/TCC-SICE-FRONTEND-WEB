@@ -1,8 +1,8 @@
 import type { CriarEvento, EditarEvento, Evento } from "../types/evento";
 import { api } from "./api";
 
-export async function buscarEventoPorId(id: number) {
-    const response = await api.get(`/eventos/${id}`);
+export async function buscarEventoPorId(id: number): Promise<Evento> {
+    const response = await api.get<Evento>(`/eventos/${id}`);
 
     return response.data;
 }

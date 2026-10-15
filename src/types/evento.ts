@@ -7,6 +7,7 @@ export type Evento = {
     descricao: string;
     dataInicio: string;
     horaInicio: string;
+    dataAviso: string;
     status: StatusEvento;
     destinos: EventoDestino[];
     criadoPor: number;

@@ -1,178 +1,94 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-
+import { Link, useNavigate, useParams } from "react-router";
 import FormEvento from "../../../../components/FormEvento";
-
-import {
-    buscarEventoPorId,
-    editarEvento
-} from "../../../../services/eventoService";
-
+import { buscarEventoPorId, editarEvento } from "../../../../services/eventoService";
 import { listarTurma } from "../../../../services/turmaService";
-
-import type {
-    EditarEvento,
-    Evento
-} from "../../../../types/evento";
-
+import type { EditarEvento, Evento } from "../../../../types/evento";
 import type { Turma } from "../../../../types/turmas";
-
-import type {
-    EventoFormData
-} from "../../../../schemas/eventoSchema";
-
+import type { EventoFormData } from "../../../../schemas/eventoSchema";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function EditarEventosPage() {
-
     const { id } = useParams();
+    const navigate = useNavigate();
+    const eventoId = Number(id);
+    const idValido = Number.isSafeInteger(eventoId) && eventoId > 0;
 
-    const [evento, setEvento] =
-        useState<Evento | null>(null);
-
-    const [turmas, setTurmas] =
-        useState<Turma[]>([]);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [salvando, setSalvando] =
-        useState(false);
-
+    const [evento, setEvento] = useState<Evento | null>(null);
+    const [turmas, setTurmas] = useState<Turma[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState("");
+    const [erroEdicao, setErroEdicao] = useState("");
+    const [salvando, setSalvando] = useState(false);
+    const [tentativa, setTentativa] = useState(0);
 
     useEffect(() => {
-
+        if (!idValido) { return; }
+        let ativo = true;
         async function carregarDados() {
-
-            if (!id) {
-                return;
-            }
-
+            setLoading(true);
+            setErroCarregamento("");
             try {
-
-                setLoading(true);
-
-                const [
-                    eventoEncontrado,
-                    turmasEncontradas
-                ] = await Promise.all([
-                    buscarEventoPorId(Number(id)),
-                    listarTurma()
+                const [eventoEncontrado, turmasEncontradas] = await Promise.all([
+                    buscarEventoPorId(eventoId), listarTurma()
                 ]);
-
-                setEvento(eventoEncontrado);
-
-                setTurmas(turmasEncontradas);
-
-            } catch (error) {
-
-                console.error(
-                    "Erro ao carregar evento:",
-                    error
-                );
-
+                if (ativo) {
+                    setEvento(eventoEncontrado);
+                    setTurmas(turmasEncontradas);
+                }
+            } catch (erro) {
+                if (ativo) setErroCarregamento(mensagemErroApi(erro, "Não foi possível carregar o evento e as turmas."));
             } finally {
-
-                setLoading(false);
-
+                if (ativo) setLoading(false);
             }
         }
+        void carregarDados();
+        return () => { ativo = false; };
+    }, [eventoId, idValido, tentativa]);
 
-
-        carregarDados();
-
-    }, [id]);
-
-
-    async function editar(
-        dados: EventoFormData
-    ) {
-
-        if (!id) {
-            return;
-        }
-
-
-        const eventoEditado: EditarEvento = {
+    async function editar(dados: EventoFormData) {
+        if (!idValido) return;
+        setErroEdicao("");
+        const atualizacao: EditarEvento = {
             titulo: dados.titulo,
             descricao: dados.descricao,
             dataInicio: dados.dataInicio,
             horaInicio: dados.horaInicio,
             destinos: dados.destinos
         };
-
-
         try {
-
             setSalvando(true);
-
-            const eventoAtualizado =
-                await editarEvento(
-                    Number(id),
-                    eventoEditado
-                );
-
-            setEvento(eventoAtualizado);
-
-        } catch (error) {
-
-            console.error(
-                "Erro ao editar evento:",
-                error
-            );
-
+            await editarEvento(eventoId, atualizacao);
+            navigate(`/eventos/${eventoId}`, {
+                replace: true,
+                state: { aviso: "Evento atualizado com sucesso!" }
+            });
+        } catch (erro) {
+            setErroEdicao(mensagemErroApi(erro, "Não foi possível editar o evento."));
         } finally {
-
             setSalvando(false);
-
         }
     }
 
-
-    if (loading) {
-
-        return (
-            <p>
-                Carregando evento...
-            </p>
-        );
-
-    }
-
-
-    if (!evento) {
-
-        return (
-            <p>
-                Evento não encontrado.
-            </p>
-        );
-
-    }
-
-
     return (
-
-        <div>
-
-            <h1>
-                Editar Evento
-            </h1>
-
-
-            <FormEvento
-                evento={evento}
-                turmas={turmas}
-                onSubmit={editar}
-            />
-
-
-            {salvando && (
-                <p>
-                    Salvando alterações...
-                </p>
+        <main>
+            <h1>Editar evento</h1>
+            <p><Link to="/gerenciarEventos">Voltar para a listagem</Link></p>
+            {!idValido && <p role="alert">Identificador de evento inválido.</p>}
+            {idValido && loading && <p role="status">Carregando evento...</p>}
+            {idValido && !loading && erroCarregamento && (
+                <div role="alert">
+                    <p>{erroCarregamento}</p>
+                    <button type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button>
+                </div>
             )}
-
-        </div>
-
+            {idValido && !loading && !erroCarregamento && !evento && <p>Evento não encontrado.</p>}
+            {idValido && !loading && !erroCarregamento && evento && (
+                <>
+                    {erroEdicao && <p role="alert">{erroEdicao}</p>}
+                    <FormEvento evento={evento} turmas={turmas} onSubmit={editar} salvando={salvando} />
+                </>
+            )}
+        </main>
     );
 }
