@@ -1,0 +1,26 @@
+/* Estrutura funcional provisória: identidade visual será definida depois. */
+.sice-dashboard { padding: 1.25rem; text-align: left; display: grid; gap: 1.25rem; }
+.sice-dashboard__cabecalho { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.sice-dashboard h1 { font-size: 1.8rem; letter-spacing: normal; margin: 0 0 .5rem; }
+.sice-dashboard h2 { font-size: 1.2rem; margin: 0 0 .75rem; }
+.sice-dashboard button { padding: .55rem .8rem; cursor: pointer; }
+.sice-dashboard button:disabled { cursor: not-allowed; opacity: .6; }
+.sice-dashboard__secao { display: grid; gap: .5rem; }
+.sice-dashboard__painel { border: 1px solid var(--border); border-radius: .6rem; padding: 1rem; min-width: 0; }
+.sice-dashboard__grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: .75rem; margin: 0; }
+.sice-dashboard__estatistica { padding: .9rem; border: 1px solid var(--border); border-radius: .6rem; min-width: 0; }
+.sice-dashboard__estatistica dt { font-size: .85rem; }
+.sice-dashboard__estatistica dd { margin: .5rem 0; font-size: 1.7rem; font-weight: 600; color: var(--text-h); }
+.sice-dashboard__estatistica small, .sice-dashboard__observacao, .sice-dashboard__rodape { font-size: .8rem; opacity: .85; }
+.sice-dashboard__colunas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 1rem; align-items: start; }
+.sice-dashboard__lista { list-style: none; margin: 0; padding: 0; }
+.sice-dashboard__lista li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .7rem 0; border-bottom: 1px solid var(--border); }
+.sice-dashboard__lista li:last-child { border-bottom: 0; }
+.sice-dashboard__lista li > div { min-width: 0; overflow-wrap: anywhere; }
+.sice-dashboard__lista strong, .sice-dashboard__lista small { display: block; }
+.sice-dashboard__lista small { margin-top: .25rem; }
+.sice-dashboard__lista a { white-space: nowrap; }
+.sice-dashboard__observacao { margin-top: .7rem; }
+.sice-dashboard__erro { padding: .7rem; border: 1px solid #b65e5e; border-radius: .4rem; }
+.sice-dashboard__vazio { padding: .7rem 0; }
+@media (max-width: 640px) { .sice-dashboard { padding: .75rem; } .sice-dashboard__grade { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sice-dashboard__estatistica { padding: .65rem; } }

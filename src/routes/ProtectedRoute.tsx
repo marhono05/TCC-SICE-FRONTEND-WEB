@@ -16,7 +16,7 @@ function ProtectedRoute() {
 
   // Quem já alterou a senha não precisa voltar para a tela de primeiro acesso.
   if (!usuario?.primeiroAcesso && pathname === "/alterar-senha") {
-    return <Navigate to={usuario?.perfil === "ADMIN" ? "/admin" : "/eventos"} replace />;
+    return <Navigate to={"/dashboard"} replace />;
   }
 
   return <Outlet />;

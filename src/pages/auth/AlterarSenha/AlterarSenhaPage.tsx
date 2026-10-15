@@ -5,9 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 
 import { useAuth } from "../../../hooks/useAuth";
+import {
+  alterarSenhaSchema,
+  type AlterarSenhaFormData,
+} from "../../../schemas/alterarSenhaSchema";
 import { alterarSenha } from "../../../services/usuarioService";
 import "./AlterarSenhaPage.css";
-import { alterarSenhaSchema, type AlterarSenhaFormData } from "../../../schemas/alterarSenhaSchema";
 
 export default function AlterarSenhaPage() {
   const navigate = useNavigate();
@@ -44,6 +47,8 @@ export default function AlterarSenhaPage() {
         setSalvouSenha(true);
       }
 
+      // /auth/me lê o primeiroAcesso atualizado do banco de dados.
+      // Só liberamos a navegação após confirmar o estado no servidor.
       const usuarioAtualizado = await atualizarSessao();
 
       if (usuarioAtualizado.primeiroAcesso) {
@@ -51,7 +56,7 @@ export default function AlterarSenhaPage() {
         return;
       }
 
-      navigate(usuarioAtualizado.perfil === "ADMIN" ? "/admin" : "/eventos", {
+      navigate("/dashboard", {
         replace: true,
       });
     } catch (error) {

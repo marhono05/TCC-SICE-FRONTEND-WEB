@@ -22,6 +22,7 @@ export default function LayoutPrincipal() {
                 </button>
 
                 <nav>
+                    {estaLogado && <NavLink to="/dashboard">Início</NavLink>}
                     {estaLogado && <NavLink to="/eventos">Calendário</NavLink>}
                     {podeGerenciarEventos && (
                         <NavLink to="/gerenciarEventos">Gerenciar Eventos</NavLink>

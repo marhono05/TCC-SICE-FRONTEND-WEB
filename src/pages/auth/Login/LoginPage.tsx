@@ -19,10 +19,11 @@ export default function LoginPage() {
     try {
       const resposta = await login({ identificador, senha });
 
+      // Esta verificação vem ANTES do perfil: inclui o ADMIN no primeiro acesso.
       if (resposta.primeiroAcesso) {
         navigate("/alterar-senha", { replace: true });
       } else {
-        navigate(resposta.perfil === "ADMIN" ? "/admin" : "/eventos", {
+        navigate("/dashboard", {
           replace: true,
         });
       }
@@ -37,12 +38,11 @@ export default function LoginPage() {
     }
   }
 
+  // Evita que uma pessoa autenticada volte ao formulário de login.
   if (usuario) {
     const destino = usuario.primeiroAcesso
       ? "/alterar-senha"
-      : usuario.perfil === "ADMIN"
-        ? "/admin"
-        : "/eventos";
+      : "/dashboard";
     return <Navigate to={destino} replace />;
   }
 

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AdminRoute from './routes/AdminRoute';
 import SecretariaRoute from './routes/SecretariaRoute';
@@ -8,7 +8,7 @@ import LayoutPrincipal from './layouts/LayoutPrincipal/LayoutPrincipal';
 import LoginPage from './pages/auth/Login/LoginPage';
 import AlterarSenhaPage from './pages/auth/AlterarSenha/AlterarSenhaPage';
 
-import AdminDashboard from './pages/admin/dashboard/DashBoardPage';
+import DashBoardPage from './pages/admin/dashboard/DashBoardPage';
 
 import EventosPage from './pages/eventos/Eventos/EventosPage';
 import ListarEventosPage from './pages/admin/eventos/ListarEventos/ListarEventosPage';
@@ -46,6 +46,8 @@ function App() {
         <Route element={<LayoutPrincipal />}>
 
 
+          <Route path='/dashboard' element={<DashBoardPage />} />
+
           <Route
             path='/eventos'
             element={<EventosPage />}
@@ -75,7 +77,7 @@ function App() {
 
               <Route
                 path='/admin'
-                element={<AdminDashboard />}
+                element={<Navigate to='/dashboard' replace />}
               />
 
 
