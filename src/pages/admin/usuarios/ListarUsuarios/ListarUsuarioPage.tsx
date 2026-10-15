@@ -51,7 +51,7 @@ export default function ListarUsuariosPage() {
                 : usuarios.map(usuario => <tr key={usuario.id}>
                     <td>{usuario.nome}</td><td>{usuario.identificador}</td><td>{usuario.email}</td><td>{usuario.perfil}</td>
                     <td>{usuario.ativo ? "Ativo" : "Inativo"}</td>
-                    <td><NavLink to={`/editarUsuario/${usuario.id}`}>Editar</NavLink>{" | "}
+                    <td>{usuario.perfil === "ALUNO" && <><NavLink to={`/alunos/${usuario.id}`}>Detalhes / Matrículas</NavLink>{" | "}</>}<NavLink to={`/editarUsuario/${usuario.id}`}>Editar</NavLink>{" | "}
                         <button type="button" disabled={processando !== null} onClick={() => void alterarStatus(usuario)}>
                             {processando === usuario.id ? "Atualizando..." : usuario.ativo ? "Desativar" : "Ativar"}
                         </button></td>

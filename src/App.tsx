@@ -20,6 +20,7 @@ import DetalhesEventoPage from './pages/admin/eventos/DetalhesEvento/DetalhesEve
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
 import CadastrarUsuarioPage from './pages/admin/usuarios/CadastrarUsuario/CadastrarUsuarioPage';
 import EditarUsuarioPage from './pages/admin/usuarios/EditarUsuario/EditarUsuariosPage';
+import DetalhesAlunoPage from './pages/admin/usuarios/DetalhesAluno/DetalhesAlunoPage';
 
 import ListarCursosPage from './pages/admin/cursos/ListarCursos/ListarCursosPage';
 import CadastrarCursosPage from './pages/admin/cursos/CadastrarCursos/CadastrarCursosPage';
@@ -28,6 +29,7 @@ import EditarCursosPage from './pages/admin/cursos/EditarCursos/EditarCursosPage
 import ListarTurmasPage from './pages/admin/turmas/ListarTurmas/ListarTurmasPage';
 import CadastrarTurmasPage from './pages/admin/turmas/CadastrarTurmas/CadastrarTurmasPage';
 import EditarTurmasPage from './pages/admin/turmas/EditarTurmas/EditarTurmasPage';
+import DetalhesTurmaPage from './pages/admin/turmas/DetalhesTurma/DetalhesTurmaPage';
 
 import CadastrarGrupoWhatsappPage from './pages/admin/grupos/CadastrarGrupos/CadastrarGrupoWhatsappPage';
 import EditarGrupoWhatsappPage from './pages/admin/grupos/EditarGrupos/EditarGrupoWhatsappPage';
@@ -89,6 +91,7 @@ function App() {
                 path='/cadastrarUsuario/:perfil'
                 element={<CadastrarUsuarioPage />}
               />
+              <Route path='/alunos/:id' element={<DetalhesAlunoPage />} />
               <Route
                 path='/editarUsuario/:id'
                 element={<EditarUsuarioPage />}
@@ -117,6 +120,7 @@ function App() {
                 path='/cadastrarTurmas'
                 element={<CadastrarTurmasPage />}
               />
+              <Route path='/turmas/:id' element={<DetalhesTurmaPage />} />
               <Route
                 path='/editarTurmas/:id'
                 element={<EditarTurmasPage />}

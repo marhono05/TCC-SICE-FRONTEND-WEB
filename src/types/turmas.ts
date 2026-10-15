@@ -12,6 +12,7 @@ export type Turma = {
     cursoId: number;
     cursoNome: string;
     ativo: boolean;
+    cursoAtivo: boolean;
 };
 
 

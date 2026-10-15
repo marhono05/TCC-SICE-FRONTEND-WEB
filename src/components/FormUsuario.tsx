@@ -8,6 +8,7 @@ import type { PerfilUsuario } from "../schemas/perfilUsuarioSchema";
 
 import {
     usuarioSchema,
+    usuarioEdicaoSchema,
     type UsuarioFormData
 } from "../schemas/usuarioSchema";
 
@@ -37,7 +38,8 @@ export default function FormUsuario({
         reset,
         formState: { errors }
     } = useForm<UsuarioFormData>({
-        resolver: zodResolver(usuarioSchema),
+        
+        resolver: zodResolver(usuario ? usuarioEdicaoSchema : usuarioSchema),
 
         defaultValues: {
             identificador: usuario?.identificador ?? "",
@@ -159,9 +161,6 @@ export default function FormUsuario({
                 type="hidden"
                 {...register("perfil")}
             />
-
-
-            {/* NOME */}
 
             <label>
                 Nome:

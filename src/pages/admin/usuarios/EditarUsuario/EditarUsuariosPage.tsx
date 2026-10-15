@@ -48,6 +48,7 @@ export default function EditarUsuarioPage() {
     }
     return <main>
         <h1>Editar Usuário</h1>
+        {usuario?.perfil === "ALUNO" && <p><Link to={`/alunos/${usuario.id}`}>Ver detalhes e matrículas do aluno</Link></p>}
         <p><Link to={`/gerenciarUsuarios/${usuario?.perfil ?? "ALUNO"}`}>Voltar à listagem</Link></p>
         {carregando ? <p>Carregando usuário...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !usuario ? <p role="alert">Usuário não encontrado.</p> : <>
             {erro && <p role="alert">{erro}</p>}

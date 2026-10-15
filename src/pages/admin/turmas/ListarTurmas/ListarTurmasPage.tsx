@@ -37,7 +37,7 @@ export default function ListarTurmasPage() {
                 : erro ? null : turmas.length === 0 ? <tr><td colSpan={7}>Nenhuma turma cadastrada.</td></tr>
                 : turmas.map(turma => <tr key={turma.id}><td>{turma.id}</td><td>{turma.anoLetivo}</td>
                     <td>{turma.cursoNome}</td><td>{turma.modalidade}</td><td>{turma.etapa}</td><td>{turma.ativo ? "Ativa" : "Inativa"}</td>
-                    <td><NavLink to={`/editarTurmas/${turma.id}`}>Editar</NavLink>{" | "}
+                    <td><NavLink to={`/turmas/${turma.id}`}>Ver turma</NavLink>{" | "}<NavLink to={`/editarTurmas/${turma.id}`}>Editar</NavLink>{" | "}
                         <button type="button" disabled={processando !== null} onClick={() => void alterarStatus(turma)}>
                             {processando === turma.id ? "Atualizando..." : turma.ativo ? "Desativar" : "Reativar"}
                         </button>
