@@ -7,7 +7,6 @@ export default function LayoutPrincipal() {
     const estaLogado = !!usuario;
     const ehAdmin = usuario?.perfil === "ADMIN";
     const ehSecretaria = usuario?.perfil === "SECRETARIA";
-    const ehProfessor = usuario?.perfil === "PROFESSOR";
 
     const podeGerenciarEventos = ehAdmin || ehSecretaria;
 
@@ -23,17 +22,10 @@ export default function LayoutPrincipal() {
                 </button>
 
                 <nav>
-                    {(usuario && (
-                        podeGerenciarEventos ? (
-                            <NavLink to="/gerenciarEventos" >
-                                Gerenciar Eventos
-                            </NavLink>
-                        ) : (
-                            <NavLink to="/eventos">
-                                Eventos
-                            </NavLink>
-                        )
-                    ))}
+                    {estaLogado && <NavLink to="/eventos">Calendário</NavLink>}
+                    {podeGerenciarEventos && (
+                        <NavLink to="/gerenciarEventos">Gerenciar Eventos</NavLink>
+                    )}
 
                     {(estaLogado && ehAdmin) && (
                         <>

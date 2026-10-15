@@ -16,6 +16,7 @@ import {
 
 type EventoFormProps = {
     evento?: Evento;
+    dataInicial?: string;
     turmas: Turma[];
     onSubmit: (dados: EventoFormData) => Promise<void>;
     salvando?: boolean;
@@ -23,6 +24,7 @@ type EventoFormProps = {
 
 export default function FormEvento({
     evento,
+    dataInicial,
     turmas,
     onSubmit,
     salvando = false
@@ -43,7 +45,7 @@ export default function FormEvento({
         defaultValues: {
             titulo: evento?.titulo ?? "",
             descricao: evento?.descricao ?? "",
-            dataInicio: evento?.dataInicio ?? "",
+            dataInicio: evento?.dataInicio ?? dataInicial ?? "",
             horaInicio: evento?.horaInicio?.slice(0, 5) ?? "",
 
             destinos:

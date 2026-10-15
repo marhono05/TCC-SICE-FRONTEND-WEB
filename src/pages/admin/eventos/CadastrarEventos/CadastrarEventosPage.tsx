@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import FormEvento from "../../../../components/FormEvento";
 import { listarTurma } from "../../../../services/turmaService";
 import { cadastrarEvento } from "../../../../services/eventoService";
+import { mensagemErroApi } from "../../../../utils/erroApi";
 import type { Turma } from "../../../../types/turmas";
 import type { CriarEvento } from "../../../../types/evento";
 import type { EventoFormData } from "../../../../schemas/eventoSchema";
-import { mensagemErroApi } from "../../../../utils/erroApi";
 
 export default function CadastrarEventosPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const dataRecebida = searchParams.get("data") ?? "";
+    const dataInicial = /^\d{4}-\d{2}-\d{2}$/.test(dataRecebida) ? dataRecebida : "";
     const [turmas, setTurmas] = useState<Turma[]>([]);
     const [carregandoTurmas, setCarregandoTurmas] = useState(true);
     const [erroTurmas, setErroTurmas] = useState("");
@@ -73,7 +76,7 @@ export default function CadastrarEventosPage() {
             {!carregandoTurmas && !erroTurmas && (
                 <>
                     {erroCadastro && <p role="alert">{erroCadastro}</p>}
-                    <FormEvento turmas={turmas} onSubmit={cadastrar} salvando={salvando} />
+                    <FormEvento turmas={turmas} dataInicial={dataInicial} onSubmit={cadastrar} salvando={salvando} />
                 </>
             )}
         </main>
