@@ -31,14 +31,8 @@ export default function DetalhesTurmaPage() {
     const [tentativa, setTentativa] = useState(0);
 
     useEffect(() => {
-        if (!idValido) {
-            setCarregando(false);
-            setErroCarregamento("");
-            return;
-        }
+        if (!idValido) return;
         let ativo = true;
-        setCarregando(true);
-        setErroCarregamento("");
         // Busca em paralelo apenas dados permitidos ao ADMIN.
         Promise.all([buscarTurmaPorId(turmaId), listarMatriculasTurma(turmaId)])
             .then(([dadosTurma, dadosMatriculas]) => {
@@ -86,7 +80,7 @@ export default function DetalhesTurmaPage() {
         {idValido && carregando && <p role="status">Carregando dados da turma...</p>}
         {idValido && !carregando && erroCarregamento && <div role="alert">
             <p>{erroCarregamento}</p>
-            <button type="button" onClick={() => setTentativa(valor => valor + 1)}>Tentar novamente</button>
+            <button type="button" onClick={() => { setCarregando(true); setErroCarregamento(""); setTentativa(valor => valor + 1); }}>Tentar novamente</button>
         </div>}
         {idValido && !carregando && !erroCarregamento && turma && <>
             <section aria-labelledby="dados-turma">

@@ -22,3 +22,10 @@
 .sice-avisos__detalhes dd { margin: 0; overflow-wrap: anywhere; }
 .sice-avisos__mensagem-erro { white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .sice-avisos__detalhes dl { grid-template-columns: 1fr; } }
+
+.sice-avisos__historico-cancelamento { max-width: 450px; text-align: left; }
+.sice-avisos__historico-cancelamento summary { cursor: pointer; white-space: nowrap; }
+.sice-avisos__historico-cancelamento p { margin: .5rem 0; }
+.sice-avisos__historico-cancelamento ol { padding-left: 1.2rem; white-space: normal; }
+.sice-avisos__historico-cancelamento li { margin: .4rem 0; }
+.sice-avisos__historico-cancelamento .sice-avisos__mensagem-erro { white-space: pre-wrap; }

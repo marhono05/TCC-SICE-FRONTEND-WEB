@@ -36,11 +36,9 @@ export default function DetalhesAlunoPage() {
     const [tentativa, setTentativa] = useState(0);
 
     useEffect(() => {
-        if (!idValido) { setCarregando(false); return; }
+        if (!idValido) return;
         let ativo = true;
         async function carregar() {
-            setCarregando(true);
-            setErroCarregamento("");
             try {
                 const [dadosAluno, dadosMatriculas] = await Promise.all([
                     buscarUsuarioPorId(usuarioId), listarMatriculasAluno(usuarioId)
@@ -110,7 +108,7 @@ export default function DetalhesAlunoPage() {
         {idValido && carregando && <p role="status">Carregando informações do aluno...</p>}
         {idValido && !carregando && erroCarregamento && <div role="alert">
             <p>{erroCarregamento}</p>
-            <button type="button" onClick={() => setTentativa(n => n + 1)}>Tentar novamente</button>
+            <button type="button" onClick={() => { setCarregando(true); setErroCarregamento(""); setTentativa(n => n + 1); }}>Tentar novamente</button>
         </div>}
         {idValido && !carregando && !erroCarregamento && aluno && <>
             <section aria-labelledby="dados-aluno">
@@ -153,7 +151,7 @@ export default function DetalhesAlunoPage() {
             <section aria-labelledby="nova-matricula">
                 <h2 id="nova-matricula">Adicionar matrícula</h2>
                 <p>Para uma matrícula anterior, utilize o botão <strong>Ativar</strong> na tabela. O histórico não é apagado.</p>
-                {erroTurmas && <p role="alert">{erroTurmas} <button type="button" onClick={() => setTentativa(n => n + 1)}>Tentar novamente</button></p>}
+                {erroTurmas && <p role="alert">{erroTurmas} <button type="button" onClick={() => { setErroTurmas(""); setTentativa(n => n + 1); }}>Tentar novamente</button></p>}
                 {!erroTurmas && turmasDisponiveis.length === 0 && <p>Não há turmas ativas disponíveis para uma nova matrícula.</p>}
                 {!erroTurmas && turmasDisponiveis.length > 0 && <form onSubmit={event => { event.preventDefault(); void adicionar(); }}>
                     <label htmlFor="turma-nova-matricula">Turma</label>{" "}

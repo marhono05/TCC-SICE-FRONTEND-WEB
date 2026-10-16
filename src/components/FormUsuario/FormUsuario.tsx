@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import type { Usuario } from "../types/usuario";
-import type { Turma } from "../types/turmas";
-import type { PerfilUsuario } from "../schemas/perfilUsuarioSchema";
-
-import {
-    usuarioSchema,
-    usuarioEdicaoSchema,
-    type UsuarioFormData
-} from "../schemas/usuarioSchema";
-
+import type { PerfilUsuario } from "../../schemas/perfilUsuarioSchema";
+import { usuarioEdicaoSchema, usuarioSchema, type UsuarioFormData } from "../../schemas/usuarioSchema";
+import type { Turma } from "../../types/turmas";
+import type { Usuario } from "../../types/usuario";
 
 type FormUsuarioProps = {
     usuario?: Usuario;
@@ -33,7 +26,7 @@ export default function FormUsuario({
     const {
         register,
         handleSubmit,
-        watch,
+        control,
         setValue,
         reset,
         formState: { errors }
@@ -58,8 +51,7 @@ export default function FormUsuario({
         useState("");
 
 
-    const turmasSelecionadas =
-        watch("turmasIds") ?? [];
+    const turmasSelecionadas = useWatch({ control, name: "turmasIds" }) ?? [];
 
     useEffect(() => {
 

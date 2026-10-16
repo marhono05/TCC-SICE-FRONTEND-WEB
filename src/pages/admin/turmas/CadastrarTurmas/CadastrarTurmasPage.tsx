@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import FormTurma from "../../../../components/FormTurma";
 import type { TurmaFormData } from "../../../../schemas/turmaSchemas";
 import { listarCurso } from "../../../../services/cursoService";
 import { cadastrarTurma } from "../../../../services/turmaService";
 import type { Curso } from "../../../../types/curso";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormTurma from "../../../../components/FormTurma/FormTurma";
 
 export default function CadastrarTurmasPage() {
     const navigate = useNavigate();

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import FormEvento from "../../../../components/FormEvento";
 import { buscarEventoPorId, editarEvento } from "../../../../services/eventoService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { EditarEvento, Evento } from "../../../../types/evento";
 import type { Turma } from "../../../../types/turmas";
 import type { EventoFormData } from "../../../../schemas/eventoSchema";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormEvento from "../../../../components/FormEvento/FormEvento";
 
 export default function EditarEventosPage() {
     const { id } = useParams();

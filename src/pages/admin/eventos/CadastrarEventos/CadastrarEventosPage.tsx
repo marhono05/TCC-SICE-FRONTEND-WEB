@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 
-import FormEvento from "../../../../components/FormEvento";
 import { listarTurma } from "../../../../services/turmaService";
 import { cadastrarEvento } from "../../../../services/eventoService";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import type { Turma } from "../../../../types/turmas";
 import type { CriarEvento } from "../../../../types/evento";
 import type { EventoFormData } from "../../../../schemas/eventoSchema";
+import FormEvento from "../../../../components/FormEvento/FormEvento";
 
 export default function CadastrarEventosPage() {
     const navigate = useNavigate();

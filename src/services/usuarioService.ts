@@ -55,3 +55,7 @@ export type AlterarSenhaRequest = {
 export async function alterarSenha(dados: AlterarSenhaRequest): Promise<void> {
   await api.patch("/usuarios/alterarSenha", dados);
 }
+
+export async function redefinirSenhaUsuario(id: number, senhaTemporaria: string): Promise<void> {
+  await api.patch(`/usuarios/${id}/redefinir-senha`, { senhaTemporaria });
+}

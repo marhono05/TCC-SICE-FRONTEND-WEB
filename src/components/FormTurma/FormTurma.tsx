@@ -1,14 +1,9 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import type { Curso } from "../types/curso";
-import type { Turma } from "../types/turmas";
-
-import {
-    turmaSchema,
-    type TurmaFormData
-} from "../schemas/turmaSchemas";
+import { turmaSchema, type TurmaFormData } from "../../schemas/turmaSchemas";
+import type { Curso } from "../../types/curso";
+import type { Turma } from "../../types/turmas";
 
 
 type FormTurmaProps = {

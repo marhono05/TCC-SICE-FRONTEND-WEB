@@ -28,7 +28,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
         setUsuario(response);
 
-      }catch(error) {
+      }catch {
 
         setUsuario(null);
 

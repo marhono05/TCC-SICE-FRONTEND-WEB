@@ -1,15 +1,9 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import type { GrupoWhatsapp } from "../types/grupoWhatsapp";
-import type { Turma } from "../types/turmas";
-
-import {
-    grupoWhatsappSchema,
-    type GrupoWhatsappFormData
-} from "../schemas/grupoWhatsappSchema";
-
+import { grupoWhatsappSchema, type GrupoWhatsappFormData } from "../../schemas/grupoWhatsappSchema";
+import type { GrupoWhatsapp } from "../../types/grupoWhatsapp";
+import type { Turma } from "../../types/turmas";
 
 type FormGrupoWhatsappProps = {
     grupo?: GrupoWhatsapp;
@@ -30,7 +24,7 @@ export default function FormGrupoWhatsapp({
         register,
         handleSubmit,
         reset,
-        watch,
+        control,
         setValue,
         formState: { errors }
     } = useForm<GrupoWhatsappFormData>({
@@ -45,7 +39,7 @@ export default function FormGrupoWhatsapp({
     });
 
 
-    const tipo = watch("tipo");
+    const tipo = useWatch({ control, name: "tipo" });
 
 
     useEffect(() => {

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import FormGrupoWhatsapp from "../../../../components/FormGrupoWhatsapp";
 import type { GrupoWhatsappFormData } from "../../../../schemas/grupoWhatsappSchema";
 import { buscarGrupoPorId, editarGrupo } from "../../../../services/grupoWhatsappService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { GrupoWhatsapp } from "../../../../types/grupoWhatsapp";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormGrupoWhatsapp from "../../../../components/FormGrupo/FormGrupoWhatsapp";
 
 export default function EditarGrupoWhatsappPage() {
     const { id } = useParams();

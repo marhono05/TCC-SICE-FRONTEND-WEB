@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import FormTurma from "../../../../components/FormTurma";
 import type { TurmaFormData } from "../../../../schemas/turmaSchemas";
 import { listarCurso } from "../../../../services/cursoService";
 import { buscarTurmaPorId, editarTurma } from "../../../../services/turmaService";
 import type { Curso } from "../../../../types/curso";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormTurma from "../../../../components/FormTurma/FormTurma";
 
 export default function EditarTurmasPage() {
     const { id } = useParams();

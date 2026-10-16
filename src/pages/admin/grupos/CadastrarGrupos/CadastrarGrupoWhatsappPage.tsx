@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import FormGrupoWhatsapp from "../../../../components/FormGrupoWhatsapp";
 import type { GrupoWhatsappFormData } from "../../../../schemas/grupoWhatsappSchema";
 import { cadastrarGrupo } from "../../../../services/grupoWhatsappService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormGrupoWhatsapp from "../../../../components/FormGrupo/FormGrupoWhatsapp";
 
 export default function CadastrarGrupoWhatsappPage() {
     const navigate = useNavigate();

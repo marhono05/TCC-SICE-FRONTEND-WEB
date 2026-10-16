@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { useAuth } from "../../../hooks/useAuth";
@@ -131,10 +131,8 @@ export default function DashBoardPage() {
   }, [perfil, ehAdmin, podeGerenciar, tentativa]);
 
   const horarioAtual = horarioDaEscola(new Date());
-  const resumo = useMemo(
-    () => eventos ? resumirEventos(eventos, horarioAtual) : null,
-    [eventos, horarioAtual.data, horarioAtual.hora]
-  );
+  // Um horário novo é calculado a cada render; não há dependências omitidas no resumo.
+  const resumo = eventos ? resumirEventos(eventos, horarioAtual) : null;
 
   const nomePerfil = perfil ? NOMES_PERFIL[perfil] : "Usuário";
 

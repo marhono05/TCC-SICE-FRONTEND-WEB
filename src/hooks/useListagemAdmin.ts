@@ -8,10 +8,7 @@ export function useListagemAdmin<T>(buscar: () => Promise<T[]>) {
     const [erro, setErro] = useState("");
     const requisicaoAtual = useRef(0);
 
-    const carregar = useCallback(async () => {
-        const requisicao = ++requisicaoAtual.current;
-        setCarregando(true);
-        setErro("");
+    const executarBusca = useCallback(async (requisicao: number) => {
         try {
             const dados = await buscar();
             if (requisicao === requisicaoAtual.current) setItens(dados);
@@ -24,10 +21,20 @@ export function useListagemAdmin<T>(buscar: () => Promise<T[]>) {
         }
     }, [buscar]);
 
+    // Chamadas manuais (Atualizar, Tentar novamente) podem mudar o estado imediatamente.
+    const carregar = useCallback(async () => {
+        const requisicao = ++requisicaoAtual.current;
+        setCarregando(true);
+        setErro("");
+        await executarBusca(requisicao);
+    }, [executarBusca]);
+
+    // A busca inicial parte do efeito; as atualizações acontecem após o retorno assíncrono.
     useEffect(() => {
-        void carregar();
+        const requisicao = ++requisicaoAtual.current;
+        void executarBusca(requisicao);
         return () => { requisicaoAtual.current += 1; };
-    }, [carregar]);
+    }, [executarBusca]);
 
     return { itens, carregando, erro, carregar };
 }

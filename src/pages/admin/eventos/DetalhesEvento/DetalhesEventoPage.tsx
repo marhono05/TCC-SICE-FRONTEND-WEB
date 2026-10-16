@@ -5,6 +5,7 @@ import { listarTurma } from "../../../../services/turmaService";
 import type { Evento } from "../../../../types/evento";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import ConfirmarCancelamentoEvento from "../../../../components/ConfirmarCancelamento/ConfirmarCancelamentoEvento";
 
 const etapas = { PRIMEIRA: "1ª", SEGUNDA: "2ª", TERCEIRA: "3ª" };
 const modalidades = { MEDIO: "Ensino Médio", TECNICO: "Ensino Técnico" };
@@ -20,6 +21,8 @@ export default function DetalhesEventoPage() {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState("");
     const [tentativa, setTentativa] = useState(0);
+    const [confirmandoCancelamento, setConfirmandoCancelamento] = useState(false);
+    const [avisoCancelamento, setAvisoCancelamento] = useState("");
 
     useEffect(() => {
         if (!idValido) return;
@@ -57,6 +60,7 @@ export default function DetalhesEventoPage() {
             <h1>Detalhes do evento</h1>
             <p><Link to="/gerenciarEventos">Voltar para a listagem</Link></p>
             {aviso && <p role="status">{aviso}</p>}
+            {avisoCancelamento && <p role="status">{avisoCancelamento}</p>}
             {!idValido && <p role="alert">Identificador de evento inválido.</p>}
             {idValido && loading && <p role="status">Carregando evento...</p>}
             {idValido && !loading && erro && (
@@ -84,8 +88,23 @@ export default function DetalhesEventoPage() {
                             )}
                         </section>
                     ))}
+                    {evento.status === "ATIVO" && (
+                        <p><button type="button" onClick={() => setConfirmandoCancelamento(true)}>Cancelar evento</button></p>
+                    )}
                     <p><Link to={`/editarEventos/${evento.id}`}>Editar evento</Link></p>
+                    <p><Link to={`/avisos?aba=cancelamentos&eventoId=${evento.id}`}>Consultar comunicações de cancelamento na Central de Avisos</Link></p>
                 </article>
+            )}
+            {confirmandoCancelamento && evento && (
+                <ConfirmarCancelamentoEvento
+                    evento={evento}
+                    onFechar={() => setConfirmandoCancelamento(false)}
+                    onConcluido={(atualizado, mensagem) => {
+                        setEvento(atualizado);
+                        setAvisoCancelamento(mensagem);
+                        setConfirmandoCancelamento(false);
+                    }}
+                />
             )}
         </main>
     );

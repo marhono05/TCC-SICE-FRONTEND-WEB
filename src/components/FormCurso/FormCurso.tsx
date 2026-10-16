@@ -1,12 +1,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import type { Curso } from "../types/curso";
-import {
-    cursoSchema,
-    type CursoFormData
-} from "../schemas/cursoSchema";
+import { cursoSchema, type CursoFormData } from "../../schemas/cursoSchema";
+import type { Curso } from "../../types/curso";
 
 
 interface FormCursoProps {

@@ -1,4 +1,4 @@
-import type { CriarEvento, EditarEvento, Evento } from "../types/evento";
+import type { CriarEvento, EditarEvento, Evento, CriarEventoDestino, VerificacaoGruposEvento } from "../types/evento";
 import { api } from "./api";
 
 export async function buscarEventoPorId(id: number): Promise<Evento> {
@@ -46,5 +46,10 @@ export async function desativarEvento(id: number): Promise<Evento> {
 export async function reativarEvento(id: number): Promise<Evento> {
     const response = await api.patch<Evento>(`/eventos/${id}/reativar`);
 
+    return response.data;
+}
+/** Consulta informativa: nao cadastra evento nem envia mensagens. */
+export async function verificarGruposDoEvento(destinos: CriarEventoDestino[]): Promise<VerificacaoGruposEvento> {
+    const response = await api.post<VerificacaoGruposEvento>("/eventos/verificarGrupos", { destinos });
     return response.data;
 }

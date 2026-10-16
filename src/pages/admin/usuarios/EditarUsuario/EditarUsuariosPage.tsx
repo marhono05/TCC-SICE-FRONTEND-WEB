@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import FormUsuario from "../../../../components/FormUsuario";
 import type { UsuarioFormData } from "../../../../schemas/usuarioSchema";
 import { buscarUsuarioPorId, editarUsuario } from "../../../../services/usuarioService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { Usuario } from "../../../../types/usuario";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormUsuario from "../../../../components/FormUsuario/FormUsuario";
+import RedefinirSenhaUsuario from "../../../../components/FormRedefinirSenha/RedefinirSenhaUsuario";
 
 export default function EditarUsuarioPage() {
     const { id } = useParams();
@@ -53,6 +54,8 @@ export default function EditarUsuarioPage() {
         {carregando ? <p>Carregando usuário...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !usuario ? <p role="alert">Usuário não encontrado.</p> : <>
             {erro && <p role="alert">{erro}</p>}
             <FormUsuario usuario={usuario} perfil={usuario.perfil} turmas={turmas} onSubmit={editar} salvando={salvando} />
+            <hr />
+            <RedefinirSenhaUsuario usuario={usuario} />
         </>}
     </main>;
 }

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import type { Evento } from "../../../../types/evento";
-import { cancelarEvento, listarTodos, reativarEvento, desativarEvento } from "../../../../services/eventoService";
+import { listarTodos, reativarEvento, desativarEvento } from "../../../../services/eventoService";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import ConfirmarCancelamentoEvento from "../../../../components/ConfirmarCancelamento/ConfirmarCancelamentoEvento";
 
-type AcaoEvento = "cancelar" | "desativar" | "reativar";
+type AcaoEvento = "desativar" | "reativar";
 
 export default function ListarEventosPage() {
     const location = useLocation();
@@ -14,12 +15,13 @@ export default function ListarEventosPage() {
     const [erro, setErro] = useState("");
     const [aviso, setAviso] = useState(avisoNavegacao ?? "");
     const [processandoId, setProcessandoId] = useState<number | null>(null);
+    const [eventoParaCancelar, setEventoParaCancelar] = useState<Evento | null>(null);
+    const [ultimoCanceladoId, setUltimoCanceladoId] = useState<number | null>(null);
 
-    const carregarEventos = useCallback(async () => {
-        setLoading(true);
-        setErro("");
+    const buscarEventos = useCallback(async () => {
         try {
-            setEventos(await listarTodos());
+            const dados = await listarTodos();
+            setEventos(dados);
         } catch (falha) {
             setErro(mensagemErroApi(falha, "Não foi possível listar os eventos."));
         } finally {
@@ -27,28 +29,46 @@ export default function ListarEventosPage() {
         }
     }, []);
 
-    useEffect(() => { void carregarEventos(); }, [carregarEventos]);
+    const carregarEventos = useCallback(async () => {
+        setLoading(true);
+        setErro("");
+        await buscarEventos();
+    }, [buscarEventos]);
+
+    // A primeira consulta é um efeito externo; atualizamos a tela apenas
+    // quando a Promise da API resolver, ignorando respostas após desmontagem.
+    useEffect(() => {
+        let ativo = true;
+        void listarTodos()
+            .then((dados) => {
+                if (ativo) setEventos(dados);
+            })
+            .catch((falha) => {
+                if (ativo) setErro(mensagemErroApi(falha, "Não foi possível listar os eventos."));
+            })
+            .finally(() => {
+                if (ativo) setLoading(false);
+            });
+        return () => { ativo = false; };
+    }, []);
 
     async function executarAcao(evento: Evento, acao: AcaoEvento) {
         if (processandoId !== null) return;
-        const confirmacao = acao === "cancelar"
-            ? "Deseja cancelar este evento?"
-            : acao === "desativar"
-                ? "Deseja desativar este evento?"
-                : "Deseja reativar este evento?";
+        const confirmacao = acao === "desativar"
+            ? "Deseja desativar este evento?"
+            : "Deseja reativar este evento?";
         if (!window.confirm(confirmacao)) return;
 
         setErro("");
         setAviso("");
+        setUltimoCanceladoId(null);
         setProcessandoId(evento.id);
         try {
-            const atualizado = acao === "cancelar"
-                ? await cancelarEvento(evento.id)
-                : acao === "desativar"
-                    ? await desativarEvento(evento.id)
-                    : await reativarEvento(evento.id);
+            const atualizado = acao === "desativar"
+                ? await desativarEvento(evento.id)
+                : await reativarEvento(evento.id);
             setEventos((atuais) => atuais.map((item) => item.id === atualizado.id ? atualizado : item));
-            setAviso(`Evento ${acao === "cancelar" ? "cancelado" : acao === "desativar" ? "desativado" : "reativado"} com sucesso.`);
+            setAviso(`Evento ${acao === "desativar" ? "desativado" : "reativado"} com sucesso.`);
         } catch (falha) {
             setErro(mensagemErroApi(falha, "Não foi possível alterar o status do evento."));
         } finally {
@@ -64,6 +84,7 @@ export default function ListarEventosPage() {
             <h1>Gerenciar eventos</h1>
             <p><Link to="/cadastrarEventos">Cadastrar evento</Link></p>
             {aviso && <p role="status">{aviso}</p>}
+            {ultimoCanceladoId !== null && <p><Link to={`/avisos?aba=cancelamentos&eventoId=${ultimoCanceladoId}`}>Consultar comunicações deste cancelamento</Link></p>}
             {erro && <div role="alert"><p>{erro}</p><button type="button" onClick={() => void carregarEventos()}>Tentar novamente</button></div>}
             <table>
                 <thead>
@@ -87,7 +108,7 @@ export default function ListarEventosPage() {
                             <td>
                                 <Link to={`/eventos/${evento.id}`}>Ver</Link>{" | "}
                                 <Link to={`/editarEventos/${evento.id}`}>Editar</Link>{" | "}
-                                <button type="button" disabled={processandoId !== null || evento.status !== "ATIVO"} onClick={() => void executarAcao(evento, "cancelar")}>Cancelar</button>{" "}
+                                <button type="button" disabled={processandoId !== null || evento.status !== "ATIVO"} onClick={() => { setErro(""); setAviso(""); setUltimoCanceladoId(null); setEventoParaCancelar(evento); }}>Cancelar</button>{" "}
                                 <button type="button" disabled={processandoId !== null || evento.status === "DESATIVADO"} onClick={() => void executarAcao(evento, "desativar")}>Desativar</button>{" "}
                                 <button type="button" disabled={processandoId !== null || evento.status === "ATIVO" || evento.dataInicio < dataHoje} onClick={() => void executarAcao(evento, "reativar")}>Reativar</button>
                                 {processandoId === evento.id && <span role="status"> Atualizando...</span>}
@@ -96,6 +117,18 @@ export default function ListarEventosPage() {
                     )) : null}
                 </tbody>
             </table>
+            {eventoParaCancelar && (
+                <ConfirmarCancelamentoEvento
+                    evento={eventoParaCancelar}
+                    onFechar={() => setEventoParaCancelar(null)}
+                    onConcluido={(atualizado, mensagem) => {
+                        setEventos((atuais) => atuais.map((item) => item.id === atualizado.id ? atualizado : item));
+                        setAviso(mensagem);
+                        setUltimoCanceladoId(atualizado.id);
+                        setEventoParaCancelar(null);
+                    }}
+                />
+            )}
         </main>
     );
 }

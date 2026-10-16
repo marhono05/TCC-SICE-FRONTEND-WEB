@@ -43,3 +43,8 @@ export type CriarEventoDestino = {
     modalidades: ModalidadeEnsino[];
     turmasIds: number[];
 };
+
+export type VerificacaoGruposEvento = {
+    totalGruposAtivos: number;
+    destinosSemGrupo: { perfil: PerfilDestinacao; turmaId: number | null }[];
+};

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import FormUsuario from "../../../../components/FormUsuario";
 import type { UsuarioFormData } from "../../../../schemas/usuarioSchema";
 import { cadastrarUsuario } from "../../../../services/usuarioService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { Turma } from "../../../../types/turmas";
 import { isPerfilUsuario, PERFIL_LABEL_SINGULAR } from "../../../../utils/perfilUsuario";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormUsuario from "../../../../components/FormUsuario/FormUsuario";
 
 export default function CadastrarUsuarioPage() {
     const { perfil } = useParams();

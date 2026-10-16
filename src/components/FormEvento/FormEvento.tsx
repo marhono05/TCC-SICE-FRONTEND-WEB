@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import {
     useFieldArray,
-    useForm
+    useForm,
+    useWatch
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import type { Evento } from "../types/evento";
-import type { Turma } from "../types/turmas";
-
-import {
-    eventoSchema,
-    type EventoFormData,
-    type PerfilDestinacao
-} from "../schemas/eventoSchema";
+import type { Evento } from "../../types/evento";
+import { eventoSchema, type EventoFormData, type PerfilDestinacao} from "../../schemas/eventoSchema";
+import type { Turma } from "../../types/turmas";
+import AlertaGruposEvento from "../AlertaGrupoEvento/AlertaGruposEvento";
 
 type EventoFormProps = {
     evento?: Evento;
@@ -34,7 +30,6 @@ export default function FormEvento({
         register,
         control,
         handleSubmit,
-        watch,
         setValue,
         getValues,
         reset,
@@ -79,10 +74,18 @@ export default function FormEvento({
         name: "destinos"
     });
 
+    // Ao editar, o formulário já recebe o evento carregado. A seleção inicial
+    // pode ser calculada aqui, sem atualizar o estado dentro de um efeito.
     const [
         especificarAlunos,
         setEspecificarAlunos
-    ] = useState(false);
+    ] = useState(() => evento?.destinos.some(
+        (destino) => destino.perfil === "ALUNO" && (
+            destino.etapas.length > 0 ||
+            destino.modalidades.length > 0 ||
+            destino.turmasIds.length > 0
+        )
+    ) ?? false);
 
     const [
         pesquisa,
@@ -122,26 +125,10 @@ export default function FormEvento({
         });
 
 
-        const destinoAluno = evento.destinos.find(
-            (destino) =>
-                destino.perfil === "ALUNO"
-        );
-
-
-        setEspecificarAlunos(
-            destinoAluno !== undefined &&
-            (
-                destinoAluno.etapas.length > 0 ||
-                destinoAluno.modalidades.length > 0 ||
-                destinoAluno.turmasIds.length > 0
-            )
-        );
-
     }, [evento, reset]);
 
 
-    const destinos =
-        watch("destinos") ?? [];
+    const destinos = useWatch({ control, name: "destinos" }) ?? [];
 
     const perfilSelecionado = (
         perfil: PerfilDestinacao
@@ -604,6 +591,8 @@ export default function FormEvento({
             })}
             <br />
             <br />
+
+            <AlertaGruposEvento destinos={destinos} turmas={turmas} />
 
             <button type="submit">
                 {salvando || isSubmitting ? "Salvando..." : "Salvar"}

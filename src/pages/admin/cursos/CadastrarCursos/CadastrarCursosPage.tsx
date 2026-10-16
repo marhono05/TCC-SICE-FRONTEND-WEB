@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import FormCurso from "../../../../components/FormCurso";
 import type { CursoFormData } from "../../../../schemas/cursoSchema";
 import { cadastrarCurso } from "../../../../services/cursoService";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormCurso from "../../../../components/FormCurso/FormCurso";
 
 export default function CadastrarCursosPage() {
     const navigate = useNavigate();

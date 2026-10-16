@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import FormCurso from "../../../../components/FormCurso";
 import type { CursoFormData } from "../../../../schemas/cursoSchema";
 import { buscarCursoPorId, editarCurso } from "../../../../services/cursoService";
 import type { Curso } from "../../../../types/curso";
 import { mensagemErroApi } from "../../../../utils/erroApi";
+import FormCurso from "../../../../components/FormCurso/FormCurso";
 
 export default function EditarCursosPage() {
     const { id } = useParams();

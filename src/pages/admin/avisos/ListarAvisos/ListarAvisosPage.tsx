@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 
 import { listarEnvios } from "../../../../services/envioAvisoService";
 import { listarTodos } from "../../../../services/eventoService";
@@ -9,15 +9,22 @@ import type { PaginaEnvios, StatusEnvioAviso } from "../../../../types/envioAvis
 import { formatarDataAviso, hojeNaEscola } from "../../../../utils/datasAvisos";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import "./avisos.css";
+import ComunicacoesCancelamentoPainel from "../../../../components/ComunicacoesCancelamento/ComunicacoesCancelamentoPainel";
 
-type Aba = "envios" | "programados";
+type Aba = "envios" | "programados" | "cancelamentos";
 
 const STATUS: Record<StatusEnvioAviso, string> = {
   PENDENTE: "Pendente", ENVIADO: "Processado pelo bot", ERRO: "Erro", CANCELADO: "Interrompido",
 };
 
 export default function ListarAvisosPage() {
-  const [aba, setAba] = useState<Aba>("envios");
+  const [parametros, setParametros] = useSearchParams();
+  const aba: Aba = parametros.get("aba") === "cancelamentos"
+    ? "cancelamentos" : parametros.get("aba") === "programados" ? "programados" : "envios";
+  const eventoIdParametro = Number(parametros.get("eventoId"));
+  const eventoIdInicial = Number.isSafeInteger(eventoIdParametro) && eventoIdParametro > 0
+    ? eventoIdParametro : undefined;
+  function mudarAba(novaAba: Aba) { setParametros({ aba: novaAba }); }
   const [statusSelecionado, setStatusSelecionado] = useState("");
   const [buscaDigitada, setBuscaDigitada] = useState("");
   const [filtro, setFiltro] = useState({ status: "", busca: "" });
@@ -29,6 +36,7 @@ export default function ListarAvisosPage() {
   const [erro, setErro] = useState("");
 
   useEffect(() => {
+    if (aba === "cancelamentos") return;
     const controller = new AbortController();
     async function carregar() {
       setCarregando(true);
@@ -74,8 +82,9 @@ export default function ListarAvisosPage() {
       <p>Consulte os registros de comunicação com os grupos de WhatsApp. Esta tela não envia mensagens.</p>
 
       <div className="sice-avisos__abas" role="group" aria-label="Visualização dos avisos">
-        <button type="button" aria-pressed={aba === "envios"} onClick={() => setAba("envios")}>Envios registrados</button>
-        <button type="button" aria-pressed={aba === "programados"} onClick={() => setAba("programados")}>Programados</button>
+        <button type="button" aria-pressed={aba === "envios"} onClick={() => mudarAba("envios")}>Envios registrados</button>
+        <button type="button" aria-pressed={aba === "programados"} onClick={() => mudarAba("programados")}>Programados</button>
+        <button type="button" aria-pressed={aba === "cancelamentos"} onClick={() => mudarAba("cancelamentos")}>Cancelamentos</button>
       </div>
 
       {aba === "envios" ? (
@@ -133,7 +142,7 @@ export default function ListarAvisosPage() {
             </>
           )}
         </section>
-      ) : (
+      ) : aba === "programados" ? (
         <section className="sice-avisos__secao" aria-label="Avisos programados">
           <p className="sice-avisos__nota">Eventos ativos com data de aviso futura. São previsões de agendamento, não confirmações de envio ou de criação de registros por grupo. Envios de hoje e anteriores só aparecem na aba de registros depois que um processamento criar seus registros individuais.</p>
           {erro && <div role="alert" className="sice-avisos__erro"><p>{erro}</p><button type="button" onClick={() => setAtualizacao((n) => n + 1)}>Tentar novamente</button></div>}
@@ -159,6 +168,8 @@ export default function ListarAvisosPage() {
             </>
           )}
         </section>
+      ) : (
+        <ComunicacoesCancelamentoPainel key={eventoIdInicial ?? "selecionar"} eventoIdInicial={eventoIdInicial} />
       )}
     </main>
   );
