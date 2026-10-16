@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
@@ -17,6 +16,9 @@ import { mensagemErroApi } from "../../../utils/erroApi";
 import "./EventosPage.css";
 import { converterEventosParaCalendario } from "../../../utils/calendarioEventos";
 
+const TELA_PEQUENA = "(max-width: 899px)";
+type VistaDesktop = "dayGridMonth" | "listMonth";
+
 const STATUS: { valor: StatusEvento; descricao: string }[] = [
     { valor: "ATIVO", descricao: "Ativos" },
     { valor: "CANCELADO", descricao: "Cancelados" },
@@ -31,6 +33,11 @@ function formatarData(data: string): string {
 export default function EventosPage() {
     const navigate = useNavigate();
     const detalhesRef = useRef<HTMLDialogElement>(null);
+    const calendarioRef = useRef<FullCalendar>(null);
+    const ultimaVistaDesktopRef = useRef<VistaDesktop>("dayGridMonth");
+    const [telaPequena, setTelaPequena] = useState(
+        () => typeof window !== "undefined" && window.matchMedia(TELA_PEQUENA).matches
+    );
     const { usuario } = useAuth();
     const podeGerenciar = usuario?.perfil === "ADMIN" || usuario?.perfil === "SECRETARIA";
 
@@ -42,6 +49,24 @@ export default function EventosPage() {
     const [eventoSelecionadoId, setEventoSelecionadoId] = useState<number | null>(null);
 
     const recarregar = useCallback(() => setTentativa((atual) => atual + 1), []);
+
+    // Mesmo ponto de quebra da sidebar: em telas pequenas, apenas a lista mensal.
+    useEffect(() => {
+        const mediaQuery = window.matchMedia(TELA_PEQUENA);
+        const aoAlterarLargura = (evento: MediaQueryListEvent) => setTelaPequena(evento.matches);
+        mediaQuery.addEventListener("change", aoAlterarLargura);
+        return () => mediaQuery.removeEventListener("change", aoAlterarLargura);
+    }, []);
+
+    // initialView só vale na montagem; changeView também cobre redimensionamentos.
+    useEffect(() => {
+        const calendario = calendarioRef.current?.getApi();
+        if (!calendario) return;
+        const vistaPermitida = telaPequena ? "listMonth" : ultimaVistaDesktopRef.current;
+        if (calendario.view.type !== vistaPermitida) {
+            calendario.changeView(vistaPermitida);
+        }
+    }, [telaPequena, carregando]);
 
     useEffect(() => {
         let ativo = true;
@@ -92,7 +117,7 @@ export default function EventosPage() {
 
     function escolherDia(info: DateClickArg) {
         if (!podeGerenciar) return;
-        // Também funciona quando o clique é feito na visualização semanal.
+        // Na grade mensal, ADMIN/SECRETARIA podem clicar no dia para cadastrar.
         const data = info.dateStr.slice(0, 10);
         navigate(`/cadastrarEventos?data=${encodeURIComponent(data)}`);
     }
@@ -141,27 +166,33 @@ export default function EventosPage() {
             ) : !erro && (
                 <>
                     <p className="sice-calendario__contagem" role="status">
-                        {eventosFiltrados.length} {eventosFiltrados.length === 1 ? "evento exibido" : "eventos exibidos"}.
+                        {eventosFiltrados.length} {eventosFiltrados.length === 1 ? "evento encontrado" : "eventos encontrados"} nos filtros (todos os meses).
                         {eventosFiltrados.length === 0 && " Não há eventos com os filtros selecionados."}
                     </p>
                     <div className="sice-calendario__quadro">
                         <FullCalendar
-                            plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+                            ref={calendarioRef}
+                            plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
                             locale={ptBrLocale}
-                            initialView="dayGridMonth"
+                            initialView={telaPequena ? "listMonth" : "dayGridMonth"}
                             headerToolbar={{
                                 left: "prev,next today",
                                 center: "title",
-                                right: "dayGridMonth,timeGridWeek,listWeek",
+                                right: telaPequena ? "" : "dayGridMonth,listMonth",
                             }}
-                            buttonText={{ month: "Mês", week: "Semana", list: "Lista", today: "Hoje" }}
+                            buttonText={{ month: "Mês", list: "Lista", today: "Hoje" }}
+                            noEventsContent="Nenhum evento encontrado neste mês."
+                            viewDidMount={({ view }) => {
+                                if (!telaPequena && (view.type === "dayGridMonth" || view.type === "listMonth")) {
+                                    ultimaVistaDesktopRef.current = view.type;
+                                }
+                            }}
                             events={eventosCalendario}
                             eventClick={selecionarEvento}
                             dateClick={podeGerenciar ? escolherDia : undefined}
                             eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
                             dayMaxEvents={3}
                             displayEventTime
-                            allDaySlot={false}
                             nowIndicator
                             height="auto"
                             editable={false}

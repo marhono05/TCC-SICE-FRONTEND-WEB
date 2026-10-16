@@ -52,6 +52,13 @@
     border-radius: .5rem;
 }
 .sice-calendario__detalhe p { overflow-wrap: anywhere; }
+/* A sidebar também passa para o modo móvel em 899px. */
+@media (max-width: 899px) {
+    .sice-calendario__quadro { overflow-x: visible; }
+    .sice-calendario__quadro .fc { min-width: 0; width: 100%; }
+    .sice-calendario__quadro .fc-list-event-title { overflow-wrap: anywhere; }
+    .sice-calendario__quadro .fc-list-table { width: 100%; }
+}
 @media (max-width: 680px) {
     .sice-calendario { padding: .75rem; }
     .sice-calendario__quadro .fc { min-width: 0; }
