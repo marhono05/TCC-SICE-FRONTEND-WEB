@@ -7,6 +7,8 @@ import { listarCurso } from "../../../services/cursoService";
 import { listarTurma } from "../../../services/turmaService";
 import { listarPorPerfil } from "../../../services/usuarioService";
 import { listarTodos as listarTodosGrupos } from "../../../services/grupoWhatsappService";
+import Botao from "../../../components/ui/Botao";
+import Aviso from "../../../components/ui/Aviso";
 import type { Evento } from "../../../types/evento";
 import { mensagemErroApi } from "../../../utils/erroApi";
 import { dataLegivel, horarioDaEscola, resumirEventos } from "../../../utils/resumoDashboard";
@@ -31,10 +33,23 @@ const NOMES_PERFIL: Record<PerfilUsuario, string> = {
   ALUNO: "Aluno",
 };
 
-function Estatistica({ titulo, valor, descricao }: { titulo: string; valor: number | null; descricao?: string }) {
+function Estatistica({
+  titulo, valor, icone, descricao, destaque = false,
+}: {
+  titulo: string;
+  valor: number | null;
+  icone: string;
+  descricao?: string;
+  destaque?: boolean;
+}) {
   return (
-    <div className="sice-dashboard__estatistica">
-      <dt>{titulo}</dt>
+    <div className={`sice-dashboard__estatistica${destaque ? " sice-dashboard__estatistica--destaque" : ""}`}>
+      <div className="sice-dashboard__estatistica-topo">
+        <dt>{titulo}</dt>
+        <span className="sice-dashboard__estatistica-icone" aria-hidden="true">
+          <i className={`bi ${icone}`} />
+        </span>
+      </div>
       <dd>{valor === null ? "—" : valor}</dd>
       {descricao && <small>{descricao}</small>}
     </div>
@@ -42,25 +57,61 @@ function Estatistica({ titulo, valor, descricao }: { titulo: string; valor: numb
 }
 
 function ListaEventos({
-  titulo, eventos, gerencia, vazio,
-}: { titulo: string; eventos: Evento[]; gerencia: boolean; vazio: string }) {
+  titulo, icone, eventos, gerencia, vazio, cancelamentos = false,
+}: {
+  titulo: string;
+  icone: string;
+  eventos: Evento[];
+  gerencia: boolean;
+  vazio: string;
+  cancelamentos?: boolean;
+}) {
   return (
     <section className="sice-dashboard__painel" aria-label={titulo}>
-      <h2>{titulo}</h2>
-      {eventos.length === 0 ? <p className="sice-dashboard__vazio">{vazio}</p> : (
+      <div className="sice-dashboard__painel-cabecalho">
+        <div className="sice-dashboard__painel-titulo">
+          <span className={`sice-dashboard__painel-icone${cancelamentos ? " sice-dashboard__painel-icone--cancelamento" : ""}`} aria-hidden="true">
+            <i className={`bi ${icone}`} />
+          </span>
+          <h2>{titulo}</h2>
+        </div>
+        <span className="sice-dashboard__quantidade" aria-label={`${eventos.length} evento(s)`}>
+          {eventos.length}
+        </span>
+      </div>
+      {eventos.length === 0 ? (
+        <div className="sice-dashboard__vazio">
+          <i className={`bi ${cancelamentos ? "bi-calendar-check" : "bi-calendar2-week"}`} aria-hidden="true" />
+          <p>{vazio}</p>
+        </div>
+      ) : (
         <ul className="sice-dashboard__lista">
           {eventos.map((evento) => (
             <li key={evento.id}>
-              <div>
+              <span className={`sice-dashboard__evento-marcador${cancelamentos ? " sice-dashboard__evento-marcador--cancelamento" : ""}`} aria-hidden="true">
+                <i className={`bi ${cancelamentos ? "bi-calendar-x" : "bi-calendar-event"}`} />
+              </span>
+              <div className="sice-dashboard__evento-informacoes">
                 <strong>{evento.titulo}</strong>
-                <small>{dataLegivel(evento.dataInicio)} às {evento.horaInicio.slice(0, 5)}</small>
+                <span className="sice-dashboard__evento-data">
+                  <i className="bi bi-clock" aria-hidden="true" />
+                  {dataLegivel(evento.dataInicio)} às {evento.horaInicio.slice(0, 5)}
+                </span>
               </div>
-              {gerencia && <Link to={`/eventos/${evento.id}`}>Detalhes</Link>}
+              {gerencia && (
+                <Link className="sice-dashboard__detalhes" to={`/eventos/${evento.id}`}>
+                  Detalhes <i className="bi bi-arrow-right" aria-hidden="true" />
+                </Link>
+              )}
             </li>
           ))}
         </ul>
       )}
-      {!gerencia && <p className="sice-dashboard__observacao">Para consultar o evento no calendário, acesse a visualização mensal ou semanal.</p>}
+      {!gerencia && (
+        <Link to="/eventos" className="sice-dashboard__atalho-calendario">
+          Ver calendário mensal <i className="bi bi-arrow-right" aria-hidden="true" />
+        </Link>
+      )}
     </section>
   );
 }
@@ -79,6 +130,7 @@ export default function DashBoardPage() {
   const [falhasCadastros, setFalhasCadastros] = useState<string[]>([]);
   const [tentativa, setTentativa] = useState(0);
 
+  // Mesmas consultas e regras de permissão do Dashboard original.
   useEffect(() => {
     let ativo = true;
 
@@ -131,55 +183,87 @@ export default function DashBoardPage() {
   }, [perfil, ehAdmin, podeGerenciar, tentativa]);
 
   const horarioAtual = horarioDaEscola(new Date());
-  // Um horário novo é calculado a cada render; não há dependências omitidas no resumo.
   const resumo = eventos ? resumirEventos(eventos, horarioAtual) : null;
-
   const nomePerfil = perfil ? NOMES_PERFIL[perfil] : "Usuário";
 
   return (
     <main className="sice-dashboard">
-      <div className="sice-dashboard__cabecalho">
-        <div>
-          <h1>Painel — {nomePerfil}</h1>
-          <p>{podeGerenciar
-            ? "Acompanhe os principais dados e os próximos eventos da escola."
-            : "Consulte os próximos eventos escolares destinados a você."}</p>
+      <header className="sice-dashboard__cabecalho">
+        <div className="sice-dashboard__identidade">
+          <span className="sice-dashboard__identidade-icone" aria-hidden="true">
+            <i className="bi bi-grid-1x2" />
+          </span>
+          <div className="sice-dashboard__cabecalho-texto">
+            <span className="sice-dashboard__perfil">Painel {nomePerfil.toLowerCase()}</span>
+            <h1>Painel — {nomePerfil}</h1>
+            <p>{podeGerenciar
+              ? "Acompanhe os principais dados e os próximos eventos da escola."
+              : "Consulte os próximos eventos escolares destinados a você."}</p>
+          </div>
         </div>
-        <button type="button" onClick={() => setTentativa((n) => n + 1)}
-          disabled={carregandoEventos || (ehAdmin && carregandoCadastros)}>
+        <Botao
+          type="button"
+          variante="secundario"
+          icone="bi-arrow-clockwise"
+          onClick={() => setTentativa((n) => n + 1)}
+          disabled={carregandoEventos || (ehAdmin && carregandoCadastros)}
+          className="sice-dashboard__atualizar"
+        >
           Atualizar dados
-        </button>
-      </div>
+        </Botao>
+      </header>
 
       {podeGerenciar && (
         <section className="sice-dashboard__secao" aria-labelledby="resumo-eventos">
-          <h2 id="resumo-eventos">Resumo de eventos</h2>
-          <dl className="sice-dashboard__grade">
-            <Estatistica titulo="Eventos ativos (total)" valor={resumo?.totalAtivos ?? null} />
-            <Estatistica titulo="Eventos em 7 dias" valor={resumo?.semana ?? null} descricao="De hoje até os próximos 6 dias" />
-            <Estatistica titulo="Cancelados em 7 dias" valor={resumo?.canceladosSemana ?? null} descricao="De hoje até os próximos 6 dias" />
+          <div className="sice-dashboard__titulo-secao">
+            <div>
+              <h2 id="resumo-eventos">Resumo de eventos</h2>
+              <p>Indicadores para acompanhar a programação escolar.</p>
+            </div>
+          </div>
+          <dl className="sice-dashboard__grade sice-dashboard__grade--eventos">
+            <Estatistica titulo="Eventos ativos (total)" icone="bi-calendar-check" valor={resumo?.totalAtivos ?? null} destaque />
+            <Estatistica titulo="Eventos em 7 dias" icone="bi-calendar-week" valor={resumo?.semana ?? null} descricao="De hoje até os próximos 6 dias" />
+            <Estatistica titulo="Cancelados em 7 dias" icone="bi-calendar-x" valor={resumo?.canceladosSemana ?? null} descricao="De hoje até os próximos 6 dias" />
           </dl>
         </section>
       )}
 
-      {carregandoEventos && <p role="status">Carregando informações de eventos...</p>}
-      {erroEventos && <p role="alert" className="sice-dashboard__erro">{erroEventos} Use “Atualizar dados” para tentar novamente.</p>}
+      {carregandoEventos && (
+        <div className="sice-dashboard__aviso" role="status" aria-live="polite">
+          <Aviso variante="informacao">Carregando informações de eventos...</Aviso>
+        </div>
+      )}
+      {erroEventos && (
+        <Aviso variante="erro" titulo="Erro ao carregar eventos" role="alert">
+          {erroEventos} Use “Atualizar dados” para tentar novamente.
+        </Aviso>
+      )}
 
       {ehAdmin && (
         <section className="sice-dashboard__secao" aria-labelledby="resumo-cadastros">
-          <h2 id="resumo-cadastros">Cadastros ativos da escola</h2>
-          {carregandoCadastros && <p role="status">Carregando cadastros...</p>}
-          {falhasCadastros.length > 0 && (
-            <p role="alert" className="sice-dashboard__erro">
-              Não foi possível consultar: {falhasCadastros.join(", ")}. Os dados indisponíveis aparecem como “—”.
-            </p>
+          <div className="sice-dashboard__titulo-secao">
+            <div>
+              <h2 id="resumo-cadastros">Cadastros ativos da escola</h2>
+              <p>Quantidade de registros ativos em cada categoria.</p>
+            </div>
+          </div>
+          {carregandoCadastros && (
+            <div className="sice-dashboard__aviso" role="status" aria-live="polite">
+              <Aviso variante="informacao">Carregando cadastros...</Aviso>
+            </div>
           )}
-          <dl className="sice-dashboard__grade">
-            <Estatistica titulo="Alunos" valor={cadastros.alunos} />
-            <Estatistica titulo="Professores" valor={cadastros.professores} />
-            <Estatistica titulo="Turmas" valor={cadastros.turmas} />
-            <Estatistica titulo="Cursos" valor={cadastros.cursos} />
-            <Estatistica titulo="Grupos WhatsApp" valor={cadastros.grupos} />
+          {falhasCadastros.length > 0 && (
+            <Aviso variante="erro" titulo="Dados indisponíveis" role="alert">
+              Não foi possível consultar: {falhasCadastros.join(", ")}. Os valores indisponíveis aparecem como “—”.
+            </Aviso>
+          )}
+          <dl className="sice-dashboard__grade sice-dashboard__grade--cadastros">
+            <Estatistica titulo="Alunos" icone="bi-mortarboard" valor={cadastros.alunos} />
+            <Estatistica titulo="Professores" icone="bi-person-workspace" valor={cadastros.professores} />
+            <Estatistica titulo="Turmas" icone="bi-people" valor={cadastros.turmas} />
+            <Estatistica titulo="Cursos" icone="bi-book" valor={cadastros.cursos} />
+            <Estatistica titulo="Grupos WhatsApp" icone="bi-chat-dots" valor={cadastros.grupos} />
           </dl>
         </section>
       )}
@@ -188,19 +272,26 @@ export default function DashBoardPage() {
         <div className="sice-dashboard__colunas">
           <ListaEventos
             titulo={podeGerenciar ? "Próximos eventos da escola" : "Seus próximos eventos (7 dias)"}
+            icone="bi-calendar-event"
             eventos={podeGerenciar ? resumo.proximos : resumo.proximosSemana}
             gerencia={podeGerenciar}
             vazio={podeGerenciar ? "Nenhum evento futuro encontrado." : "Nenhum evento nos próximos 7 dias."}
           />
           <ListaEventos
             titulo="Cancelamentos nos próximos 7 dias"
+            icone="bi-calendar-x"
             eventos={podeGerenciar ? resumo.cancelados.slice(0, 3) : resumo.cancelados}
             gerencia={podeGerenciar}
             vazio="Nenhum cancelamento nesse período."
+            cancelamentos
           />
         </div>
       )}
-      <p className="sice-dashboard__rodape">Horários e datas considerados no fuso da escola (São Paulo).</p>
+
+      <footer className="sice-dashboard__rodape">
+        <i className="bi bi-clock-history" aria-hidden="true" />
+        Horários e datas considerados no fuso da escola (São Paulo).
+      </footer>
     </main>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type { TurmaFormData } from "../../../../schemas/turmaSchemas";
 import { listarCurso } from "../../../../services/cursoService";
 import { buscarTurmaPorId, editarTurma } from "../../../../services/turmaService";
@@ -7,6 +7,9 @@ import type { Curso } from "../../../../types/curso";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormTurma from "../../../../components/FormTurma/FormTurma";
+
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
 
 export default function EditarTurmasPage() {
     const { id } = useParams();
@@ -40,12 +43,26 @@ export default function EditarTurmasPage() {
         } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível editar a turma.")); }
         finally { setSalvando(false); }
     }
-    return <main>
-        <h1>Editar Turma</h1>
-        <p><Link to="/gerenciarTurmas">Voltar à listagem</Link></p>
-        {carregando ? <p>Carregando turma...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !turma ? <p role="alert">Turma não encontrada.</p> : <>
-            {erro && <p role="alert">{erro}</p>}
-            <FormTurma turma={turma} cursos={cursos} onSubmit={editar} salvando={salvando} />
-        </>}
-    </main>;
+    return (
+        <PaginaFormulario
+            titulo={"Editar turma"}
+            descricao={"Atualize os dados da turma, preservando suas vinculações existentes."}
+            icone="bi-mortarboard"
+            voltarPara={"/gerenciarTurmas"}
+            textoVoltar="Voltar para turmas"
+        >
+            {carregando ? (
+                <div className="sice-pagina-formulario__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando turma...</div>
+            ) : erroCarregamento ? (
+                <Aviso variante="erro" role="alert">{erroCarregamento}</Aviso>
+            ) : !turma ? (
+                <Aviso variante="informacao">Turma não encontrada.</Aviso>
+            ) : (
+                <>
+                    {erro && <Aviso variante="erro" role="alert">{erro}</Aviso>}
+                    <FormTurma turma={turma} cursos={cursos} onSubmit={editar} salvando={salvando} />
+                </>
+            )}
+        </PaginaFormulario>
+    );
 }

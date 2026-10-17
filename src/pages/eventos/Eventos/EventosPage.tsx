@@ -15,8 +15,15 @@ import type { StatusEvento } from "../../../schemas/eventoSchema";
 import { mensagemErroApi } from "../../../utils/erroApi";
 import "./EventosPage.css";
 import { converterEventosParaCalendario } from "../../../utils/calendarioEventos";
+import Aviso from "../../../components/ui/Aviso";
+import Botao from "../../../components/ui/Botao";
+import EtiquetaStatusEvento from "../../../components/ui/EtiquetaStatusEvento";
 
 const TELA_PEQUENA = "(max-width: 899px)";
+
+function mesDaData(data: Date): string {
+    return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}`;
+}
 type VistaDesktop = "dayGridMonth" | "listMonth";
 
 const STATUS: { valor: StatusEvento; descricao: string }[] = [
@@ -47,6 +54,7 @@ export default function EventosPage() {
     const [tentativa, setTentativa] = useState(0);
     const [statusVisiveis, setStatusVisiveis] = useState<StatusEvento[]>(["ATIVO", "CANCELADO", "DESATIVADO"]);
     const [eventoSelecionadoId, setEventoSelecionadoId] = useState<number | null>(null);
+    const [mesExibido, setMesExibido] = useState(() => mesDaData(new Date()));
 
     const recarregar = useCallback(() => setTentativa((atual) => atual + 1), []);
 
@@ -101,6 +109,10 @@ export default function EventosPage() {
         [eventosFiltrados]
     );
     const eventoSelecionado = eventosFiltrados.find((evento) => evento.id === eventoSelecionadoId) ?? null;
+    const quantidadeNoMes = useMemo(
+        () => eventosFiltrados.filter((evento) => evento.dataInicio.slice(0, 7) === mesExibido).length,
+        [eventosFiltrados, mesExibido]
+    );
 
     function alternarStatus(status: StatusEvento, visivel: boolean) {
         setStatusVisiveis((atuais) => visivel
@@ -124,51 +136,84 @@ export default function EventosPage() {
 
     return (
         <main className="sice-calendario">
-            <div className="sice-calendario__cabecalho">
-                <div>
-                    <h1>Calendário escolar</h1>
-                    <p>{podeGerenciar
-                        ? "Acompanhe todos os eventos e selecione um dia para cadastrar um novo."
-                        : "Veja os eventos destinados a você e consulte seus detalhes."}</p>
+            <header className="sice-calendario__cabecalho">
+                <div className="sice-calendario__identidade">
+                    <span className="sice-calendario__icone-pagina" aria-hidden="true">
+                        <i className="bi bi-calendar3" />
+                    </span>
+                    <div className="sice-calendario__titulos">
+                        <h1>Calendário escolar</h1>
+                        <p>{podeGerenciar
+                            ? "Acompanhe os eventos da instituição. Selecione um dia na grade para cadastrar um novo evento."
+                            : "Consulte os eventos destinados a você e veja os detalhes de cada um."}</p>
+                    </div>
                 </div>
                 {podeGerenciar && (
-                    <div className="sice-calendario__acoes">
-                        <Link to="/gerenciarEventos">Gerenciar eventos</Link>
-                        <Link to="/cadastrarEventos">Cadastrar evento</Link>
-                    </div>
+                    <nav className="sice-calendario__acoes" aria-label="Gerenciamento dos eventos">
+                        <Link className="sice-calendario__link sice-calendario__link--secundario" to="/gerenciarEventos">
+                            <i className="bi bi-list-ul" aria-hidden="true" /> Gerenciar eventos
+                        </Link>
+                        <Link className="sice-calendario__link sice-calendario__link--primario" to="/cadastrarEventos">
+                            <i className="bi bi-plus-lg" aria-hidden="true" /> Cadastrar evento
+                        </Link>
+                    </nav>
                 )}
-            </div>
+            </header>
 
-            <fieldset className="sice-calendario__filtros">
-                <legend>Status dos eventos</legend>
-                {STATUS.filter(({ valor }) => podeGerenciar || valor !== "DESATIVADO").map(({ valor, descricao }) => (
-                    <label key={valor} className="sice-calendario__filtro">
-                        <input
-                            type="checkbox"
-                            checked={statusVisiveis.includes(valor)}
-                            onChange={(e) => alternarStatus(valor, e.target.checked)}
-                        />
-                        <span className={`sice-calendario__indicador sice-calendario__indicador--${valor.toLowerCase()}`} />
-                        {descricao}
-                    </label>
-                ))}
-            </fieldset>
+            <section className="sice-calendario__painel" aria-labelledby="sice-calendario-filtros-titulo">
+                <div className="sice-calendario__painel-topo">
+                    <div>
+                        <h2 id="sice-calendario-filtros-titulo"><i className="bi bi-funnel" aria-hidden="true" /> Filtrar eventos</h2>
+                        <p>Escolha quais situações deseja visualizar no calendário.</p>
+                    </div>
+                </div>
+                <fieldset className="sice-calendario__filtros">
+                    <legend className="sice-calendario__legenda">Status dos eventos</legend>
+                    {STATUS.filter(({ valor }) => podeGerenciar || valor !== "DESATIVADO").map(({ valor, descricao }) => (
+                        <label
+                            key={valor}
+                            className={`sice-calendario__filtro ${statusVisiveis.includes(valor) ? "sice-calendario__filtro--selecionado" : ""}`}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={statusVisiveis.includes(valor)}
+                                onChange={(e) => alternarStatus(valor, e.target.checked)}
+                            />
+                            <span className={`sice-calendario__indicador sice-calendario__indicador--${valor.toLowerCase()}`} aria-hidden="true" />
+                            <span>{descricao}</span>
+                        </label>
+                    ))}
+                </fieldset>
+            </section>
 
             {erro && (
-                <div role="alert" className="sice-calendario__alerta">
+                <Aviso variante="erro" role="alert" titulo="Não foi possível carregar os eventos">
                     <p>{erro}</p>
-                    <button type="button" onClick={recarregar}>Tentar novamente</button>
-                </div>
+                    <div className="sice-calendario__alerta-acoes">
+                        <Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={recarregar}>Tentar novamente</Botao>
+                    </div>
+                </Aviso>
             )}
 
             {carregando ? (
-                <p role="status">Carregando eventos do calendário...</p>
+                <div className="sice-calendario__carregando" role="status">
+                    <i className="bi bi-hourglass-split" aria-hidden="true" /> Carregando eventos do calendário...
+                </div>
             ) : !erro && (
-                <>
-                    <p className="sice-calendario__contagem" role="status">
-                        {eventosFiltrados.length} {eventosFiltrados.length === 1 ? "evento encontrado" : "eventos encontrados"} nos filtros (todos os meses).
-                        {eventosFiltrados.length === 0 && " Não há eventos com os filtros selecionados."}
-                    </p>
+                <section className="sice-calendario__painel sice-calendario__painel--agenda" aria-label="Agenda de eventos">
+                    <div className="sice-calendario__resumo" role="status">
+                        <div className="sice-calendario__resumo-identidade">
+                            <span className="sice-calendario__resumo-icone" aria-hidden="true"><i className="bi bi-calendar-check" /></span>
+                            <div>
+                                <strong>{quantidadeNoMes} {quantidadeNoMes === 1 ? "evento neste mês" : "eventos neste mês"}</strong>
+                                <p>Considerando os filtros selecionados.</p>
+                            </div>
+                        </div>
+                        <span className="sice-calendario__resumo-vistas">
+                            <i className={`bi ${telaPequena ? "bi-list-ul" : "bi-calendar3"}`} aria-hidden="true" />
+                            {telaPequena ? "Lista mensal" : "Mês ou lista"}
+                        </span>
+                    </div>
                     <div className="sice-calendario__quadro">
                         <FullCalendar
                             ref={calendarioRef}
@@ -182,6 +227,10 @@ export default function EventosPage() {
                             }}
                             buttonText={{ month: "Mês", list: "Lista", today: "Hoje" }}
                             noEventsContent="Nenhum evento encontrado neste mês."
+                            datesSet={({ view }) => {
+                                const mesAtual = mesDaData(view.currentStart);
+                                setMesExibido((anterior) => anterior === mesAtual ? anterior : mesAtual);
+                            }}
                             viewDidMount={({ view }) => {
                                 if (!telaPequena && (view.type === "dayGridMonth" || view.type === "listMonth")) {
                                     ultimaVistaDesktopRef.current = view.type;
@@ -201,35 +250,70 @@ export default function EventosPage() {
                             }}
                         />
                     </div>
-                    <p className="sice-calendario__nota">Os horários representam o início dos eventos. O SICE ainda não registra horário de término.</p>
-
-                    <dialog
-                        ref={detalhesRef}
-                        className="sice-calendario__dialog"
-                        aria-labelledby="titulo-evento-selecionado"
-                        onClose={() => setEventoSelecionadoId(null)}
-                    >
-                        {eventoSelecionado && (
-                            <section className="sice-calendario__detalhe">
-                                <h2 id="titulo-evento-selecionado">{eventoSelecionado.titulo}</h2>
-                                <p><strong>Data:</strong> {formatarData(eventoSelecionado.dataInicio)}</p>
-                                <p><strong>Horário:</strong> {eventoSelecionado.horaInicio.slice(0, 5)}</p>
-                                <p><strong>Status:</strong> {eventoSelecionado.status}</p>
-                                <p><strong>Descrição:</strong> {eventoSelecionado.descricao}</p>
-                                {podeGerenciar && (
-                                    <div className="sice-calendario__acoes">
-                                        <Link to={`/eventos/${eventoSelecionado.id}`}>Ver detalhes completos</Link>
-                                        <Link to={`/editarEventos/${eventoSelecionado.id}`}>Editar evento</Link>
-                                    </div>
-                                )}
-                            </section>
-                        )}
-                        <form method="dialog">
-                            <button type="submit">Fechar</button>
-                        </form>
-                    </dialog>
-                </>
+                    <p className="sice-calendario__nota">
+                        <i className="bi bi-info-circle" aria-hidden="true" />
+                        Os horários indicam o início dos eventos. O SICE ainda não registra horário de término.
+                    </p>
+                </section>
             )}
+
+            <dialog
+                ref={detalhesRef}
+                className="sice-calendario__dialog"
+                aria-labelledby="titulo-evento-selecionado"
+                aria-describedby="sice-calendario-detalhe-texto"
+                onClose={() => setEventoSelecionadoId(null)}
+            >
+                {eventoSelecionado && (
+                    <article className="sice-calendario__detalhe">
+                        <div className="sice-calendario__detalhe-topo">
+                            <span className="sice-calendario__detalhe-icone" aria-hidden="true"><i className="bi bi-calendar-event" /></span>
+                            <div className="sice-calendario__detalhe-titulos">
+                                <span className="sice-calendario__detalhe-sobretitulo">Evento escolar</span>
+                                <h2 id="titulo-evento-selecionado">{eventoSelecionado.titulo}</h2>
+                            </div>
+                            <button
+                                type="button"
+                                className="sice-calendario__dialog-fechar"
+                                onClick={() => detalhesRef.current?.close()}
+                                aria-label="Fechar detalhes do evento"
+                            ><i className="bi bi-x-lg" aria-hidden="true" /></button>
+                        </div>
+                        <div className="sice-calendario__detalhe-status">
+                            <EtiquetaStatusEvento status={eventoSelecionado.status} />
+                        </div>
+                        <dl className="sice-calendario__dados">
+                            <div className="sice-calendario__dado">
+                                <dt><i className="bi bi-calendar3" aria-hidden="true" /> Data</dt>
+                                <dd>{formatarData(eventoSelecionado.dataInicio)}</dd>
+                            </div>
+                            <div className="sice-calendario__dado">
+                                <dt><i className="bi bi-clock" aria-hidden="true" /> Horário</dt>
+                                <dd>{eventoSelecionado.horaInicio.slice(0, 5)}</dd>
+                            </div>
+                        </dl>
+                        <section className="sice-calendario__descricao">
+                            <h3>Descrição</h3>
+                            <p id="sice-calendario-detalhe-texto">{eventoSelecionado.descricao}</p>
+                        </section>
+                        <footer className="sice-calendario__detalhe-acoes">
+                            {podeGerenciar && (
+                                <>
+                                    <Link className="sice-calendario__link sice-calendario__link--secundario" to={`/eventos/${eventoSelecionado.id}`}>
+                                        <i className="bi bi-eye" aria-hidden="true" /> Ver detalhes completos
+                                    </Link>
+                                    <Link className="sice-calendario__link sice-calendario__link--primario" to={`/editarEventos/${eventoSelecionado.id}`}>
+                                        <i className="bi bi-pencil-square" aria-hidden="true" /> Editar evento
+                                    </Link>
+                                </>
+                            )}
+                            <form method="dialog" className="sice-calendario__fechar-rodape">
+                                <Botao type="submit" variante="secundario" icone="bi-x-lg">Fechar</Botao>
+                            </form>
+                        </footer>
+                    </article>
+                )}
+            </dialog>
         </main>
     );
 }

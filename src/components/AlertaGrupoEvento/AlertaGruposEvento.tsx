@@ -3,6 +3,7 @@ import type { EventoFormData } from "../../schemas/eventoSchema";
 import { verificarGruposDoEvento } from "../../services/eventoService";
 import type { Turma } from "../../types/turmas";
 import type { VerificacaoGruposEvento } from "../../types/evento";
+import Aviso from "../ui/Aviso";
 
 type Props = {
     destinos: EventoFormData["destinos"];
@@ -40,10 +41,10 @@ export default function AlertaGruposEvento({ destinos, turmas }: Props) {
     // A resposta de outros destinatários nunca deve aparecer durante uma nova verificação.
     if (destinosValidos.length === 0) return null;
     if (!estado || estado.assinatura !== assinatura) {
-        return <p role="status">Verificando grupos de WhatsApp disponíveis...</p>;
+        return <Aviso variante="informacao" role="status">Verificando grupos de WhatsApp disponíveis...</Aviso>;
     }
     if (estado.tipo === "erro") return (
-        <p role="status">Não foi possível verificar os grupos de WhatsApp agora. O evento ainda pode ser salvo.</p>
+        <Aviso variante="alerta" role="status">Não foi possível verificar os grupos de WhatsApp agora. O evento ainda pode ser salvo.</Aviso>
     );
     const { totalGruposAtivos, destinosSemGrupo } = estado.dados;
     if (destinosSemGrupo.length === 0) return null;
@@ -58,10 +59,9 @@ export default function AlertaGruposEvento({ destinos, turmas }: Props) {
     }
 
     return (
-        <div role="alert" style={{ border: "1px solid #c4892e", padding: "12px", margin: "12px 0" }}>
-            <strong>{totalGruposAtivos === 0
+        <Aviso role="alert" variante="alerta" titulo={totalGruposAtivos === 0
                 ? "Nenhum grupo de WhatsApp disponível para os destinatários"
-                : "Alguns destinatários estão sem grupo de WhatsApp"}</strong>
+                : "Alguns destinatários estão sem grupo de WhatsApp"}>
             <p>Não há grupo ativo correspondente a:</p>
             <ul>
                 {destinosSemGrupo.map((destino, index) => (
@@ -74,6 +74,6 @@ export default function AlertaGruposEvento({ destinos, turmas }: Props) {
                 Você pode salvar o evento normalmente. Se esses grupos continuarem indisponíveis
                 no momento do processamento, eles não receberão avisos pelo WhatsApp.
             </p>
-        </div>
+        </Aviso>
     );
 }

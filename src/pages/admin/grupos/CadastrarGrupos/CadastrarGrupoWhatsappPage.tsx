@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import type { GrupoWhatsappFormData } from "../../../../schemas/grupoWhatsappSchema";
 import { cadastrarGrupo } from "../../../../services/grupoWhatsappService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormGrupoWhatsapp from "../../../../components/FormGrupo/FormGrupoWhatsapp";
+
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
 
 export default function CadastrarGrupoWhatsappPage() {
     const navigate = useNavigate();
@@ -31,12 +34,24 @@ export default function CadastrarGrupoWhatsappPage() {
         } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível cadastrar o grupo. Verifique se já existe outro grupo com esse identificador ou tipo.")); }
         finally { setSalvando(false); }
     }
-    return <main>
-        <h1>Cadastrar Grupo do WhatsApp</h1>
-        <p><Link to="/gerenciarGruposWhatsapp">Voltar à listagem</Link></p>
-        {carregando ? <p>Carregando turmas...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : <>
-            {erro && <p role="alert">{erro}</p>}
-            <FormGrupoWhatsapp turmas={turmas} onSubmit={cadastrar} salvando={salvando} />
-        </>}
-    </main>;
+    return (
+        <PaginaFormulario
+            titulo={"Cadastrar grupo de WhatsApp"}
+            descricao={"Vincule um grupo ao público destinatário correspondente."}
+            icone="bi-whatsapp"
+            voltarPara={"/gerenciarGruposWhatsapp"}
+            textoVoltar="Voltar para grupos"
+        >
+            {carregando ? (
+                <div className="sice-pagina-formulario__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando turmas...</div>
+            ) : erroCarregamento ? (
+                <Aviso variante="erro" role="alert">{erroCarregamento}</Aviso>
+            ) : (
+                <>
+                    {erro && <Aviso variante="erro" role="alert">{erro}</Aviso>}
+                    <FormGrupoWhatsapp turmas={turmas} onSubmit={cadastrar} salvando={salvando} />
+                </>
+            )}
+        </PaginaFormulario>
+    );
 }

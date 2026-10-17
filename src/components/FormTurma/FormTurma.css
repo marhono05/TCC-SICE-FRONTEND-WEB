@@ -1,0 +1,12 @@
+.sice-turma-form { width: 100%; max-width: 1050px; color: #171d28; }
+.sice-turma-form__fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.sice-turma-form__fieldset:disabled { opacity: .75; }
+.sice-turma-form .sice-secao-formulario + .sice-secao-formulario { margin-top: 1.2rem; }
+.sice-turma-form__grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+.sice-turma-form__grupos { display: grid; gap: 1.3rem; }
+.sice-turma-form__acoes { display: flex; justify-content: flex-end; padding: 1.25rem 0 0; }
+.sice-turma-form__acoes .sice-botao { min-width: 160px; }
+@media (max-width: 680px) {
+    .sice-turma-form__grade { grid-template-columns: 1fr; }
+    .sice-turma-form__acoes .sice-botao { width: 100%; }
+}

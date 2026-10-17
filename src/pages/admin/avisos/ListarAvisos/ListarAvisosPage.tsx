@@ -8,14 +8,14 @@ import type { Evento } from "../../../../types/evento";
 import type { PaginaEnvios, StatusEnvioAviso } from "../../../../types/envioAviso";
 import { formatarDataAviso, hojeNaEscola } from "../../../../utils/datasAvisos";
 import { mensagemErroApi } from "../../../../utils/erroApi";
-import "./avisos.css";
+import CabecalhoListagem from "../../../../components/ui/CabecalhoListagem";
+import Botao from "../../../../components/ui/Botao";
+import Aviso from "../../../../components/ui/Aviso";
+import EtiquetaStatusAviso from "../../../../components/ui/EtiquetaStatusAviso";
 import ComunicacoesCancelamentoPainel from "../../../../components/ComunicacoesCancelamento/ComunicacoesCancelamentoPainel";
+import "./avisos.css";
 
 type Aba = "envios" | "programados" | "cancelamentos";
-
-const STATUS: Record<StatusEnvioAviso, string> = {
-  PENDENTE: "Pendente", ENVIADO: "Processado pelo bot", ERRO: "Erro", CANCELADO: "Interrompido",
-};
 
 export default function ListarAvisosPage() {
   const [parametros, setParametros] = useSearchParams();
@@ -78,22 +78,26 @@ export default function ListarAvisosPage() {
 
   return (
     <main className="sice-avisos">
-      <h1>Gerenciar avisos</h1>
-      <p>Consulte os registros de comunicação com os grupos de WhatsApp. Esta tela não envia mensagens.</p>
+      <CabecalhoListagem
+        titulo="Central de Avisos"
+        descricao="Consulte as comunicações com os grupos de WhatsApp e acompanhe as tentativas. Esta tela não envia mensagens."
+        icone="bi-megaphone"
+      />
 
-      <div className="sice-avisos__abas" role="group" aria-label="Visualização dos avisos">
-        <button type="button" aria-pressed={aba === "envios"} onClick={() => mudarAba("envios")}>Envios registrados</button>
-        <button type="button" aria-pressed={aba === "programados"} onClick={() => mudarAba("programados")}>Programados</button>
-        <button type="button" aria-pressed={aba === "cancelamentos"} onClick={() => mudarAba("cancelamentos")}>Cancelamentos</button>
-      </div>
+      <nav className="sice-avisos__abas" aria-label="Visualização dos avisos">
+        <button className="sice-avisos__aba" type="button" aria-current={aba === "envios" ? "page" : undefined} aria-pressed={aba === "envios"} onClick={() => mudarAba("envios")}> <i className="bi bi-send-check" aria-hidden="true" />Envios registrados</button>
+        <button className="sice-avisos__aba" type="button" aria-current={aba === "programados" ? "page" : undefined} aria-pressed={aba === "programados"} onClick={() => mudarAba("programados")}> <i className="bi bi-calendar-event" aria-hidden="true" />Programados</button>
+        <button className="sice-avisos__aba" type="button" aria-current={aba === "cancelamentos" ? "page" : undefined} aria-pressed={aba === "cancelamentos"} onClick={() => mudarAba("cancelamentos")}> <i className="bi bi-calendar-x" aria-hidden="true" />Cancelamentos</button>
+      </nav>
 
       {aba === "envios" ? (
-        <section aria-label="Envios registrados" className="sice-avisos__secao">
+        <section aria-label="Envios registrados" className="sice-avisos__secao sice-avisos__painel">
+          <div className="sice-avisos__titulo-bloco"><i className="bi bi-send-check" aria-hidden="true" /><div><h2>Envios registrados</h2><p>Pesquise e consulte as operações e suas tentativas.</p></div></div>
           <form className="sice-avisos__filtros" onSubmit={aplicarFiltros}>
-            <label>Buscar evento ou grupo
+            <label className="sice-avisos__campo sice-avisos__campo--busca">Buscar evento ou grupo
               <input type="search" value={buscaDigitada} maxLength={100} onChange={(e) => setBuscaDigitada(e.target.value)} placeholder="Nome do evento ou grupo" />
             </label>
-            <label>Status
+            <label className="sice-avisos__campo">Status
               <select value={statusSelecionado} onChange={(e) => setStatusSelecionado(e.target.value)}>
                 <option value="">Todos</option>
                 <option value="PENDENTE">Pendente</option>
@@ -102,69 +106,99 @@ export default function ListarAvisosPage() {
                 <option value="CANCELADO">Interrompido</option>
               </select>
             </label>
-            <button type="submit">Filtrar</button>
-            <button type="button" onClick={() => {
-              setBuscaDigitada(""); setStatusSelecionado(""); setFiltro({ status: "", busca: "" }); setPagina(0);
-            }}>Limpar</button>
+            <div className="sice-avisos__filtros-acoes">
+              <Botao type="submit" icone="bi-funnel">Filtrar</Botao>
+              <Botao type="button" variante="secundario" icone="bi-x-circle" onClick={() => {
+                setBuscaDigitada(""); setStatusSelecionado(""); setFiltro({ status: "", busca: "" }); setPagina(0);
+              }}>Limpar</Botao>
+            </div>
           </form>
-          <p className="sice-avisos__nota">Um registro corresponde à operação de aviso para um grupo, que pode conter várias tentativas. “Processado pelo bot” não comprova entrega no WhatsApp.</p>
-          {erro && <div role="alert" className="sice-avisos__erro"><p>{erro}</p><button type="button" onClick={() => setAtualizacao((n) => n + 1)}>Tentar novamente</button></div>}
-          {carregando && <p role="status">Carregando envios...</p>}
+          <Aviso variante="informacao">Cada registro é uma operação para um grupo e pode conter várias tentativas. <strong>“Processado pelo bot” não comprova entrega no WhatsApp.</strong></Aviso>
+          {erro && <Aviso variante="erro" titulo="Falha ao carregar envios" role="alert">{erro}<div className="sice-avisos__aviso-acao"><Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => setAtualizacao((n) => n + 1)}>Tentar novamente</Botao></div></Aviso>}
+          {carregando && <p className="sice-avisos__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando envios...</p>}
           {!carregando && !erro && registros && (
             <>
-              <div className="sice-avisos__barra"><p>{registros.total} registro(s) encontrado(s)</p><button type="button" onClick={() => setAtualizacao((n) => n + 1)}>Atualizar</button></div>
-              <div className="sice-avisos__rolagem">
-                <table>
-                  <thead><tr><th>Evento</th><th>Grupo</th><th>Data prevista</th><th>Status</th><th>Tentativas</th><th>Ação</th></tr></thead>
-                  <tbody>
-                    {registros.itens.length === 0 ? (
-                      <tr><td colSpan={6}>Nenhum envio encontrado para os filtros selecionados.</td></tr>
-                    ) : registros.itens.map((envio) => (
-                      <tr key={envio.id}>
-                        <td>{envio.eventoTitulo}</td>
-                        <td>{envio.grupoNome}</td>
-                        <td>{formatarDataAviso(envio.dataAviso)}</td>
-                        <td>{STATUS[envio.status]}</td>
-                        <td>{envio.tentativas}</td>
-                        <td><Link to={`/avisos/envios/${envio.id}`}>Ver detalhes</Link></td>
-                      </tr>
+              <div className="sice-avisos__barra"><p><strong>{registros.total}</strong> registro(s) encontrado(s)</p><Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => setAtualizacao((n) => n + 1)}>Atualizar</Botao></div>
+              {registros.itens.length === 0 ? (
+                <div className="sice-avisos__vazio"><i className="bi bi-inbox" aria-hidden="true" /><strong>Nenhum envio encontrado</strong><p>Tente outros filtros ou consulte outro período.</p></div>
+              ) : (
+                <>
+                  <div className="sice-avisos__rolagem sice-avisos__so-desktop">
+                    <table>
+                      <thead><tr><th>Evento</th><th>Grupo</th><th>Data prevista</th><th>Status</th><th>Tentativas</th><th>Ação</th></tr></thead>
+                      <tbody>{registros.itens.map((envio) => (
+                        <tr key={envio.id}>
+                          <td className="sice-avisos__nome">{envio.eventoTitulo}</td>
+                          <td>{envio.grupoNome}</td>
+                          <td>{formatarDataAviso(envio.dataAviso)}</td>
+                          <td><EtiquetaStatusAviso status={envio.status} /></td>
+                          <td>{envio.tentativas}</td>
+                          <td><Link className="sice-avisos__link-acao" to={`/avisos/envios/${envio.id}`}><i className="bi bi-eye" aria-hidden="true" />Ver detalhes</Link></td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
+                  <div className="sice-avisos__cartoes sice-avisos__so-mobile">
+                    {registros.itens.map((envio) => (
+                      <article key={envio.id} className="sice-avisos__cartao">
+                        <h3>{envio.eventoTitulo}</h3>
+                        <EtiquetaStatusAviso status={envio.status} />
+                        <dl>
+                          <dt>Grupo</dt><dd>{envio.grupoNome}</dd>
+                          <dt>Data prevista</dt><dd>{formatarDataAviso(envio.dataAviso)}</dd>
+                          <dt>Tentativas</dt><dd>{envio.tentativas}</dd>
+                        </dl>
+                        <Link className="sice-avisos__link-acao" to={`/avisos/envios/${envio.id}`}><i className="bi bi-eye" aria-hidden="true" />Ver detalhes</Link>
+                      </article>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+                </>
+              )}
               {registros.totalPaginas > 1 && (
                 <nav className="sice-avisos__paginacao" aria-label="Páginas de envios">
-                  <button type="button" disabled={pagina === 0} onClick={() => setPagina((n) => Math.max(0, n - 1))}>Anterior</button>
+                  <Botao type="button" variante="secundario" icone="bi-chevron-left" disabled={pagina === 0} onClick={() => setPagina((n) => Math.max(0, n - 1))}>Anterior</Botao>
                   <span>Página {registros.pagina + 1} de {registros.totalPaginas}</span>
-                  <button type="button" disabled={pagina + 1 >= registros.totalPaginas} onClick={() => setPagina((n) => n + 1)}>Próxima</button>
+                  <Botao type="button" variante="secundario" icone="bi-chevron-right" disabled={pagina + 1 >= registros.totalPaginas} onClick={() => setPagina((n) => n + 1)}>Próxima</Botao>
                 </nav>
               )}
             </>
           )}
         </section>
       ) : aba === "programados" ? (
-        <section className="sice-avisos__secao" aria-label="Avisos programados">
-          <p className="sice-avisos__nota">Eventos ativos com data de aviso futura. São previsões de agendamento, não confirmações de envio ou de criação de registros por grupo. Envios de hoje e anteriores só aparecem na aba de registros depois que um processamento criar seus registros individuais.</p>
-          {erro && <div role="alert" className="sice-avisos__erro"><p>{erro}</p><button type="button" onClick={() => setAtualizacao((n) => n + 1)}>Tentar novamente</button></div>}
-          {carregando && <p role="status">Carregando programação...</p>}
+        <section className="sice-avisos__secao sice-avisos__painel" aria-label="Avisos programados">
+          <div className="sice-avisos__titulo-bloco"><i className="bi bi-calendar-event" aria-hidden="true" /><div><h2>Programação de avisos</h2><p>Eventos que ainda têm uma data de aviso futura.</p></div></div>
+          <Aviso variante="informacao">Estes são eventos ativos com data de aviso futura. São <strong>previsões de agendamento</strong>, não confirmações de envio ou de criação de registros por grupo. Envios de hoje e anteriores aparecem nos registros somente quando o processamento cria seus registros individuais.</Aviso>
+          {erro && <Aviso variante="erro" titulo="Falha ao carregar programação" role="alert">{erro}<div className="sice-avisos__aviso-acao"><Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => setAtualizacao((n) => n + 1)}>Tentar novamente</Botao></div></Aviso>}
+          {carregando && <p className="sice-avisos__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando programação...</p>}
           {!carregando && !erro && (
             <>
-              <div className="sice-avisos__barra"><p>{programados.length} evento(s) com avisos futuros</p><button type="button" onClick={() => setAtualizacao((n) => n + 1)}>Atualizar</button></div>
-              <div className="sice-avisos__rolagem">
-                <table>
-                  <thead><tr><th>Evento</th><th>Data do aviso</th><th>Data do evento</th><th>Ação</th></tr></thead>
-                  <tbody>{programados.length === 0 ? (
-                    <tr><td colSpan={4}>Nenhum aviso futuro programado.</td></tr>
-                  ) : programados.map((evento) => (
-                    <tr key={evento.id}>
-                      <td>{evento.titulo}</td>
-                      <td>{formatarDataAviso(evento.dataAviso)}</td>
-                      <td>{formatarDataAviso(evento.dataInicio)} às {evento.horaInicio.slice(0, 5)}</td>
-                      <td><Link to={`/eventos/${evento.id}`}>Ver evento</Link></td>
-                    </tr>
-                  ))}</tbody>
-                </table>
-              </div>
+              <div className="sice-avisos__barra"><p><strong>{programados.length}</strong> evento(s) com avisos futuros</p><Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => setAtualizacao((n) => n + 1)}>Atualizar</Botao></div>
+              {programados.length === 0 ? (
+                <div className="sice-avisos__vazio"><i className="bi bi-calendar2-check" aria-hidden="true" /><strong>Nenhum aviso futuro programado</strong><p>Não há eventos com data de aviso futura no momento.</p></div>
+              ) : (
+                <>
+                  <div className="sice-avisos__rolagem sice-avisos__so-desktop"><table>
+                    <thead><tr><th>Evento</th><th>Data do aviso</th><th>Data do evento</th><th>Ação</th></tr></thead>
+                    <tbody>{programados.map((evento) => (
+                      <tr key={evento.id}>
+                        <td className="sice-avisos__nome">{evento.titulo}</td>
+                        <td>{formatarDataAviso(evento.dataAviso)}</td>
+                        <td>{formatarDataAviso(evento.dataInicio)} às {evento.horaInicio.slice(0, 5)}</td>
+                        <td><Link className="sice-avisos__link-acao" to={`/eventos/${evento.id}`}><i className="bi bi-eye" aria-hidden="true" />Ver evento</Link></td>
+                      </tr>
+                    ))}</tbody>
+                  </table></div>
+                  <div className="sice-avisos__cartoes sice-avisos__so-mobile">
+                    {programados.map((evento) => (
+                      <article key={evento.id} className="sice-avisos__cartao">
+                        <h3>{evento.titulo}</h3>
+                        <dl><dt>Data do aviso</dt><dd>{formatarDataAviso(evento.dataAviso)}</dd><dt>Data do evento</dt><dd>{formatarDataAviso(evento.dataInicio)} às {evento.horaInicio.slice(0, 5)}</dd></dl>
+                        <Link className="sice-avisos__link-acao" to={`/eventos/${evento.id}`}><i className="bi bi-eye" aria-hidden="true" />Ver evento</Link>
+                      </article>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
         </section>

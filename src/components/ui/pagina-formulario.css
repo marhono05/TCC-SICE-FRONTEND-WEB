@@ -1,0 +1,101 @@
+/* Estrutura de páginas de cadastro/edição — preserva os cartões dos formulários. */
+.sice-pagina-formulario {
+    display: grid;
+    align-content: start;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 1040px;
+    min-width: 0;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+.sice-pagina-formulario__navegacao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .7rem 1rem;
+    min-width: 0;
+}
+.sice-pagina-formulario__voltar,
+.sice-pagina-formulario__link-auxiliar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    min-height: 44px;
+    padding: .55rem .78rem;
+    border-radius: .7rem;
+    color: #1f4892;
+    font-size: .92rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: background-color .15s ease;
+}
+.sice-pagina-formulario__voltar:hover,
+.sice-pagina-formulario__link-auxiliar:hover { background: #edf2fa; }
+.sice-pagina-formulario__voltar:focus-visible,
+.sice-pagina-formulario__link-auxiliar:focus-visible {
+    outline: 3px solid #1f4892;
+    outline-offset: 2px;
+}
+.sice-pagina-formulario__acao { display: flex; flex-wrap: wrap; gap: .5rem; min-width: 0; }
+.sice-pagina-formulario__cabecalho {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    min-width: 0;
+}
+.sice-pagina-formulario__icone {
+    display: inline-flex;
+    flex: 0 0 52px;
+    justify-content: center;
+    align-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: .9rem;
+    background: #e8eef9;
+    color: #1f4892;
+    font-size: 1.5rem;
+}
+.sice-pagina-formulario__titulos { min-width: 0; }
+.sice-pagina-formulario__titulos h1 {
+    margin: 0 0 .3rem;
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+    line-height: 1.25;
+}
+.sice-pagina-formulario__titulos p {
+    color: #4e5b70;
+    font-size: .95rem;
+    line-height: 1.55;
+}
+.sice-pagina-formulario__conteudo { display: grid; gap: 1.25rem; min-width: 0; }
+.sice-pagina-formulario__conteudo > * { min-width: 0; }
+.sice-pagina-formulario__conteudo > .sice-aviso { width: 100%; }
+.sice-pagina-formulario__carregando {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid #d2d8e1;
+    border-radius: .85rem;
+    background: #fff;
+    color: #34445c;
+}
+.sice-pagina-formulario__carregando .bi { color: #1f4892; font-size: 1.2rem; }
+.sice-pagina-formulario__tentar-novamente { margin-top: .85rem; }
+@media (max-width: 680px) {
+    .sice-pagina-formulario { gap: 1rem; padding-bottom: 1.2rem; }
+    .sice-pagina-formulario__cabecalho { align-items: flex-start; gap: .75rem; }
+    .sice-pagina-formulario__icone { flex-basis: 44px; width: 44px; height: 44px; font-size: 1.25rem; }
+    .sice-pagina-formulario__titulos h1 { font-size: 1.4rem; }
+    .sice-pagina-formulario__titulos p { font-size: .9rem; }
+    .sice-pagina-formulario__navegacao { align-items: flex-start; }
+    .sice-pagina-formulario__acao { width: 100%; }
+    .sice-pagina-formulario__link-auxiliar { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .sice-pagina-formulario__voltar,
+    .sice-pagina-formulario__link-auxiliar { transition: none; }
+}

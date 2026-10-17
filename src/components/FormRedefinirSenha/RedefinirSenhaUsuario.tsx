@@ -5,57 +5,105 @@ import { redefinirSenhaUsuarioSchema, type RedefinirSenhaUsuarioFormData } from 
 import { redefinirSenhaUsuario } from "../../services/usuarioService";
 import type { Usuario } from "../../types/usuario";
 import { mensagemErroApi } from "../../utils/erroApi";
-
+import CampoFormulario from "../ui/CampoFormulario";
+import Botao from "../ui/Botao";
+import Aviso from "../ui/Aviso";
+import SecaoFormulario from "../ui/SecaoFormulario";
+import "./RedefinirSenhaUsuario.css";
 
 type Props = { usuario: Usuario };
 
-/** Formulário separado da edição de dados cadastrais: não envia senha ao salvar usuário. */
+/** Formulário independente: salvar os dados cadastrais nunca envia a senha provisória. */
 export default function RedefinirSenhaUsuario({ usuario }: Props) {
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<RedefinirSenhaUsuarioFormData>({
-    resolver: zodResolver(redefinirSenhaUsuarioSchema),
-    defaultValues: { senhaTemporaria: "", confirmarSenha: "" },
-  });
+    const [erro, setErro] = useState("");
+    const [sucesso, setSucesso] = useState("");
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm<RedefinirSenhaUsuarioFormData>({
+        resolver: zodResolver(redefinirSenhaUsuarioSchema),
+        defaultValues: { senhaTemporaria: "", confirmarSenha: "" }
+    });
 
-  async function salvar(dados: RedefinirSenhaUsuarioFormData) {
-    if (!window.confirm(`Redefinir a senha de ${usuario.nome}? O usuário precisará alterá-la no próximo acesso.`)) return;
-    setErro("");
-    setSucesso("");
-    try {
-      await redefinirSenhaUsuario(usuario.id, dados.senhaTemporaria);
-      reset();
-      setSucesso("Senha provisória definida. O usuário deverá alterá-la no próximo acesso.");
-    } catch (falha) {
-      setErro(mensagemErroApi(falha, "Não foi possível redefinir a senha do usuário."));
+    async function salvar(dados: RedefinirSenhaUsuarioFormData) {
+        if (!window.confirm(`Redefinir a senha de ${usuario.nome}? O usuário precisará alterá-la no próximo acesso.`)) return;
+        setErro("");
+        setSucesso("");
+        try {
+            await redefinirSenhaUsuario(usuario.id, dados.senhaTemporaria);
+            reset();
+            setSucesso("Senha provisória definida. O usuário deverá alterá-la no próximo acesso.");
+        } catch (falha) {
+            setErro(mensagemErroApi(falha, "Não foi possível redefinir a senha do usuário."));
+        }
     }
-  }
 
-  return (
-    <section aria-labelledby="redefinicao-senha-titulo">
-      <h2 id="redefinicao-senha-titulo">Redefinir senha</h2>
-      <p>Defina uma senha provisória para {usuario.nome}. Ela deverá ser alterada no próximo login.</p>
-      {!usuario.ativo && <p>Esta conta está desativada. A redefinição da senha não irá reativá-la.</p>}
-      <form onSubmit={handleSubmit(salvar)} noValidate>
-        <div>
-          <label htmlFor="senhaTemporaria">Senha provisória</label>
-          <input id="senhaTemporaria" type="password" autoComplete="new-password"
-            disabled={isSubmitting} aria-invalid={!!errors.senhaTemporaria} {...register("senhaTemporaria")} />
-          {errors.senhaTemporaria && <p role="alert">{errors.senhaTemporaria.message}</p>}
+    return (
+        <div className="sice-senha-usuario">
+            <SecaoFormulario
+                id="redefinicao-senha-titulo"
+                titulo="Redefinir senha"
+                descricao={`Defina uma senha provisória para ${usuario.nome}. Ela deverá ser alterada no próximo login.`}
+                icone="bi-key"
+            >
+                {!usuario.ativo && (
+                    <Aviso variante="alerta" titulo="Conta desativada" className="sice-senha-usuario__mensagem">
+                        A redefinição da senha não irá reativar esta conta.
+                    </Aviso>
+                )}
+                <form onSubmit={handleSubmit(salvar)} noValidate>
+                    <fieldset className="sice-senha-usuario__fieldset" disabled={isSubmitting}>
+                        <div className="sice-senha-usuario__grade">
+                            <CampoFormulario
+                                id="senhaTemporaria"
+                                rotulo="Senha provisória"
+                                obrigatorio
+                                erro={errors.senhaTemporaria?.message}
+                                ajuda="Mínimo de 6 caracteres."
+                            >
+                                <input
+                                    id="senhaTemporaria"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    className="sice-campo__controle"
+                                    aria-invalid={Boolean(errors.senhaTemporaria)}
+                                    aria-describedby={`senhaTemporaria-ajuda${errors.senhaTemporaria ? " senhaTemporaria-erro" : ""}`}
+                                    {...register("senhaTemporaria")}
+                                />
+                            </CampoFormulario>
+                            <CampoFormulario
+                                id="confirmarSenhaRedefinida"
+                                rotulo="Confirmar senha provisória"
+                                obrigatorio
+                                erro={errors.confirmarSenha?.message}
+                            >
+                                <input
+                                    id="confirmarSenhaRedefinida"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    className="sice-campo__controle"
+                                    aria-invalid={Boolean(errors.confirmarSenha)}
+                                    aria-describedby={errors.confirmarSenha ? "confirmarSenhaRedefinida-erro" : undefined}
+                                    {...register("confirmarSenha")}
+                                />
+                            </CampoFormulario>
+                        </div>
+                        {erro && <Aviso variante="erro" role="alert" className="sice-senha-usuario__mensagem">{erro}</Aviso>}
+                        {sucesso && <Aviso variante="sucesso" role="status" className="sice-senha-usuario__mensagem">{sucesso}</Aviso>}
+                        <p className="sice-senha-usuario__orientacao">
+                            <i className="bi bi-shield-lock" aria-hidden="true" />
+                            Entregue a senha provisória ao usuário por um meio privado.
+                        </p>
+                        <div className="sice-senha-usuario__acoes">
+                            <Botao type="submit" icone="bi-key" disabled={isSubmitting}>
+                                {isSubmitting ? "Redefinindo..." : "Redefinir senha"}
+                            </Botao>
+                        </div>
+                    </fieldset>
+                </form>
+            </SecaoFormulario>
         </div>
-        <div>
-          <label htmlFor="confirmarSenhaRedefinida">Confirmar senha provisória</label>
-          <input id="confirmarSenhaRedefinida" type="password" autoComplete="new-password"
-            disabled={isSubmitting} aria-invalid={!!errors.confirmarSenha} {...register("confirmarSenha")} />
-          {errors.confirmarSenha && <p role="alert">{errors.confirmarSenha.message}</p>}
-        </div>
-        {erro && <p role="alert">{erro}</p>}
-        {sucesso && <p role="status">{sucesso}</p>}
-        <p><small>Mínimo de 6 caracteres. Entregue a senha provisória ao usuário por um meio privado.</small></p>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Redefinindo..." : "Redefinir senha"}
-        </button>
-      </form>
-    </section>
-  );
+    );
 }

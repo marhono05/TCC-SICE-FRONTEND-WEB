@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { buscarEventoPorId, editarEvento } from "../../../../services/eventoService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { EditarEvento, Evento } from "../../../../types/evento";
@@ -7,6 +7,10 @@ import type { Turma } from "../../../../types/turmas";
 import type { EventoFormData } from "../../../../schemas/eventoSchema";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormEvento from "../../../../components/FormEvento/FormEvento";
+
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
+import Botao from "../../../../components/ui/Botao";
 
 export default function EditarEventosPage() {
     const { id } = useParams();
@@ -71,24 +75,30 @@ export default function EditarEventosPage() {
     }
 
     return (
-        <main>
-            <h1>Editar evento</h1>
-            <p><Link to="/gerenciarEventos">Voltar para a listagem</Link></p>
-            {!idValido && <p role="alert">Identificador de evento inválido.</p>}
-            {idValido && loading && <p role="status">Carregando evento...</p>}
+        <PaginaFormulario
+            titulo={"Editar evento"}
+            descricao={"Atualize as informações e os destinatários do evento escolar."}
+            icone="bi-calendar-event"
+            voltarPara={"/gerenciarEventos"}
+            textoVoltar="Voltar para eventos"
+        >
+            {!idValido && <Aviso variante="erro" role="alert">Identificador de evento inválido.</Aviso>}
+            {idValido && loading && <div className="sice-pagina-formulario__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando evento...</div>}
             {idValido && !loading && erroCarregamento && (
-                <div role="alert">
-                    <p>{erroCarregamento}</p>
-                    <button type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button>
-                </div>
+                <Aviso variante="erro" role="alert">
+                    {erroCarregamento}
+                    <div className="sice-pagina-formulario__tentar-novamente">
+                        <Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</Botao>
+                    </div>
+                </Aviso>
             )}
-            {idValido && !loading && !erroCarregamento && !evento && <p>Evento não encontrado.</p>}
+            {idValido && !loading && !erroCarregamento && !evento && <Aviso variante="informacao">Evento não encontrado.</Aviso>}
             {idValido && !loading && !erroCarregamento && evento && (
                 <>
-                    {erroEdicao && <p role="alert">{erroEdicao}</p>}
+                    {erroEdicao && <Aviso variante="erro" role="alert">{erroEdicao}</Aviso>}
                     <FormEvento evento={evento} turmas={turmas} onSubmit={editar} salvando={salvando} />
                 </>
             )}
-        </main>
+        </PaginaFormulario>
     );
 }

@@ -9,6 +9,14 @@ import type { Usuario } from "../../../../types/usuario";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import type { Matricula } from "../../../../types/matricula";
 import { listarMatriculasAluno, adicionarMatriculaAluno, alterarStatusMatriculaAluno } from "../../../../services/matriculaService";
+import CabecalhoListagem from "../../../../components/ui/CabecalhoListagem";
+import SecaoFormulario from "../../../../components/ui/SecaoFormulario";
+import DadoDetalhe from "../../../../components/ui/DadoDetalhe";
+import Botao from "../../../../components/ui/Botao";
+import Aviso from "../../../../components/ui/Aviso";
+import EtiquetaStatus from "../../../../components/ui/EtiquetaStatus";
+import "../../../../components/ui/detalhes-ui.css";
+
 
 const etapas: Record<string, string> = { PRIMEIRA: "1ª etapa", SEGUNDA: "2ª etapa", TERCEIRA: "3ª etapa" };
 const modalidades: Record<string, string> = { MEDIO: "Ensino Médio", TECNICO: "Ensino Técnico" };
@@ -101,67 +109,114 @@ export default function DetalhesAlunoPage() {
         } finally { setProcessando(null); }
     }
 
-    return <main>
-        <h1>Detalhes do Aluno</h1>
-        <p><Link to="/gerenciarUsuarios/ALUNO">Voltar à listagem de alunos</Link></p>
-        {!idValido && <p role="alert">Identificador do aluno inválido.</p>}
-        {idValido && carregando && <p role="status">Carregando informações do aluno...</p>}
-        {idValido && !carregando && erroCarregamento && <div role="alert">
-            <p>{erroCarregamento}</p>
-            <button type="button" onClick={() => { setCarregando(true); setErroCarregamento(""); setTentativa(n => n + 1); }}>Tentar novamente</button>
-        </div>}
-        {idValido && !carregando && !erroCarregamento && aluno && <>
-            <section aria-labelledby="dados-aluno">
-                <h2 id="dados-aluno">Informações gerais</h2>
-                <p><strong>Nome:</strong> {aluno.nome}</p>
-                <p><strong>E-mail:</strong> {aluno.email}</p>
-                <p><strong>Identificador:</strong> {aluno.identificador}</p>
-                <p><strong>Status do usuário:</strong> {aluno.ativo ? "Ativo" : "Inativo"}</p>
-                <p><Link to={`/editarUsuario/${aluno.id}`}>Editar dados do aluno</Link></p>
-            </section>
-            <section aria-labelledby="matriculas-aluno">
-                <h2 id="matriculas-aluno">Matrículas do aluno</h2>
-                <p>{totalAtivas} matrícula(s) ativa(s) · {matriculas.length} no histórico</p>
-                {sucesso && <p role="status">{sucesso}</p>}
-                {erroAcao && <p role="alert">{erroAcao}</p>}
-                <table>
-                    <thead><tr><th scope="col">Turma / curso</th><th scope="col">Ano</th><th scope="col">Etapa</th><th scope="col">Modalidade</th><th scope="col">Matrícula</th><th scope="col">Turma</th><th scope="col">Ação</th></tr></thead>
-                    <tbody>
-                        {matriculas.length === 0 ? <tr><td colSpan={7}>Nenhuma matrícula encontrada.</td></tr> :
-                            matriculas.map(matricula => <tr key={matricula.id}>
-                                <td>{matricula.cursoNome}</td>
-                                <td>{matricula.anoLetivo}</td>
-                                <td>{etapas[matricula.etapa] ?? matricula.etapa}</td>
-                                <td>{modalidades[matricula.modalidade] ?? matricula.modalidade}</td>
-                                <td>{matricula.ativo ? "Ativa" : "Inativa"}</td>
-                                <td>{matricula.turmaAtiva && matricula.cursoAtivo ? "Disponível" : "Turma/curso inativo"}</td>
-                                <td>
-                                    <button type="button"
-                                        disabled={processando !== null || (!matricula.ativo && (!matricula.turmaAtiva || !matricula.cursoAtivo))}
-                                        title={!matricula.ativo && (!matricula.turmaAtiva || !matricula.cursoAtivo) ? "Ative a turma e o curso antes de reativar a matrícula." : undefined}
-                                        onClick={() => void mudarStatus(matricula)}>
-                                        {processando === String(matricula.id) ? "Atualizando..." : matricula.ativo ? "Desativar" : "Ativar"}
-                                    </button>
-                                </td>
-                            </tr>)}
-                    </tbody>
-                </table>
-                {totalAtivas === 0 && <p>Este aluno não possui matrículas ativas no momento. As matrículas anteriores continuam no histórico.</p>}
-            </section>
-            <section aria-labelledby="nova-matricula">
-                <h2 id="nova-matricula">Adicionar matrícula</h2>
-                <p>Para uma matrícula anterior, utilize o botão <strong>Ativar</strong> na tabela. O histórico não é apagado.</p>
-                {erroTurmas && <p role="alert">{erroTurmas} <button type="button" onClick={() => { setErroTurmas(""); setTentativa(n => n + 1); }}>Tentar novamente</button></p>}
-                {!erroTurmas && turmasDisponiveis.length === 0 && <p>Não há turmas ativas disponíveis para uma nova matrícula.</p>}
-                {!erroTurmas && turmasDisponiveis.length > 0 && <form onSubmit={event => { event.preventDefault(); void adicionar(); }}>
-                    <label htmlFor="turma-nova-matricula">Turma</label>{" "}
-                    <select id="turma-nova-matricula" value={turmaSelecionada} onChange={event => setTurmaSelecionada(event.target.value)} required disabled={processando !== null}>
-                        <option value="">Selecione uma turma</option>
-                        {turmasDisponiveis.map(turma => <option key={turma.id} value={turma.id}>{descricaoTurma(turma)}</option>)}
-                    </select>{" "}
-                    <button type="submit" disabled={!turmaSelecionada || processando !== null}>{processando === "adicionar" ? "Adicionando..." : "Adicionar matrícula"}</button>
-                </form>}
-            </section>
-        </>}
-    </main>;
+    return (
+        <main className="sice-detalhes">
+            <CabecalhoListagem
+                titulo="Detalhes do aluno"
+                descricao="Informações do aluno e histórico de matrículas."
+                icone="bi-person-vcard"
+                acao={<Link className="sice-detalhes__voltar" to="/gerenciarUsuarios/ALUNO"><i className="bi bi-arrow-left" aria-hidden="true" /> Voltar aos alunos</Link>}
+            />
+            {!idValido && <Aviso variante="erro" role="alert">Identificador do aluno inválido.</Aviso>}
+            {idValido && carregando && <p className="sice-detalhes__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" /> Carregando informações do aluno...</p>}
+            {idValido && !carregando && erroCarregamento && (
+                <Aviso variante="erro" role="alert" titulo="Erro ao carregar aluno">
+                    <p>{erroCarregamento}</p>
+                    <div className="sice-detalhes__aviso-acoes"><Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => { setCarregando(true); setErroCarregamento(""); setTentativa(n => n + 1); }}>Tentar novamente</Botao></div>
+                </Aviso>
+            )}
+            {idValido && !carregando && !erroCarregamento && !aluno && <Aviso variante="informacao">Aluno não encontrado.</Aviso>}
+            {idValido && !carregando && !erroCarregamento && aluno && (
+                <div className="sice-detalhes__corpo">
+                    <SecaoFormulario id="dados-aluno" titulo="Informações gerais" descricao="Dados cadastrais do aluno." icone="bi-person-lines-fill">
+                        <div className="sice-detalhes__destaque">
+                            <div className="sice-detalhes__destaque-texto"><h3>{aluno.nome}</h3><p>Usuário #{aluno.id}</p></div>
+                            <EtiquetaStatus ativo={aluno.ativo} />
+                        </div>
+                        <dl className="sice-detalhes__dados">
+                            <DadoDetalhe rotulo="E-mail">{aluno.email || "—"}</DadoDetalhe>
+                            <DadoDetalhe rotulo="Identificador">{aluno.identificador}</DadoDetalhe>
+                        </dl>
+                        <div className="sice-detalhes__acoes sice-detalhes__acoes--separadas">
+                            <Link className="sice-detalhes__link" to={`/editarUsuario/${aluno.id}`}><i className="bi bi-pencil-square" aria-hidden="true" /> Editar dados do aluno</Link>
+                        </div>
+                    </SecaoFormulario>
+                    <SecaoFormulario id="matriculas-aluno" titulo="Matrículas do aluno" descricao="As matrículas inativas permanecem no histórico." icone="bi-journal-bookmark">
+                        <div className="sice-detalhes__resumo">
+                            <span><strong>{totalAtivas}</strong> ativa(s)</span>
+                            <span><strong>{matriculas.length}</strong> no histórico</span>
+                        </div>
+                        {sucesso && <Aviso variante="sucesso" role="status">{sucesso}</Aviso>}
+                        {erroAcao && <Aviso variante="erro" role="alert">{erroAcao}</Aviso>}
+                        {matriculas.length === 0 ? (
+                            <div className="sice-detalhes__vazio"><i className="bi bi-inbox" aria-hidden="true" /><p>Nenhuma matrícula encontrada.</p></div>
+                        ) : (
+                            <>
+                                <div className="sice-detalhes__tabela-container">
+                                    <table className="sice-detalhes__tabela">
+                                        <thead><tr><th scope="col">Turma / curso</th><th scope="col">Ano</th><th scope="col">Etapa</th><th scope="col">Modalidade</th><th scope="col">Matrícula</th><th scope="col">Turma</th><th scope="col">Ação</th></tr></thead>
+                                        <tbody>{matriculas.map(matricula => (
+                                            <tr key={matricula.id}>
+                                                <td className="sice-detalhes__coluna-principal">{matricula.cursoNome}</td>
+                                                <td>{matricula.anoLetivo}</td>
+                                                <td>{etapas[matricula.etapa] ?? matricula.etapa}</td>
+                                                <td>{modalidades[matricula.modalidade] ?? matricula.modalidade}</td>
+                                                <td><EtiquetaStatus ativo={matricula.ativo} rotuloAtivo="Ativa" rotuloInativo="Inativa" /></td>
+                                                <td><EtiquetaStatus ativo={matricula.turmaAtiva && matricula.cursoAtivo} rotuloAtivo="Disponível" rotuloInativo="Turma/curso inativo" /></td>
+                                                <td><Botao type="button" className="sice-detalhes__botao-pequeno" variante={matricula.ativo ? "perigo" : "secundario"} icone={matricula.ativo ? "bi-slash-circle" : "bi-check-circle"}
+                                                    disabled={processando !== null || (!matricula.ativo && (!matricula.turmaAtiva || !matricula.cursoAtivo))}
+                                                    title={!matricula.ativo && (!matricula.turmaAtiva || !matricula.cursoAtivo) ? "Ative a turma e o curso antes de reativar a matrícula." : undefined}
+                                                    onClick={() => void mudarStatus(matricula)}>
+                                                    {processando === String(matricula.id) ? "Atualizando..." : matricula.ativo ? "Desativar" : "Ativar"}
+                                                </Botao></td>
+                                            </tr>
+                                        ))}</tbody>
+                                    </table>
+                                </div>
+                                <div className="sice-detalhes__cartoes">
+                                    {matriculas.map(matricula => (
+                                        <article className="sice-detalhes__cartao" key={matricula.id}>
+                                            <div className="sice-detalhes__cartao-topo"><h3>{matricula.cursoNome}</h3><EtiquetaStatus ativo={matricula.ativo} rotuloAtivo="Ativa" rotuloInativo="Inativa" /></div>
+                                            <dl className="sice-detalhes__dados">
+                                                <DadoDetalhe rotulo="Ano">{matricula.anoLetivo}</DadoDetalhe>
+                                                <DadoDetalhe rotulo="Etapa">{etapas[matricula.etapa] ?? matricula.etapa}</DadoDetalhe>
+                                                <DadoDetalhe rotulo="Modalidade">{modalidades[matricula.modalidade] ?? matricula.modalidade}</DadoDetalhe>
+                                                <DadoDetalhe rotulo="Situação da turma"><EtiquetaStatus ativo={matricula.turmaAtiva && matricula.cursoAtivo} rotuloAtivo="Disponível" rotuloInativo="Turma/curso inativo" /></DadoDetalhe>
+                                            </dl>
+                                            <Botao type="button" className="sice-detalhes__acao-cartao" variante={matricula.ativo ? "perigo" : "secundario"} icone={matricula.ativo ? "bi-slash-circle" : "bi-check-circle"}
+                                                disabled={processando !== null || (!matricula.ativo && (!matricula.turmaAtiva || !matricula.cursoAtivo))}
+                                                title={!matricula.ativo && (!matricula.turmaAtiva || !matricula.cursoAtivo) ? "Ative a turma e o curso antes de reativar a matrícula." : undefined}
+                                                onClick={() => void mudarStatus(matricula)}>
+                                                {processando === String(matricula.id) ? "Atualizando..." : matricula.ativo ? "Desativar matrícula" : "Ativar matrícula"}
+                                            </Botao>
+                                        </article>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        {totalAtivas === 0 && <Aviso variante="informacao">Este aluno não possui matrículas ativas no momento. As matrículas anteriores continuam no histórico.</Aviso>}
+                    </SecaoFormulario>
+                    <SecaoFormulario id="nova-matricula" titulo="Adicionar matrícula" descricao="Vincule o aluno a uma nova turma ativa." icone="bi-person-plus">
+                        <Aviso variante="informacao">Para uma matrícula anterior, utilize o botão <strong>Ativar</strong> na tabela ou no cartão. O histórico não é apagado.</Aviso>
+                        {erroTurmas && <Aviso variante="erro" role="alert">{erroTurmas}<div className="sice-detalhes__aviso-acoes"><Botao type="button" variante="secundario" onClick={() => { setErroTurmas(""); setTentativa(n => n + 1); }}>Tentar novamente</Botao></div></Aviso>}
+                        {!erroTurmas && turmasDisponiveis.length === 0 && <Aviso variante="informacao">Não há turmas ativas disponíveis para uma nova matrícula.</Aviso>}
+                        {!erroTurmas && turmasDisponiveis.length > 0 && (
+                            <form className="sice-detalhes__formulario" onSubmit={event => { event.preventDefault(); void adicionar(); }}>
+                                <div className="sice-campo">
+                                    <label className="sice-campo__rotulo" htmlFor="turma-nova-matricula">Turma</label>
+                                    <select className="sice-campo__controle" id="turma-nova-matricula" value={turmaSelecionada} onChange={event => setTurmaSelecionada(event.target.value)} required disabled={processando !== null}>
+                                        <option value="">Selecione uma turma</option>
+                                        {turmasDisponiveis.map(turma => <option key={turma.id} value={turma.id}>{descricaoTurma(turma)}</option>)}
+                                    </select>
+                                </div>
+                                <Botao type="submit" icone="bi-plus-circle" disabled={!turmaSelecionada || processando !== null}>
+                                    {processando === "adicionar" ? "Adicionando..." : "Adicionar matrícula"}
+                                </Botao>
+                            </form>
+                        )}
+                    </SecaoFormulario>
+                </div>
+            )}
+        </main>
+    );
 }

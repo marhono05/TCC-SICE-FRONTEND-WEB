@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import { listarTurma } from "../../../../services/turmaService";
 import { cadastrarEvento } from "../../../../services/eventoService";
@@ -8,6 +8,10 @@ import type { Turma } from "../../../../types/turmas";
 import type { CriarEvento } from "../../../../types/evento";
 import type { EventoFormData } from "../../../../schemas/eventoSchema";
 import FormEvento from "../../../../components/FormEvento/FormEvento";
+
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
+import Botao from "../../../../components/ui/Botao";
 
 export default function CadastrarEventosPage() {
     const navigate = useNavigate();
@@ -63,22 +67,28 @@ export default function CadastrarEventosPage() {
     }
 
     return (
-        <main>
-            <h1>Cadastro de eventos</h1>
-            <p><Link to="/gerenciarEventos">Voltar para a listagem</Link></p>
-            {carregandoTurmas && <p role="status">Carregando turmas...</p>}
+        <PaginaFormulario
+            titulo={"Cadastrar evento"}
+            descricao={"Preencha os dados e defina o público que receberá os avisos do evento."}
+            icone="bi-calendar-plus"
+            voltarPara={"/gerenciarEventos"}
+            textoVoltar="Voltar para eventos"
+        >
+            {carregandoTurmas && <div className="sice-pagina-formulario__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando turmas...</div>}
             {!carregandoTurmas && erroTurmas && (
-                <div role="alert">
-                    <p>{erroTurmas}</p>
-                    <button type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button>
-                </div>
+                <Aviso variante="erro" role="alert">
+                    {erroTurmas}
+                    <div className="sice-pagina-formulario__tentar-novamente">
+                        <Botao type="button" variante="secundario" icone="bi-arrow-clockwise" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</Botao>
+                    </div>
+                </Aviso>
             )}
             {!carregandoTurmas && !erroTurmas && (
                 <>
-                    {erroCadastro && <p role="alert">{erroCadastro}</p>}
+                    {erroCadastro && <Aviso variante="erro" role="alert">{erroCadastro}</Aviso>}
                     <FormEvento turmas={turmas} dataInicial={dataInicial} onSubmit={cadastrar} salvando={salvando} />
                 </>
             )}
-        </main>
+        </PaginaFormulario>
     );
 }

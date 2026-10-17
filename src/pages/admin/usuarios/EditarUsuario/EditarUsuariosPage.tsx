@@ -9,6 +9,9 @@ import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormUsuario from "../../../../components/FormUsuario/FormUsuario";
 import RedefinirSenhaUsuario from "../../../../components/FormRedefinirSenha/RedefinirSenhaUsuario";
 
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
+
 export default function EditarUsuarioPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -47,15 +50,32 @@ export default function EditarUsuarioPage() {
         } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível editar o usuário.")); }
         finally { setSalvando(false); }
     }
-    return <main>
-        <h1>Editar Usuário</h1>
-        {usuario?.perfil === "ALUNO" && <p><Link to={`/alunos/${usuario.id}`}>Ver detalhes e matrículas do aluno</Link></p>}
-        <p><Link to={`/gerenciarUsuarios/${usuario?.perfil ?? "ALUNO"}`}>Voltar à listagem</Link></p>
-        {carregando ? <p>Carregando usuário...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !usuario ? <p role="alert">Usuário não encontrado.</p> : <>
-            {erro && <p role="alert">{erro}</p>}
-            <FormUsuario usuario={usuario} perfil={usuario.perfil} turmas={turmas} onSubmit={editar} salvando={salvando} />
-            <hr />
-            <RedefinirSenhaUsuario usuario={usuario} />
-        </>}
-    </main>;
+    return (
+        <PaginaFormulario
+            titulo={"Editar usuário"}
+            descricao={"Atualize os dados cadastrais. A redefinição de senha fica em uma seção separada."}
+            icone="bi-person-gear"
+            voltarPara={`/gerenciarUsuarios/${usuario?.perfil ?? "ALUNO"}`}
+            textoVoltar="Voltar para usuários"
+            acao={usuario?.perfil === "ALUNO" ? (
+                <Link className="sice-pagina-formulario__link-auxiliar" to={`/alunos/${usuario.id}`}>
+                    <i className="bi bi-mortarboard" aria-hidden="true" />Ver detalhes e matrículas
+                </Link>
+            ) : undefined}
+        >
+            {carregando ? (
+                <div className="sice-pagina-formulario__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando usuário...</div>
+            ) : erroCarregamento ? (
+                <Aviso variante="erro" role="alert">{erroCarregamento}</Aviso>
+            ) : !usuario ? (
+                <Aviso variante="informacao">Usuário não encontrado.</Aviso>
+            ) : (
+                <>
+                    {erro && <Aviso variante="erro" role="alert">{erro}</Aviso>}
+                    <FormUsuario usuario={usuario} perfil={usuario.perfil} turmas={turmas} onSubmit={editar} salvando={salvando} />
+                    <RedefinirSenhaUsuario usuario={usuario} />
+                </>
+            )}
+        </PaginaFormulario>
+    );
 }

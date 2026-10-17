@@ -10,10 +10,8 @@ function nomeDaPagina(pathname: string): string {
   if (pathname.startsWith("/avisos")) return "Central de avisos";
   if (pathname.startsWith("/gerenciarEventos") || pathname.startsWith("/cadastrarEventos")
     || pathname.startsWith("/editarEventos") || pathname.startsWith("/eventos/")) return "Gerenciar eventos";
-  if (pathname.startsWith("/gerenciarUsuarios/ALUNO") || pathname.startsWith("/cadastrarUsuario/ALUNO")
-    || pathname.startsWith("/alunos/")) return "Alunos";
-  if (pathname.startsWith("/gerenciarUsuarios/PROFESSOR") || pathname.startsWith("/cadastrarUsuario/PROFESSOR")) return "Professores";
-  if (pathname.startsWith("/editarUsuario/")) return "Editar usuário";
+  if (pathname.startsWith("/gerenciarUsuarios/") || pathname.startsWith("/cadastrarUsuario/")
+    || pathname.startsWith("/editarUsuario/") || pathname.startsWith("/alunos/")) return "Usuários";
   if (pathname.includes("Turmas") || pathname.startsWith("/turmas/")) return "Turmas";
   if (pathname.includes("Cursos")) return "Cursos";
   if (pathname.includes("GruposWhatsapp") || pathname.startsWith("/grupos-whatsapp/")) return "Grupos de WhatsApp";

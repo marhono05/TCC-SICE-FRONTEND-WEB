@@ -37,12 +37,12 @@ const itensSecretaria: ItemNavegacao[] = [
 
 const itensAdmin: ItemNavegacao[] = [
   {
-    caminho: "/gerenciarUsuarios/ALUNO", rotulo: "Alunos", icone: "people",
-    caminhosRelacionados: ["/cadastrarUsuario/ALUNO", "/alunos/"],
-  },
-  {
-    caminho: "/gerenciarUsuarios/PROFESSOR", rotulo: "Professores", icone: "person-badge",
-    caminhosRelacionados: ["/cadastrarUsuario/PROFESSOR"],
+    // A seção Usuários reúne as abas Alunos, Professores e Secretaria.
+    // O clique abre Alunos; as demais abas permanecem na listagem.
+    caminho: "/gerenciarUsuarios/ALUNO", rotulo: "Usuários", icone: "people",
+    caminhosRelacionados: [
+      "/gerenciarUsuarios/", "/cadastrarUsuario/", "/editarUsuario/", "/alunos/",
+    ],
   },
   {
     caminho: "/gerenciarTurmas", rotulo: "Turmas", icone: "collection",
@@ -70,8 +70,6 @@ function itemEstaAtivo(item: ItemNavegacao, pathname: string): boolean {
   if (item.caminho !== "/eventos" && pathname.startsWith(`${item.caminho}/`)) return true;
   // A rota /eventos/:id pertence à gestão; /eventos sozinho é o calendário.
   if (item.caminhosRelacionados?.some((caminho) => pathname.startsWith(caminho))) return true;
-  // A rota de edição não indica se o usuário é aluno ou professor.
-  // Evitamos destacar uma seção incorreta nesse caso.
   return false;
 }
 

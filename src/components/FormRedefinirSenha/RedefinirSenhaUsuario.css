@@ -1,0 +1,18 @@
+.sice-senha-usuario { width: 100%; max-width: 1050px; color: #171d28; margin-top: 1.15rem; }
+.sice-senha-usuario__fieldset { margin: 0; padding: 0; min-width: 0; border: 0; }
+.sice-senha-usuario__fieldset:disabled { opacity: .75; }
+.sice-senha-usuario__grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+.sice-senha-usuario__mensagem { margin-bottom: 1.15rem; }
+.sice-senha-usuario__grade + .sice-senha-usuario__mensagem { margin-top: 1.15rem; }
+.sice-senha-usuario__orientacao {
+    display: flex; align-items: flex-start; gap: .55rem;
+    margin-top: 1.25rem; color: #536074;
+    font-size: .875rem; line-height: 1.5;
+}
+.sice-senha-usuario__orientacao .bi { font-size: 1.05rem; color: #1f4892; }
+.sice-senha-usuario__acoes { display: flex; justify-content: flex-end; margin-top: 1.2rem; }
+.sice-senha-usuario__acoes .sice-botao { min-width: 185px; }
+@media (max-width: 680px) {
+    .sice-senha-usuario__grade { grid-template-columns: 1fr; }
+    .sice-senha-usuario__acoes .sice-botao { width: 100%; }
+}

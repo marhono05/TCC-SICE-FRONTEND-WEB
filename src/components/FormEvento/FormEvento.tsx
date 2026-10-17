@@ -9,6 +9,9 @@ import type { Evento } from "../../types/evento";
 import { eventoSchema, type EventoFormData, type PerfilDestinacao} from "../../schemas/eventoSchema";
 import type { Turma } from "../../types/turmas";
 import AlertaGruposEvento from "../AlertaGrupoEvento/AlertaGruposEvento";
+import CampoFormulario from "../ui/CampoFormulario";
+import Botao from "../ui/Botao";
+import "./FormEvento.css";
 
 type EventoFormProps = {
     evento?: Evento;
@@ -270,333 +273,173 @@ export default function FormEvento({
 
 
     return (
+        <form className="sice-evento-form" onSubmit={handleSubmit(onSubmit)}>
+            <fieldset className="sice-evento-form__fieldset" disabled={salvando || isSubmitting}>
+                <section className="sice-evento-form__secao" aria-labelledby="evento-secao-informacoes">
+                    <div className="sice-evento-form__cabecalho">
+                        <span className="sice-evento-form__icone"><i className="bi bi-calendar-event" aria-hidden="true" /></span>
+                        <div>
+                            <h2 id="evento-secao-informacoes">Informações do evento</h2>
+                            <p>Preencha o título, a descrição, a data e o horário.</p>
+                        </div>
+                    </div>
+                    <div className="sice-evento-form__grade">
+                        <CampoFormulario id="evento-titulo" rotulo="Título do evento" obrigatorio
+                            erro={errors.titulo?.message} className="sice-evento-form__coluna-inteira">
+                            <input id="evento-titulo" type="text" className="sice-campo__controle"
+                                placeholder="Ex.: Reunião de pais"
+                                aria-invalid={Boolean(errors.titulo)}
+                                aria-describedby={errors.titulo ? "evento-titulo-erro" : undefined}
+                                {...register("titulo")} />
+                        </CampoFormulario>
+                        <CampoFormulario id="evento-descricao" rotulo="Descrição" obrigatorio
+                            erro={errors.descricao?.message} className="sice-evento-form__coluna-inteira">
+                            <textarea id="evento-descricao" className="sice-campo__controle" rows={4}
+                                placeholder="Descreva o evento escolar..."
+                                aria-invalid={Boolean(errors.descricao)}
+                                aria-describedby={errors.descricao ? "evento-descricao-erro" : undefined}
+                                {...register("descricao")} />
+                        </CampoFormulario>
+                        <CampoFormulario id="evento-data" rotulo="Data do evento" obrigatorio
+                            erro={errors.dataInicio?.message}>
+                            <input id="evento-data" type="date" className="sice-campo__controle"
+                                aria-invalid={Boolean(errors.dataInicio)}
+                                aria-describedby={errors.dataInicio ? "evento-data-erro" : undefined}
+                                {...register("dataInicio")} />
+                        </CampoFormulario>
+                        <CampoFormulario id="evento-hora" rotulo="Horário" obrigatorio
+                            erro={errors.horaInicio?.message}>
+                            <input id="evento-hora" type="time" className="sice-campo__controle"
+                                aria-invalid={Boolean(errors.horaInicio)}
+                                aria-describedby={errors.horaInicio ? "evento-hora-erro" : undefined}
+                                {...register("horaInicio")} />
+                        </CampoFormulario>
+                    </div>
+                </section>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <fieldset disabled={salvando || isSubmitting} style={{ border: "none", padding: 0, margin: 0 }}>
-            <label>
-                Título:
-            </label>
-            
-            <input
-                type="text"
-                placeholder="Digite o título..."
-                {...register("titulo")}
-            />
-            {errors.titulo && (
-                <span>
-                    {errors.titulo.message}
-                </span>
-            )}
-            <br />
-            <br />
-
-            <label>
-                Descrição:
-            </label>
-
-            <textarea
-                placeholder="Digite a descrição..."
-                {...register("descricao")}
-            />
-            {errors.descricao && (
-                <span>
-                    {errors.descricao.message}
-                </span>
-            )}
-            <br />
-            <br />
-
-            <label>
-                Data:
-            </label>
-
-            <input
-                type="date"
-                {...register("dataInicio")}
-            />
-
-            {errors.dataInicio && (
-                <span>
-                    {errors.dataInicio.message}
-                </span>
-            )}
-            <br />
-            <br />
-
-            <label>
-                Hora:
-            </label>
-
-            <input
-                type="time"
-                {...register("horaInicio")}
-            />
-            {errors.horaInicio && (
-                <span>
-                    {errors.horaInicio.message}
-                </span>
-            )}
-            <br />
-            <br />
-
-            <h2>
-                Selecione as destinações do evento:
-            </h2>
-
-            <div>
-
-                <label>
-
-                    <input
-                        type="checkbox"
-                        checked={
-                            perfilSelecionado("ALUNO")
-                        }
-                        onChange={(event) =>
-                            selecionarPerfil(
-                                "ALUNO",
-                                event.target.checked
-                            )
-                        }
-                    />
-                    Alunos
-                </label>
-
-                <label>
-
-                    <input
-                        type="checkbox"
-                        checked={
-                            perfilSelecionado("PROFESSOR")
-                        }
-                        onChange={(event) =>
-                            selecionarPerfil(
-                                "PROFESSOR",
-                                event.target.checked
-                            )
-                        }
-                    />
-                    Professores
-                </label>
-
-            </div>
-            {errors.destinos?.message && (
-                <span>
-                    {errors.destinos.message}
-                </span>
-            )}
-
-            {fields.map((field, index) => {
-
-                const destino =
-                    destinos[index];
-
-
-                const perfil =
-                    destino?.perfil ??
-                    field.perfil;
-
-
-                const turmasSelecionadas =
-                    destino?.turmasIds ?? [];
-
-                const turmasFiltradas =
-                    turmas.filter((turma) => {
-
-                        const texto = `
-                            ${turma.cursoNome}
-                            ${turma.anoLetivo}
-                            ${turma.modalidade}
-                            ${turma.etapa}
-                        `
-                            .toLowerCase()
-                            .replace(/\s+/g, " ");
-
-
-                        return texto.includes(
-                            pesquisa
-                                .toLowerCase()
-                                .trim()
-                        );
-                    });
-
-                return (
-
-                    <div key={field.id}>
-                        <hr />
-                        <h3>
-                            Destino: {
-                                perfil === "ALUNO"
-                                    ? "Alunos"
-                                    : "Professores"
-                            }
-                        </h3>
-
-                        <input
-                            type="hidden"
-                            {...register(
-                                `destinos.${index}.perfil`
-                            )}
-                        />
-
-                        {perfil === "ALUNO" && (
-                            <>
-                                <label>
-
-                                    <input
-                                        type="checkbox"
-                                        checked={
-                                            especificarAlunos
-                                        }
-                                        onChange={(event) =>
-                                            alterarEspecificacaoAluno(
-                                                index,
-                                                event.target.checked
-                                            )
-                                        }
-                                    />
-                                    Adicionar especificações para alunos
-                                </label>
-
-                                {especificarAlunos && (
+                <section className="sice-evento-form__secao" aria-labelledby="evento-secao-destinatarios">
+                    <div className="sice-evento-form__cabecalho">
+                        <span className="sice-evento-form__icone"><i className="bi bi-people" aria-hidden="true" /></span>
+                        <div>
+                            <h2 id="evento-secao-destinatarios">Destinatários</h2>
+                            <p>Selecione os públicos que deverão receber o aviso do evento.</p>
+                        </div>
+                    </div>
+                    <div className="sice-evento-form__opcoes" role="group" aria-label="Públicos destinatários">
+                        <label className="sice-evento-form__opcao">
+                            <input type="checkbox" checked={perfilSelecionado("ALUNO")}
+                                onChange={(event) => selecionarPerfil("ALUNO", event.target.checked)} />
+                            <i className="bi bi-mortarboard" aria-hidden="true" />
+                            Alunos
+                        </label>
+                        <label className="sice-evento-form__opcao">
+                            <input type="checkbox" checked={perfilSelecionado("PROFESSOR")}
+                                onChange={(event) => selecionarPerfil("PROFESSOR", event.target.checked)} />
+                            <i className="bi bi-person-workspace" aria-hidden="true" />
+                            Professores
+                        </label>
+                    </div>
+                    {errors.destinos?.message && (
+                        <p className="sice-campo__erro" role="alert">{errors.destinos.message}</p>
+                    )}
+                    {fields.map((field, index) => {
+                        const destino = destinos[index];
+                        const perfil = destino?.perfil ?? field.perfil;
+                        const turmasSelecionadas = destino?.turmasIds ?? [];
+                        const turmasFiltradas = turmas.filter((turma) => {
+                            const texto = `${turma.cursoNome} ${turma.anoLetivo} ${turma.modalidade} ${turma.etapa}`
+                                .toLowerCase().replace(/\s+/g, " ");
+                            return texto.includes(pesquisa.toLowerCase().trim());
+                        });
+                        return (
+                            <div className="sice-evento-form__destino" key={field.id}>
+                                <h3>Destino: {perfil === "ALUNO" ? "Alunos" : "Professores"}</h3>
+                                <input type="hidden" {...register(`destinos.${index}.perfil`)} />
+                                {perfil === "ALUNO" && (
                                     <>
-                                        <div>
-
-                                            <h4>
-                                                Modalidades
-                                            </h4>
-
-                                            <label>
-
-                                                <input
-                                                    type="checkbox"
-                                                    value="MEDIO"
-                                                    {...register(
-                                                        `destinos.${index}.modalidades`
-                                                    )}
-                                                />
-                                                Ensino Médio
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value="TECNICO"
-                                                    {...register(
-                                                        `destinos.${index}.modalidades`
-                                                    )}
-                                                />
-                                                Ensino Técnico
-                                            </label>
-                                        </div>
-
-                                        <div>
-                                            <h4>
-                                                Etapas
-                                            </h4>
-
-                                            <label>
-
-                                                <input
-                                                    type="checkbox"
-                                                    value="PRIMEIRA"
-                                                    {...register(
-                                                        `destinos.${index}.etapas`
-                                                    )}
-                                                />
-                                                Primeiro
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value="SEGUNDA"
-                                                    {...register(
-                                                        `destinos.${index}.etapas`
-                                                    )}
-                                                />
-                                                Segundo
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value="TERCEIRA"
-                                                    {...register(
-                                                        `destinos.${index}.etapas`
-                                                    )}
-                                                />
-                                                Terceiro
-                                            </label>
-                                        </div>
-
-                                        <div>
-
-                                            <h4>
-                                                Turmas
-                                            </h4>
-
-                                            <input
-                                                type="text"
-                                                placeholder="Pesquisar turma..."
-                                                value={pesquisa}
-                                                onChange={(event) =>
-                                                    setPesquisa(
-                                                        event.target.value
-                                                    )
-                                                }
-                                            />
-                                            <br />
-                                            <br />
-
-                                            {turmasFiltradas.map(
-                                                (turma) => (
-                                                    <div
-                                                        key={turma.id}
-                                                    >
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={
-                                                                    turmasSelecionadas.includes(
-                                                                        turma.id
-                                                                    )
-                                                                }
-                                                                onChange={() =>
-                                                                    selecionarTurma(
-                                                                        index,
-                                                                        turma.id
-                                                                    )
-                                                                }
-                                                            />
-                                                            {turma.cursoNome}
-                                                            {" - "}
-                                                            {turma.anoLetivo}
-                                                            {" - "}
-                                                            {turma.modalidade}
-                                                            {" - "}
-                                                            {turma.etapa}
-                                                            {!turma.ativo && " (inativa)"}
-                                                        </label>
+                                        <label className="sice-evento-form__opcao">
+                                            <input type="checkbox" checked={especificarAlunos}
+                                                onChange={(event) => alterarEspecificacaoAluno(index, event.target.checked)} />
+                                            <span>Adicionar especificações para alunos</span>
+                                        </label>
+                                        {especificarAlunos && (
+                                            <>
+                                                <div className="sice-evento-form__filtros">
+                                                    <div className="sice-evento-form__grupo" role="group" aria-label="Modalidades">
+                                                        <h4>Modalidades</h4>
+                                                        <div className="sice-evento-form__opcoes sice-evento-form__opcoes--coluna">
+                                                            <label className="sice-evento-form__opcao">
+                                                                <input type="checkbox" value="MEDIO"
+                                                                    {...register(`destinos.${index}.modalidades`)} />
+                                                                Ensino Médio
+                                                            </label>
+                                                            <label className="sice-evento-form__opcao">
+                                                                <input type="checkbox" value="TECNICO"
+                                                                    {...register(`destinos.${index}.modalidades`)} />
+                                                                Ensino Técnico
+                                                            </label>
+                                                        </div>
                                                     </div>
-                                                )
-                                            )}
-                                        </div>
+                                                    <div className="sice-evento-form__grupo" role="group" aria-label="Etapas">
+                                                        <h4>Etapas</h4>
+                                                        <div className="sice-evento-form__opcoes sice-evento-form__opcoes--coluna">
+                                                            <label className="sice-evento-form__opcao">
+                                                                <input type="checkbox" value="PRIMEIRA"
+                                                                    {...register(`destinos.${index}.etapas`)} />
+                                                                Primeiro
+                                                            </label>
+                                                            <label className="sice-evento-form__opcao">
+                                                                <input type="checkbox" value="SEGUNDA"
+                                                                    {...register(`destinos.${index}.etapas`)} />
+                                                                Segundo
+                                                            </label>
+                                                            <label className="sice-evento-form__opcao">
+                                                                <input type="checkbox" value="TERCEIRA"
+                                                                    {...register(`destinos.${index}.etapas`)} />
+                                                                Terceiro
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="sice-evento-form__grupo">
+                                                    <h4>Turmas</h4>
+                                                    <p>Pesquise e marque as turmas desejadas.</p>
+                                                    <CampoFormulario id="evento-busca-turmas" rotulo="Pesquisar turma">
+                                                        <input id="evento-busca-turmas" type="search"
+                                                            className="sice-campo__controle" placeholder="Curso, ano ou etapa..."
+                                                            value={pesquisa}
+                                                            onChange={(event) => setPesquisa(event.target.value)} />
+                                                    </CampoFormulario>
+                                                    <div className="sice-evento-form__lista-turmas" role="group" aria-label="Turmas disponíveis">
+                                                        {turmasFiltradas.length === 0 && (
+                                                            <p className="sice-evento-form__sem-turmas">Nenhuma turma encontrada.</p>
+                                                        )}
+                                                        {turmasFiltradas.map((turma) => (
+                                                            <label key={turma.id} className={`sice-evento-form__turma ${!turma.ativo ? "sice-evento-form__turma--inativa" : ""}`}>
+                                                                <input type="checkbox" checked={turmasSelecionadas.includes(turma.id)}
+                                                                    onChange={() => selecionarTurma(index, turma.id)} />
+                                                                <span>{turma.cursoNome} — {turma.anoLetivo} — {turma.modalidade} — {turma.etapa}{!turma.ativo && " (inativa)"}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
                                     </>
                                 )}
-                            </>
-                        )}
-                    </div>
-                );
-            })}
-            <br />
-            <br />
+                            </div>
+                        );
+                    })}
+                </section>
 
-            <AlertaGruposEvento destinos={destinos} turmas={turmas} />
-
-            <button type="submit">
-                {salvando || isSubmitting ? "Salvando..." : "Salvar"}
-            </button>
+                <div className="sice-evento-form__alerta">
+                    <AlertaGruposEvento destinos={destinos} turmas={turmas} />
+                </div>
+                <div className="sice-evento-form__acoes">
+                    <Botao type="submit" icone="bi-check-lg">
+                        {salvando || isSubmitting ? "Salvando..." : "Salvar evento"}
+                    </Botao>
+                </div>
             </fieldset>
         </form>
     );

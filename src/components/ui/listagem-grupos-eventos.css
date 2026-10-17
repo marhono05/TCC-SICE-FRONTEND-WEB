@@ -1,0 +1,55 @@
+/* Etapa 3: grupos de WhatsApp e eventos. Reutiliza o padrão das outras listagens. */
+.sice-listagem__tabela--grupos { min-width: 1160px; }
+.sice-listagem__tabela--eventos { min-width: 1320px; }
+.sice-listagem__tabela--grupos td,
+.sice-listagem__tabela--eventos td { overflow-wrap: anywhere; }
+.sice-listagem__identificador {
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    color: #34445c;
+}
+.sice-listagem__tipo-grupo {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: #243c61;
+    font-weight: 550;
+}
+.sice-listagem__tipo-grupo > .bi { color: #1f4892; }
+.sice-etiqueta-evento {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border-radius: 999px;
+    padding: .3rem .7rem;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.sice-etiqueta-evento--ativo { background: #e4f6ea; color: #006b33; }
+.sice-etiqueta-evento--cancelado { background: #fdebee; color: #a40710; }
+.sice-etiqueta-evento--desativado { background: #edf0f5; color: #45546b; }
+.sice-listagem__acoes--eventos { min-width: 300px; }
+.sice-listagem__acoes--eventos > .sice-listagem__link-acao,
+.sice-listagem__acoes--eventos > .sice-listagem__botao-acao { min-height: 40px; }
+.sice-listagem__acao-aguardando { font-size: .78rem; color: #45546b; }
+.sice-listagem__atalho-avisos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .55rem;
+    padding: .85rem 1rem;
+    border: 1px solid #b7cae6;
+    border-radius: .75rem;
+    background: #edf2fa;
+    color: #1f4892;
+    font-size: .92rem;
+    font-weight: 600;
+}
+.sice-listagem__atalho-avisos a { color: inherit; text-underline-offset: .15rem; }
+.sice-listagem__atalho-avisos a:focus-visible { outline: 3px solid #1f4892; outline-offset: 3px; }
+@media (max-width: 899px) {
+    .sice-listagem__cartao .sice-listagem__acoes--eventos { min-width: 0; }
+    .sice-listagem__cartao .sice-listagem__acoes--eventos > * { flex: 1 1 125px; }
+}

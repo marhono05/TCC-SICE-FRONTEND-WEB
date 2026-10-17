@@ -1,84 +1,246 @@
-/* Estilos funcionais temporários: a identidade visual será definida depois. */
+/* Calendário escolar: identidade institucional SICE, desktop e lista mensal mobile. */
 .sice-calendario {
-    padding: 1.25rem;
-    text-align: left;
+  display: grid;
+  gap: 1.15rem;
+  width: 100%;
+  max-width: 1600px;
+  min-width: 0;
+  margin: 0 auto;
+  color: #172237;
+  text-align: left;
 }
-.sice-calendario h1 { margin: 0 0 .4rem; font-size: clamp(1.65rem, 4vw, 2.2rem); }
-.sice-calendario h2 { margin: 0; }
-.sice-calendario__cabecalho,
-.sice-calendario__detalhe-topo {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    align-items: start;
-    flex-wrap: wrap;
+.sice-calendario__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  min-width: 0;
 }
-.sice-calendario__acoes {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    align-items: center;
+.sice-calendario__identidade { display: flex; align-items: center; gap: .85rem; min-width: 0; }
+.sice-calendario__icone-pagina {
+  flex: 0 0 50px;
+  display: grid;
+  place-items: center;
+  height: 50px;
+  border-radius: .9rem;
+  background: #e8eef9;
+  color: #1f4892;
+  font-size: 1.55rem;
 }
+.sice-calendario__titulos { min-width: 0; }
+.sice-calendario__titulos h1 { margin: 0 0 .25rem; }
+.sice-calendario__titulos p { max-width: 680px; color: #4e5b70; font-size: .92rem; }
+.sice-calendario__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.sice-calendario__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 44px;
+  padding: .68rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .7rem;
+  font-size: .9rem;
+  line-height: 1.4;
+  font-weight: 650;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.sice-calendario__link--primario { background: #1f4892; color: #fff; }
+.sice-calendario__link--primario:hover { background: #173975; color: #fff; }
+.sice-calendario__link--secundario { background: #fff; color: #1f4892; border-color: #a4b3ce; }
+.sice-calendario__link--secundario:hover { background: #eff4fb; }
+.sice-calendario__painel {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #d2d8e1;
+  border-radius: 1rem;
+  padding: clamp(.9rem, 2.2vw, 1.5rem);
+  box-shadow: 0 3px 12px rgba(22,39,70,.045);
+}
+.sice-calendario__painel-topo h2 {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0 0 .2rem;
+  font-size: 1.05rem;
+  color: #172237;
+}
+.sice-calendario__painel-topo h2 .bi { color: #1f4892; }
+.sice-calendario__painel-topo p { color: #536074; font-size: .88rem; }
 .sice-calendario__filtros {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: .75rem 1.25rem;
-    margin: 1.25rem 0;
-    padding: .75rem 1rem;
-    border: 1px solid var(--border, #ddd);
-    border-radius: .5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  min-width: 0;
+  padding: 0;
+  margin: 1rem 0 0;
+  border: 0;
 }
-.sice-calendario__filtro { display: inline-flex; gap: .4rem; align-items: center; cursor: pointer; }
-.sice-calendario__indicador { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; }
-.sice-calendario__indicador--ativo { background: #1871ba; }
-.sice-calendario__indicador--cancelado { background: #b35b18; }
-.sice-calendario__indicador--desativado { background: #777; }
-.sice-calendario__quadro { margin-top: .75rem; overflow-x: auto; }
-.sice-calendario__quadro .fc { min-width: 570px; font-family: var(--sans, sans-serif); font-size: .88rem; }
-.sice-calendario__quadro .fc-toolbar { flex-wrap: wrap; gap: .75rem; }
-.sice-calendario__quadro .fc-toolbar-title { font-size: 1.15rem; }
-.sice-calendario__quadro .fc .fc-button { padding: .35rem .55rem; }
-.sice-calendario__evento--ativo { background: #1871ba; border-color: #1871ba; }
-.sice-calendario__evento--cancelado { background: #b35b18; border-color: #b35b18; text-decoration: line-through; }
-.sice-calendario__evento--desativado { background: #777; border-color: #777; opacity: .7; }
-.sice-calendario__contagem, .sice-calendario__nota { margin: .65rem 0; font-size: .9rem; }
-.sice-calendario__detalhe, .sice-calendario__alerta {
-    display: grid;
-    gap: .65rem;
-    margin: 1rem 0;
-    padding: 1rem;
-    border: 1px solid var(--border, #ddd);
-    border-radius: .5rem;
+.sice-calendario__legenda { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.sice-calendario__filtro {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 44px;
+  padding: .6rem .9rem;
+  border: 1px solid #ccd5e2;
+  border-radius: .72rem;
+  background: #fff;
+  color: #34445c;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
 }
-.sice-calendario__detalhe p { overflow-wrap: anywhere; }
-/* A sidebar também passa para o modo móvel em 899px. */
-@media (max-width: 899px) {
-    .sice-calendario__quadro { overflow-x: visible; }
-    .sice-calendario__quadro .fc { min-width: 0; width: 100%; }
-    .sice-calendario__quadro .fc-list-event-title { overflow-wrap: anywhere; }
-    .sice-calendario__quadro .fc-list-table { width: 100%; }
+.sice-calendario__filtro:hover { background: #f7f9fd; border-color: #8ba2c7; }
+.sice-calendario__filtro--selecionado { background: #edf3fc; border-color: #1f4892; color: #173975; }
+.sice-calendario__filtro:focus-within { outline: 3px solid rgba(31,72,146,.24); outline-offset: 2px; }
+.sice-calendario__filtro input { width: 17px; height: 17px; margin: 0; accent-color: #1f4892; cursor: pointer; }
+.sice-calendario__indicador { display: inline-block; flex: 0 0 9px; width: 9px; height: 9px; border-radius: 50%; }
+.sice-calendario__indicador--ativo { background: #1f4892; }
+.sice-calendario__indicador--cancelado { background: #bf0811; }
+.sice-calendario__indicador--desativado { background: #66748a; }
+.sice-calendario__alerta-acoes { margin-top: .75rem; }
+.sice-calendario__carregando { display: flex; align-items: center; gap: .6rem; min-height: 100px; padding: 1.3rem; border-radius: 1rem; border: 1px solid #d2d8e1; color: #3c506b; background: #fff; }
+.sice-calendario__carregando .bi { color: #1f4892; font-size: 1.2rem; }
+.sice-calendario__painel--agenda { display: grid; gap: 1rem; }
+.sice-calendario__resumo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .85rem; padding-bottom: 1rem; border-bottom: 1px solid #e3e8f0; }
+.sice-calendario__resumo-identidade { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+.sice-calendario__resumo-identidade strong { display: block; color: #1b2c48; font-size: .98rem; }
+.sice-calendario__resumo-identidade p { color: #526074; font-size: .81rem; }
+.sice-calendario__resumo-icone { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: .75rem; background: #edf2fa; color: #1f4892; font-size: 1.18rem; }
+.sice-calendario__resumo-vistas { display: inline-flex; gap: .4rem; align-items: center; color: #536074; font-size: .82rem; }
+.sice-calendario__quadro { min-width: 0; max-width: 100%; }
+.sice-calendario__quadro .fc { min-width: 0; width: 100%; font-family: var(--sans, Inter, Arial, sans-serif); font-size: .875rem; --fc-border-color: #e0e6ef; --fc-today-bg-color: #edf3fc; --fc-neutral-bg-color: #f3f6fa; --fc-list-event-hover-bg-color: #f2f6fc; --fc-page-bg-color: #fff; }
+.sice-calendario__quadro .fc .fc-header-toolbar { flex-wrap: wrap; gap: .75rem 1rem; margin-bottom: 1.25rem; }
+.sice-calendario__quadro .fc .fc-toolbar-title { font-size: clamp(1.06rem, 1.5vw, 1.3rem); font-weight: 700; color: #172237; line-height: 1.3; }
+.sice-calendario__quadro .fc .fc-toolbar-chunk { display: flex; align-items: center; min-width: 0; }
+.sice-calendario__quadro .fc .fc-button-group { gap: 2px; }
+.sice-calendario__quadro .fc .fc-button,
+.sice-calendario__quadro .fc .fc-button-primary {
+  min-height: 40px;
+  padding: .5rem .8rem;
+  border: 1px solid #1f4892;
+  border-radius: .55rem;
+  background: #1f4892;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: .85rem;
+  line-height: 1.25;
+  text-transform: none;
+  box-shadow: none;
 }
-@media (max-width: 680px) {
-    .sice-calendario { padding: .75rem; }
-    .sice-calendario__quadro .fc { min-width: 0; }
-    .sice-calendario__quadro .fc-toolbar { align-items: center; }
-    .sice-calendario__quadro .fc-toolbar-chunk { display: flex; gap: .25rem; flex-wrap: wrap; }
-    .sice-calendario__quadro .fc-toolbar-chunk:nth-child(2) { flex-basis: 100%; justify-content: center; order: -1; }
-    .sice-calendario__quadro .fc-toolbar-title { font-size: 1rem; }
-    .sice-calendario__quadro .fc .fc-button { padding: .25rem .4rem; font-size: .75rem; }
-}
-
+.sice-calendario__quadro .fc .fc-button:hover:not(:disabled),
+.sice-calendario__quadro .fc .fc-button-primary:hover:not(:disabled) { background: #173975; border-color: #173975; }
+.sice-calendario__quadro .fc .fc-button:focus-visible { outline: 3px solid #9bb4e2; outline-offset: 2px; box-shadow: none; }
+.sice-calendario__quadro .fc .fc-button-primary:not(:disabled).fc-button-active,
+.sice-calendario__quadro .fc .fc-button-primary:not(:disabled):active { background: #173975; border-color: #173975; }
+.sice-calendario__quadro .fc .fc-button:disabled { opacity: .56; }
+.sice-calendario__quadro .fc .fc-daygrid { border: 1px solid #dce4ef; border-radius: .75rem; overflow: hidden; }
+.sice-calendario__quadro .fc .fc-col-header-cell { background: #edf2fa; }
+.sice-calendario__quadro .fc .fc-col-header-cell-cushion { padding: .8rem .25rem; color: #1f4892; font-size: .79rem; font-weight: 700; text-decoration: none; }
+.sice-calendario__quadro .fc .fc-daygrid-day-number { padding: .45rem .6rem; text-decoration: none; color: #34445c; font-weight: 600; }
+.sice-calendario__quadro .fc .fc-day-other .fc-daygrid-day-number { color: #8b97a8; }
+.sice-calendario__quadro .fc .fc-day-today .fc-daygrid-day-number { display: grid; place-items: center; margin: .25rem; min-width: 30px; height: 30px; padding: .25rem; background: #1f4892; color: #fff; border-radius: 50%; }
+.sice-calendario__quadro .fc .fc-daygrid-day-frame { min-height: 95px; }
+.sice-calendario__quadro .fc .fc-daygrid-day:hover { background-color: #fafcff; }
+.sice-calendario__quadro .fc .fc-daygrid-event { margin: 2px 3px; border-radius: .4rem; padding: .1rem .22rem; font-weight: 550; }
+.sice-calendario__quadro .fc .fc-daygrid-event .fc-event-title { white-space: normal; overflow-wrap: anywhere; }
+.sice-calendario__quadro .fc .fc-daygrid-event.sice-calendario__evento--ativo { background: #1f4892; border-color: #1f4892; color: #fff; }
+.sice-calendario__quadro .fc .fc-daygrid-event.sice-calendario__evento--cancelado { background: #bf0811; border-color: #bf0811; color: #fff; text-decoration: line-through; }
+.sice-calendario__quadro .fc .fc-daygrid-event.sice-calendario__evento--desativado { background: #586779; border-color: #586779; color: #fff; }
+.sice-calendario__quadro .fc .fc-daygrid-more-link { color: #1f4892; font-weight: 700; padding: .15rem .35rem; }
+.sice-calendario__quadro .fc .fc-list { border: 1px solid #dce4ef; border-radius: .75rem; overflow: hidden; }
+.sice-calendario__quadro .fc .fc-list-day > * { background: #edf2fa; }
+.sice-calendario__quadro .fc .fc-list-day-cushion { padding: .7rem .9rem; color: #1f4892; font-weight: 700; }
+.sice-calendario__quadro .fc .fc-list-day-text,
+.sice-calendario__quadro .fc .fc-list-day-side-text { color: #1f4892; text-decoration: none; }
+.sice-calendario__quadro .fc .fc-list-event > td { border-bottom: 1px solid #e6ebf2; padding: .85rem .6rem; vertical-align: middle; background: #fff; }
+.sice-calendario__quadro .fc .fc-list-event:hover > td { background: #f5f8fd; }
+.sice-calendario__quadro .fc .fc-list-event-time { white-space: nowrap; color: #425572; font-size: .85rem; font-weight: 600; }
+.sice-calendario__quadro .fc .fc-list-event-title { min-width: 0; font-weight: 600; overflow-wrap: anywhere; color: #172237; }
+.sice-calendario__quadro .fc .fc-list-event-title a { color: inherit; text-decoration: none; }
+.sice-calendario__quadro .fc .fc-list-event-dot { border-color: #1f4892; }
+.sice-calendario__quadro .fc .fc-list-event.sice-calendario__evento--cancelado .fc-list-event-dot { border-color: #bf0811; }
+.sice-calendario__quadro .fc .fc-list-event.sice-calendario__evento--desativado .fc-list-event-dot { border-color: #586779; }
+.sice-calendario__quadro .fc .fc-list-event.sice-calendario__evento--cancelado .fc-list-event-title { color: #a40710; text-decoration: line-through; }
+.sice-calendario__quadro .fc .fc-list-event.sice-calendario__evento--desativado .fc-list-event-title { color: #5e6a7e; }
+.sice-calendario__quadro .fc .fc-list-empty { background: #f7f9fc; color: #526074; padding: 2rem 1rem; text-align: center; }
+.sice-calendario__quadro .fc .fc-list-table { width: 100%; }
+.sice-calendario__nota { display: flex; align-items: flex-start; gap: .5rem; color: #526074; font-size: .83rem; line-height: 1.5; }
+.sice-calendario__nota .bi { color: #1f4892; flex: 0 0 auto; }
+/* Dialog nativo: abre pelo FullCalendar e fecha por Esc, X ou botão Fechar. */
 .sice-calendario__dialog {
-    width: min(560px, calc(100vw - 2rem));
-    box-sizing: border-box;
-    padding: 1.25rem;
-    border: 1px solid var(--border, #ddd);
-    border-radius: .65rem;
-    background: var(--bg, #fff);
-    color: var(--text-h, #222);
-    box-shadow: var(--shadow, 0 12px 32px rgba(0,0,0,.25));
-    text-align: left;
+  width: min(590px, calc(100vw - 2rem));
+  max-height: min(86dvh, 820px);
+  overflow-y: auto;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #d2d8e1;
+  border-radius: 1rem;
+  background: #fff;
+  color: #172237;
+  box-shadow: 0 24px 70px rgba(6,23,54,.28);
+  text-align: left;
 }
-.sice-calendario__dialog::backdrop { background: rgba(0,0,0,.5); }
-.sice-calendario__dialog .sice-calendario__detalhe { margin: 0 0 1rem; border: 0; padding: 0; }
+.sice-calendario__dialog::backdrop { background: rgba(11,26,49,.64); }
+.sice-calendario__detalhe { min-width: 0; padding: clamp(1rem, 2.4vw, 1.6rem); }
+.sice-calendario__detalhe-topo { display: flex; align-items: flex-start; gap: .8rem; }
+.sice-calendario__detalhe-icone { flex: 0 0 46px; height: 46px; display: grid; place-items: center; border-radius: .8rem; background: #edf2fa; color: #1f4892; font-size: 1.35rem; }
+.sice-calendario__detalhe-titulos { flex: 1; min-width: 0; }
+.sice-calendario__detalhe-sobretitulo { display: block; margin: 0 0 .3rem; color: #536074; font-size: .8rem; font-weight: 600; }
+.sice-calendario__detalhe-titulos h2 { margin: 0; font-size: clamp(1.15rem, 2.5vw, 1.42rem); overflow-wrap: anywhere; }
+.sice-calendario__dialog-fechar { flex: 0 0 38px; display: grid; place-items: center; height: 38px; border: 1px solid #d2d8e1; border-radius: .65rem; background: #fff; color: #34445c; cursor: pointer; }
+.sice-calendario__dialog-fechar:hover { background: #edf2fa; }
+.sice-calendario__detalhe-status { margin: .85rem 0 1.15rem 3.4rem; }
+.sice-calendario__dados { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .75rem; margin: 0 0 1.2rem; }
+.sice-calendario__dado { padding: .85rem 1rem; border: 1px solid #dce4ef; border-radius: .75rem; background: #f7f9fc; min-width: 0; }
+.sice-calendario__dado dt { display: flex; align-items: center; gap: .45rem; font-size: .81rem; font-weight: 600; color: #536074; }
+.sice-calendario__dado dt .bi { color: #1f4892; }
+.sice-calendario__dado dd { margin: .25rem 0 0; color: #172237; font-size: .98rem; font-weight: 650; }
+.sice-calendario__descricao { padding-top: 1rem; border-top: 1px solid #e3e8f0; }
+.sice-calendario__descricao h3 { margin: 0 0 .5rem; font-size: .95rem; }
+.sice-calendario__descricao p { color: #3e4d62; font-size: .92rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.sice-calendario__detalhe-acoes { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: .6rem; padding-top: 1.25rem; margin-top: 1.25rem; border-top: 1px solid #e3e8f0; }
+.sice-calendario__fechar-rodape { margin: 0; }
+@media (max-width: 899px) {
+  .sice-calendario__quadro .fc .fc-header-toolbar { display: grid; grid-template-columns: minmax(0,1fr); gap: .8rem; justify-items: center; }
+  .sice-calendario__quadro .fc .fc-toolbar-chunk:nth-child(2) { grid-row: 1; }
+  .sice-calendario__quadro .fc .fc-toolbar-chunk:nth-child(1) { grid-row: 2; }
+  .sice-calendario__quadro .fc .fc-toolbar-chunk:nth-child(3) { display: none; }
+  .sice-calendario__quadro .fc .fc-list-event-time { font-size: .8rem; }
+  .sice-calendario__quadro .fc .fc-list-event > td { padding: .76rem .4rem; }
+}
+@media (max-width: 600px) {
+  .sice-calendario { gap: .85rem; }
+  .sice-calendario__cabecalho { align-items: flex-start; }
+  .sice-calendario__identidade { align-items: flex-start; }
+  .sice-calendario__icone-pagina { flex-basis: 42px; height: 42px; font-size: 1.3rem; }
+  .sice-calendario__titulos p { font-size: .85rem; }
+  .sice-calendario__acoes { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .sice-calendario__link { min-width: 0; padding: .65rem .55rem; font-size: .8rem; }
+  .sice-calendario__painel { padding: .85rem; }
+  .sice-calendario__filtros { gap: .5rem; }
+  .sice-calendario__filtro { padding: .52rem .63rem; font-size: .8rem; gap: .35rem; }
+  .sice-calendario__filtro input { width: 16px; height: 16px; }
+  .sice-calendario__resumo-vistas { display: none; }
+  .sice-calendario__quadro .fc .fc-button,
+  .sice-calendario__quadro .fc .fc-button-primary { min-height: 44px; padding: .55rem .7rem; }
+  .sice-calendario__quadro .fc .fc-list-day-cushion { padding: .7rem .5rem; }
+  .sice-calendario__quadro .fc .fc-list-event-title { font-size: .86rem; line-height: 1.45; }
+  .sice-calendario__quadro .fc .fc-list-event-time { font-size: .77rem; }
+  .sice-calendario__quadro .fc .fc-list-event-graphic { padding-right: .3rem; }
+  .sice-calendario__dados { grid-template-columns: 1fr; }
+  .sice-calendario__detalhe-acoes { display: grid; grid-template-columns: 1fr; }
+  .sice-calendario__detalhe-acoes .sice-calendario__link,
+  .sice-calendario__fechar-rodape,
+  .sice-calendario__fechar-rodape .sice-botao { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sice-calendario__link, .sice-calendario__filtro { transition: none; }
+}

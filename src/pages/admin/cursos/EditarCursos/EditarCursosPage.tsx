@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type { CursoFormData } from "../../../../schemas/cursoSchema";
 import { buscarCursoPorId, editarCurso } from "../../../../services/cursoService";
 import type { Curso } from "../../../../types/curso";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormCurso from "../../../../components/FormCurso/FormCurso";
+
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
 
 export default function EditarCursosPage() {
     const { id } = useParams();
@@ -34,12 +37,26 @@ export default function EditarCursosPage() {
         } catch (falha) { setErro(mensagemErroApi(falha, "Não foi possível editar o curso.")); }
         finally { setSalvando(false); }
     }
-    return <main>
-        <h1>Editar Curso</h1>
-        <p><Link to="/gerenciarCursos">Voltar à listagem</Link></p>
-        {carregando ? <p>Carregando curso...</p> : erroCarregamento ? <p role="alert">{erroCarregamento}</p> : !curso ? <p role="alert">Curso não encontrado.</p> : <>
-            {erro && <p role="alert">{erro}</p>}
-            <FormCurso curso={curso} onSubmit={editar} salvando={salvando} />
-        </>}
-    </main>;
+    return (
+        <PaginaFormulario
+            titulo={"Editar curso"}
+            descricao={"Atualize o nome do curso cadastrado."}
+            icone="bi-journal-text"
+            voltarPara={"/gerenciarCursos"}
+            textoVoltar="Voltar para cursos"
+        >
+            {carregando ? (
+                <div className="sice-pagina-formulario__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" />Carregando curso...</div>
+            ) : erroCarregamento ? (
+                <Aviso variante="erro" role="alert">{erroCarregamento}</Aviso>
+            ) : !curso ? (
+                <Aviso variante="informacao">Curso não encontrado.</Aviso>
+            ) : (
+                <>
+                    {erro && <Aviso variante="erro" role="alert">{erro}</Aviso>}
+                    <FormCurso curso={curso} onSubmit={editar} salvando={salvando} />
+                </>
+            )}
+        </PaginaFormulario>
+    );
 }

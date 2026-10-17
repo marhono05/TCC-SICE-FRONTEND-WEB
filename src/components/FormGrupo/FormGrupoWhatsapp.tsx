@@ -4,6 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { grupoWhatsappSchema, type GrupoWhatsappFormData } from "../../schemas/grupoWhatsappSchema";
 import type { GrupoWhatsapp } from "../../types/grupoWhatsapp";
 import type { Turma } from "../../types/turmas";
+import CampoFormulario from "../ui/CampoFormulario";
+import SecaoFormulario from "../ui/SecaoFormulario";
+import Botao from "../ui/Botao";
+import "./FormGrupoWhatsapp.css";
 
 type FormGrupoWhatsappProps = {
     grupo?: GrupoWhatsapp;
@@ -12,14 +16,12 @@ type FormGrupoWhatsappProps = {
     onSubmit: (dados: GrupoWhatsappFormData) => Promise<void> | void;
 };
 
-
 export default function FormGrupoWhatsapp({
     grupo,
     turmas,
     onSubmit,
     salvando = false
 }: FormGrupoWhatsappProps) {
-
     const {
         register,
         handleSubmit,
@@ -29,7 +31,6 @@ export default function FormGrupoWhatsapp({
         formState: { errors }
     } = useForm<GrupoWhatsappFormData>({
         resolver: zodResolver(grupoWhatsappSchema),
-
         defaultValues: {
             nome: grupo?.nome ?? "",
             identificador: grupo?.identificador ?? "",
@@ -38,187 +39,142 @@ export default function FormGrupoWhatsapp({
         }
     });
 
-
     const tipo = useWatch({ control, name: "tipo" });
 
-
     useEffect(() => {
-
-        if (!grupo) {
-            return;
-        }
-
+        if (!grupo) return;
         reset({
             nome: grupo.nome,
             identificador: grupo.identificador,
             tipo: grupo.tipo,
             turmaId: grupo.turmaId
         });
-
     }, [grupo, reset]);
 
-
     useEffect(() => {
-
         if (tipo !== "TURMA") {
             setValue("turmaId", null);
         }
-
     }, [tipo, setValue]);
 
-
     return (
+        <form className="sice-grupo-form" onSubmit={handleSubmit(onSubmit)}>
+            <fieldset className="sice-grupo-form__fieldset" disabled={salvando}>
+                <SecaoFormulario
+                    id="grupo-secao-dados"
+                    titulo="Dados do grupo"
+                    descricao="Informe o nome e o identificador utilizado pelo grupo no WhatsApp."
+                    icone="bi-whatsapp"
+                >
+                    <div className="sice-grupo-form__grade">
+                        <CampoFormulario
+                            id="grupo-nome"
+                            rotulo="Nome do grupo"
+                            obrigatorio
+                            erro={errors.nome?.message}
+                        >
+                            <input
+                                id="grupo-nome"
+                                type="text"
+                                className="sice-campo__controle"
+                                placeholder="Digite o nome do grupo..."
+                                aria-invalid={Boolean(errors.nome)}
+                                aria-describedby={errors.nome ? "grupo-nome-erro" : undefined}
+                                {...register("nome")}
+                            />
+                        </CampoFormulario>
+                        <CampoFormulario
+                            id="grupo-identificador"
+                            rotulo="Identificador do grupo"
+                            obrigatorio
+                            erro={errors.identificador?.message}
+                        >
+                            <input
+                                id="grupo-identificador"
+                                type="text"
+                                className="sice-campo__controle"
+                                placeholder="Digite o identificador do grupo..."
+                                aria-invalid={Boolean(errors.identificador)}
+                                aria-describedby={errors.identificador ? "grupo-identificador-erro" : undefined}
+                                {...register("identificador")}
+                            />
+                        </CampoFormulario>
+                    </div>
+                </SecaoFormulario>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-
-            <label>
-                Nome:
-            </label>
-
-            <input
-                type="text"
-                placeholder="Digite o nome do grupo"
-                {...register("nome")}
-            />
-
-            {errors.nome && (
-                <span>
-                    {errors.nome.message}
-                </span>
-            )}
-
-            <br />
-            <br />
-
-
-            <label>
-                Identificador:
-            </label>
-
-            <input
-                type="text"
-                placeholder="Digite o identificador do grupo"
-                {...register("identificador")}
-            />
-
-            {errors.identificador && (
-                <span>
-                    {errors.identificador.message}
-                </span>
-            )}
-
-            <br />
-            <br />
-
-
-            <h3>
-                Tipo do grupo
-            </h3>
-
-            <label>
-
-                <input
-                    type="radio"
-                    value="GERAL_ALUNOS"
-                    {...register("tipo")}
-                />
-
-                Geral dos Alunos
-
-            </label>
-
-            <br />
-
-            <label>
-
-                <input
-                    type="radio"
-                    value="GERAL_PROFESSORES"
-                    {...register("tipo")}
-                />
-
-                Geral dos Professores
-
-            </label>
-
-            <br />
-
-            <label>
-
-                <input
-                    type="radio"
-                    value="TURMA"
-                    {...register("tipo")}
-                />
-
-                Turma
-
-            </label>
-
-            {errors.tipo && (
-                <span>
-                    {errors.tipo.message}
-                </span>
-            )}
-
-            <br />
-            <br />
-
-            {tipo === "TURMA" && (
-                <>
-                    <label>
-                        Turma:
-                    </label>
-
-                    <select
-                        {...register("turmaId", {
-                            setValueAs: (value) =>
-                                value === ""
-                                    ? null
-                                    : Number(value)
-                        })}
+                <SecaoFormulario
+                    id="grupo-secao-destinatarios"
+                    titulo="Destinatários do grupo"
+                    descricao="Defina se o grupo é geral ou está vinculado a uma turma."
+                    icone="bi-people"
+                >
+                    <fieldset
+                        className="sice-opcoes-formulario"
+                        aria-describedby={errors.tipo ? "grupo-tipo-erro" : undefined}
                     >
+                        <legend className="sice-opcoes-formulario__rotulo">
+                            Tipo de grupo <span className="sice-campo__obrigatorio" aria-hidden="true">*</span>
+                        </legend>
+                        <div className="sice-opcoes-formulario__grade sice-opcoes-formulario__grade--tres">
+                            <label className="sice-opcao-formulario">
+                                <input type="radio" value="GERAL_ALUNOS" {...register("tipo")} />
+                                <i className="bi bi-people" aria-hidden="true" />
+                                <span>Geral dos Alunos</span>
+                            </label>
+                            <label className="sice-opcao-formulario">
+                                <input type="radio" value="GERAL_PROFESSORES" {...register("tipo")} />
+                                <i className="bi bi-person-workspace" aria-hidden="true" />
+                                <span>Geral dos Professores</span>
+                            </label>
+                            <label className="sice-opcao-formulario">
+                                <input type="radio" value="TURMA" {...register("tipo")} />
+                                <i className="bi bi-diagram-3" aria-hidden="true" />
+                                <span>Turma</span>
+                            </label>
+                        </div>
+                        {errors.tipo && (
+                            <p id="grupo-tipo-erro" className="sice-campo__erro" role="alert">
+                                {errors.tipo.message}
+                            </p>
+                        )}
+                    </fieldset>
 
-                        <option value="">
-                            Selecione uma turma
-                        </option>
-
-                        {turmas.map((turma) => (
-
-                            <option
-                                key={turma.id}
-                                value={turma.id}
+                    {tipo === "TURMA" && (
+                        <div className="sice-grupo-form__turma">
+                            <CampoFormulario
+                                id="grupo-turma"
+                                rotulo="Turma vinculada"
+                                obrigatorio
+                                erro={errors.turmaId?.message}
                             >
-                                {turma.cursoNome}
-                                {" - "}
-                                {turma.anoLetivo}
-                                {" - "}
-                                {turma.etapa}
-                                {" - "}
-                                {turma.modalidade}
-                            </option>
-
-                        ))}
-
-                    </select>
-
-                    {errors.turmaId && (
-                        <span>
-                            {errors.turmaId.message}
-                        </span>
+                                <select
+                                    id="grupo-turma"
+                                    className="sice-campo__controle"
+                                    aria-invalid={Boolean(errors.turmaId)}
+                                    aria-describedby={errors.turmaId ? "grupo-turma-erro" : undefined}
+                                    {...register("turmaId", {
+                                        setValueAs: (value) => value === "" ? null : Number(value)
+                                    })}
+                                >
+                                    <option value="">Selecione uma turma</option>
+                                    {turmas.map((turma) => (
+                                        <option key={turma.id} value={turma.id}>
+                                            {turma.cursoNome} - {turma.anoLetivo} - {turma.etapa} - {turma.modalidade}
+                                            {!turma.ativo ? " (inativa)" : ""}
+                                        </option>
+                                    ))}
+                                </select>
+                            </CampoFormulario>
+                        </div>
                     )}
+                </SecaoFormulario>
 
-                    <br />
-                    <br />
-                </>
-            )}
-
-
-            <button type="submit" disabled={salvando}>
-                {salvando ? "Salvando..." : "Salvar"}
-            </button>
-
+                <div className="sice-grupo-form__acoes">
+                    <Botao type="submit" icone="bi-check-lg" disabled={salvando}>
+                        {salvando ? "Salvando..." : "Salvar grupo"}
+                    </Botao>
+                </div>
+            </fieldset>
         </form>
-
     );
 }

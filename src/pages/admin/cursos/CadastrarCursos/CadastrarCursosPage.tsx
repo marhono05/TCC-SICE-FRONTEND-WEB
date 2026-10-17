@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import type { CursoFormData } from "../../../../schemas/cursoSchema";
 import { cadastrarCurso } from "../../../../services/cursoService";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormCurso from "../../../../components/FormCurso/FormCurso";
+
+import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import Aviso from "../../../../components/ui/Aviso";
 
 export default function CadastrarCursosPage() {
     const navigate = useNavigate();
@@ -19,10 +22,16 @@ export default function CadastrarCursosPage() {
             setErro(mensagemErroApi(falha, "Não foi possível cadastrar o curso."));
         } finally { setSalvando(false); }
     }
-    return <main>
-        <h1>Cadastrar Curso</h1>
-        <p><Link to="/gerenciarCursos">Voltar à listagem</Link></p>
-        {erro && <p role="alert">{erro}</p>}
-        <FormCurso onSubmit={cadastrar} salvando={salvando} />
-    </main>;
+    return (
+        <PaginaFormulario
+            titulo={"Cadastrar curso"}
+            descricao={"Adicione um curso ao cadastro da instituição."}
+            icone="bi-book"
+            voltarPara={"/gerenciarCursos"}
+            textoVoltar="Voltar para cursos"
+        >
+            {erro && <Aviso variante="erro" role="alert">{erro}</Aviso>}
+            <FormCurso onSubmit={cadastrar} salvando={salvando} />
+        </PaginaFormulario>
+    );
 }
