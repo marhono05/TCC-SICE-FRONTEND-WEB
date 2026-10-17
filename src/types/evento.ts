@@ -11,6 +11,7 @@ export type Evento = {
     status: StatusEvento;
     destinos: EventoDestino[];
     criadoPor: number;
+    criadoPorNome: string;
 };
 
 export type EventoDestino = {

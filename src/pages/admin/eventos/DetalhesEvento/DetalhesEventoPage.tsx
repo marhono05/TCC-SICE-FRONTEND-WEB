@@ -124,7 +124,7 @@ export default function DetalhesEventoPage() {
                             <DadoDetalhe rotulo="Data do evento">{formatarDataAviso(evento.dataInicio)}</DadoDetalhe>
                             <DadoDetalhe rotulo="Horário">{evento.horaInicio.slice(0, 5)}</DadoDetalhe>
                             <DadoDetalhe rotulo="Data do aviso">{formatarDataAviso(evento.dataAviso)}</DadoDetalhe>
-                            <DadoDetalhe rotulo="Criado pelo usuário">#{evento.criadoPor}</DadoDetalhe>
+                            <DadoDetalhe rotulo="Criado por">{evento.criadoPorNome} (ID: #{evento.criadoPor})</DadoDetalhe>
                         </dl>
                     </SecaoFormulario>
                     <SecaoFormulario id="detalhes-evento-destinatarios" titulo="Destinatários" descricao="Públicos associados a este evento." icone="bi-people">
