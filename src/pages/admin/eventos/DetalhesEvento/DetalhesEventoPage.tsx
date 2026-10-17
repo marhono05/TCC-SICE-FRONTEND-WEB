@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router";
-import { buscarEventoPorId } from "../../../../services/eventoService";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { buscarEventoPorId, excluirEvento } from "../../../../services/eventoService";
 import { listarTurma } from "../../../../services/turmaService";
 import type { Evento } from "../../../../types/evento";
 import type { Turma } from "../../../../types/turmas";
@@ -22,6 +22,7 @@ const modalidades = { MEDIO: "Ensino Médio", TECNICO: "Ensino Técnico" };
 export default function DetalhesEventoPage() {
     const { id } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
     const aviso = (location.state as { aviso?: string } | null)?.aviso;
     const eventoId = Number(id);
     const idValido = Number.isSafeInteger(eventoId) && eventoId > 0;
@@ -32,6 +33,8 @@ export default function DetalhesEventoPage() {
     const [tentativa, setTentativa] = useState(0);
     const [confirmandoCancelamento, setConfirmandoCancelamento] = useState(false);
     const [avisoCancelamento, setAvisoCancelamento] = useState("");
+    const [excluindo, setExcluindo] = useState(false);
+    const [erroExclusao, setErroExclusao] = useState("");
 
     useEffect(() => {
         if (!idValido) return;
@@ -59,6 +62,24 @@ export default function DetalhesEventoPage() {
         return () => { ativo = false; };
     }, [eventoId, idValido, tentativa]);
 
+    async function confirmarExclusao() {
+        if (!evento || excluindo) return;
+        if (!window.confirm(
+            `Excluir definitivamente o evento "${evento.titulo}"?\n\n` +
+            "Só é possível excluir eventos sem nenhum registro de aviso."
+        )) return;
+        setErroExclusao("");
+        setExcluindo(true);
+        try {
+            await excluirEvento(evento.id);
+            navigate("/gerenciarEventos", { replace: true, state: { aviso: "Evento excluído definitivamente." } });
+        } catch (falha) {
+            setErroExclusao(mensagemErroApi(falha, "Não foi possível excluir o evento."));
+        } finally {
+            setExcluindo(false);
+        }
+    }
+
     function nomeTurma(turmaId: number) {
         const turma = turmas.find((t) => t.id === turmaId);
         return turma ? `${turma.cursoNome} · ${turma.anoLetivo} · ${turma.modalidade} · ${turma.etapa}` : `Turma #${turmaId}`;
@@ -75,6 +96,7 @@ export default function DetalhesEventoPage() {
 
             {aviso && <Aviso variante="informacao" role="status">{aviso}</Aviso>}
             {avisoCancelamento && <Aviso variante="sucesso" role="status">{avisoCancelamento}</Aviso>}
+            {erroExclusao && <Aviso variante="erro" role="alert">{erroExclusao}</Aviso>}
             {!idValido && <Aviso variante="erro" role="alert">Identificador de evento inválido.</Aviso>}
             {idValido && loading && <p className="sice-detalhes__carregando" role="status"><i className="bi bi-hourglass-split" aria-hidden="true" /> Carregando evento...</p>}
             {idValido && !loading && erro && (
@@ -134,6 +156,7 @@ export default function DetalhesEventoPage() {
                             <Link className="sice-detalhes__link" to={`/editarEventos/${evento.id}`}><i className="bi bi-pencil-square" aria-hidden="true" /> Editar evento</Link>
                             <Link className="sice-detalhes__link" to={`/avisos?aba=cancelamentos&eventoId=${evento.id}`}><i className="bi bi-megaphone" aria-hidden="true" /> Comunicações de cancelamento</Link>
                             {evento.status === "ATIVO" && <Botao type="button" variante="perigo" icone="bi-calendar-x" onClick={() => setConfirmandoCancelamento(true)}>Cancelar evento</Botao>}
+                            <Botao type="button" variante="secundario" icone="bi-trash" disabled={excluindo} onClick={() => void confirmarExclusao()}>{excluindo ? "Excluindo..." : "Excluir evento"}</Botao>
                         </div>
                     </section>
                 </article>

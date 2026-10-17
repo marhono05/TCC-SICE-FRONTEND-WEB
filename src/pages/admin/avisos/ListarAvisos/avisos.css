@@ -175,3 +175,15 @@
   .sice-avisos__barra .sice-botao { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .sice-avisos__aba, .sice-avisos__historico-seta { transition: none; } }
+
+/* Diagnostico explicado antes do erro bruto (sem alterar os dados recebidos). */
+.sice-avisos__diagnostico { display: grid; gap: .45rem; min-width: 0; max-width: 65ch; line-height: 1.5; }
+.sice-avisos__diagnostico-titulo { font-weight: 650; color: #8b1119; }
+.sice-avisos__diagnostico-orientacao { margin: 0; color: #47566b; font-weight: 400; }
+.sice-avisos__diagnostico-tecnico { min-width: 0; }
+.sice-avisos__diagnostico-tecnico summary { width: fit-content; color: #1f4892; font-weight: 600; cursor: pointer; padding: .4rem 0; }
+.sice-avisos__diagnostico-tecnico summary:hover { text-decoration: underline; }
+.sice-avisos__diagnostico-tecnico pre { max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; margin: .3rem 0 0; padding: .7rem; border-radius: .5rem; border: 1px solid #d8e0ea; background: #f7f9fd; color: #233044; font: 400 .82rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+
+.sice-avisos__rolagem .sice-avisos__diagnostico { max-width: 340px; }
+.sice-avisos__diagnostico-tecnico summary:focus-visible { outline: 3px solid rgba(31,72,146,.35); outline-offset: 3px; border-radius: .25rem; }

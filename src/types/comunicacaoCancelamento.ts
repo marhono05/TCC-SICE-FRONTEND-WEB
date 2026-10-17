@@ -1,3 +1,5 @@
+
+import type { DiagnosticoErroBot } from "./diagnosticoErroBot";
 import type { Evento } from "./evento";
 
 export type StatusComunicacaoCancelamento = "PENDENTE" | "ENVIADO" | "ERRO" | "CANCELADO";
@@ -11,6 +13,7 @@ export interface TentativaComunicacaoCancelamento {
   fim: string;
   resultado: ResultadoTentativaCancelamento;
   erro: string | null;
+  diagnosticoErro?: DiagnosticoErroBot | null;
 }
 
 export interface ComunicacaoCancelamento {
@@ -25,6 +28,7 @@ export interface ComunicacaoCancelamento {
   criadoEm: string;
   enviadoEm: string | null;
   ultimoErro: string | null;
+  diagnosticoErro?: DiagnosticoErroBot | null;
   historico: TentativaComunicacaoCancelamento[];
 }
 

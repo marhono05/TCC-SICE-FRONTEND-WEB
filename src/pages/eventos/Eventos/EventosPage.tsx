@@ -29,7 +29,6 @@ type VistaDesktop = "dayGridMonth" | "listMonth";
 const STATUS: { valor: StatusEvento; descricao: string }[] = [
     { valor: "ATIVO", descricao: "Ativos" },
     { valor: "CANCELADO", descricao: "Cancelados" },
-    { valor: "DESATIVADO", descricao: "Desativados" },
 ];
 
 function formatarData(data: string): string {
@@ -52,7 +51,7 @@ export default function EventosPage() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
     const [tentativa, setTentativa] = useState(0);
-    const [statusVisiveis, setStatusVisiveis] = useState<StatusEvento[]>(["ATIVO", "CANCELADO", "DESATIVADO"]);
+    const [statusVisiveis, setStatusVisiveis] = useState<StatusEvento[]>(["ATIVO", "CANCELADO"]);
     const [eventoSelecionadoId, setEventoSelecionadoId] = useState<number | null>(null);
     const [mesExibido, setMesExibido] = useState(() => mesDaData(new Date()));
 
@@ -169,7 +168,7 @@ export default function EventosPage() {
                 </div>
                 <fieldset className="sice-calendario__filtros">
                     <legend className="sice-calendario__legenda">Status dos eventos</legend>
-                    {STATUS.filter(({ valor }) => podeGerenciar || valor !== "DESATIVADO").map(({ valor, descricao }) => (
+                    {STATUS.map(({ valor, descricao }) => (
                         <label
                             key={valor}
                             className={`sice-calendario__filtro ${statusVisiveis.includes(valor) ? "sice-calendario__filtro--selecionado" : ""}`}

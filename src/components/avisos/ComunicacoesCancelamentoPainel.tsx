@@ -10,6 +10,7 @@ import type { ComunicacaoCancelamento } from "../../types/comunicacaoCancelament
 import Botao from "../ui/Botao";
 import Aviso from "../ui/Aviso";
 import EtiquetaStatusAviso from "./EtiquetaStatusAviso";
+import DiagnosticoErroAviso from "./DiagnosticoErroAviso";
 
 function HistoricoCancelamento({ comunicacao }: { comunicacao: ComunicacaoCancelamento }) {
   return (
@@ -17,7 +18,7 @@ function HistoricoCancelamento({ comunicacao }: { comunicacao: ComunicacaoCancel
       <summary><i className="bi bi-journal-text" aria-hidden="true" />Ver histórico e mensagem<i className="bi bi-chevron-down sice-avisos__historico-seta" aria-hidden="true" /></summary>
       <div className="sice-avisos__historico-conteudo">
         <p><strong>Aviso original:</strong> <Link to={`/avisos/envios/${comunicacao.envioOriginalId}`}>#{comunicacao.envioOriginalId}</Link></p>
-        <p><strong>Último erro:</strong> {comunicacao.ultimoErro || "Nenhum erro registrado."}</p>
+        <div><strong>Último erro:</strong> {comunicacao.ultimoErro ? <DiagnosticoErroAviso diagnostico={comunicacao.diagnosticoErro} erroTecnico={comunicacao.ultimoErro} /> : "Nenhum erro registrado."}</div>
         <p><strong>Mensagem enviada ao bot:</strong></p>
         <p className="sice-avisos__mensagem-erro sice-avisos__mensagem-conteudo">{comunicacao.mensagem}</p>
         <strong>Tentativas</strong>
@@ -26,7 +27,7 @@ function HistoricoCancelamento({ comunicacao }: { comunicacao: ComunicacaoCancel
             <li key={t.numero}>
               <strong>Tentativa {t.numero}:</strong> {t.resultado === "CONFIRMADO_PELO_BOT" ? "Confirmado pelo bot" : "Sem confirmação"}.
               {" "}{formatarDataHoraAviso(t.inicio)} – {formatarDataHoraAviso(t.fim)}.
-              {t.erro && <span> {t.erro}</span>}
+              {t.erro && <DiagnosticoErroAviso diagnostico={t.diagnosticoErro} erroTecnico={t.erro} />}
             </li>
           ))}</ol>
         )}

@@ -37,17 +37,11 @@ export async function cancelarEvento(id: number): Promise<Evento> {
     return response.data;
 }
 
-export async function desativarEvento(id: number): Promise<Evento> {
-    const response = await api.patch<Evento>(`/eventos/${id}/desativar`);
-
-    return response.data;
+/** O backend recusa a exclusao quando existe qualquer EnvioAviso ou comunicacao. */
+export async function excluirEvento(id: number): Promise<void> {
+    await api.delete(`/eventos/${id}`);
 }
 
-export async function reativarEvento(id: number): Promise<Evento> {
-    const response = await api.patch<Evento>(`/eventos/${id}/reativar`);
-
-    return response.data;
-}
 /** Consulta informativa: nao cadastra evento nem envia mensagens. */
 export async function verificarGruposDoEvento(destinos: CriarEventoDestino[]): Promise<VerificacaoGruposEvento> {
     const response = await api.post<VerificacaoGruposEvento>("/eventos/verificarGrupos", { destinos });

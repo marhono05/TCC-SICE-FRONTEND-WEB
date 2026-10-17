@@ -1,3 +1,4 @@
+import type { DiagnosticoErroBot } from "./diagnosticoErroBot";
 export type StatusEnvioAviso = "PENDENTE" | "ENVIADO" | "ERRO" | "CANCELADO";
 export type StatusEventoEnvio = "ATIVO" | "CANCELADO" | "DESATIVADO";
 export type TipoGrupoEnvio = "GERAL_ALUNOS" | "GERAL_PROFESSORES" | "TURMA";
@@ -19,6 +20,7 @@ export interface EnvioAviso {
   ultimaTentativaEm: string | null;
   enviadoEm: string | null;
   ultimoErro: string | null;
+  diagnosticoErro?: DiagnosticoErroBot | null;
 }
 
 export interface PaginaEnvios {
@@ -44,4 +46,5 @@ export interface TentativaEnvioAviso {
   finalizadaEm: string;
   resultado: "CONFIRMADO_PELO_BOT" | "SEM_CONFIRMACAO";
   detalheErro: string | null;
+  diagnosticoErro?: DiagnosticoErroBot | null;
 }

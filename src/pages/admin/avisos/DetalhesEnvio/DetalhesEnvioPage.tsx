@@ -7,6 +7,7 @@ import type { EnvioAviso, TentativaEnvioAviso } from "../../../../types/envioAvi
 import Botao from "../../../../components/ui/Botao";
 import Aviso from "../../../../components/ui/Aviso";
 import EtiquetaStatusAviso from "../../../../components/avisos/EtiquetaStatusAviso";
+import DiagnosticoErroAviso from "../../../../components/avisos/DiagnosticoErroAviso";
 import CabecalhoListagem from "../../../../components/ui/CabecalhoListagem";
 import { formatarDataAviso, formatarDataHoraAviso } from "../../../../utils/datasAvisos";
 
@@ -74,7 +75,7 @@ export default function DetalhesEnvioPage() {
             <dt>Tentativas registradas</dt><dd>{envio.tentativas}</dd>
             <dt>Última tentativa</dt><dd>{formatarDataHoraAviso(envio.ultimaTentativaEm)}</dd>
             <dt>Processado em</dt><dd>{formatarDataHoraAviso(envio.enviadoEm)}</dd>
-            <dt>Último erro</dt><dd className="sice-avisos__mensagem-erro">{envio.ultimoErro || "Nenhum erro registrado."}</dd>
+            <dt>Último erro</dt><dd>{envio.ultimoErro ? <DiagnosticoErroAviso diagnostico={envio.diagnosticoErro} erroTecnico={envio.ultimoErro} /> : "Nenhum erro registrado."}</dd>
           </dl>
           <section className="sice-avisos__historico" aria-labelledby="sice-historico-envio">
             <div className="sice-avisos__titulo-bloco"><i className="bi bi-clock-history" aria-hidden="true" /><div><h3 id="sice-historico-envio">Histórico individual de tentativas</h3><p>Acompanhe cada tentativa realizada pelo sistema.</p></div></div>
@@ -90,7 +91,7 @@ export default function DetalhesEnvioPage() {
                         <td>{formatarDataHoraAviso(tentativa.iniciadaEm)}</td>
                         <td>{formatarDataHoraAviso(tentativa.finalizadaEm)}</td>
                         <td>{tentativa.resultado === "CONFIRMADO_PELO_BOT" ? "Confirmado pelo bot" : "Sem confirmação"}</td>
-                        <td className="sice-avisos__mensagem-erro">{tentativa.detalheErro || "—"}</td>
+                        <td><DiagnosticoErroAviso diagnostico={tentativa.diagnosticoErro} erroTecnico={tentativa.detalheErro} /></td>
                       </tr>
                     ))}</tbody>
                   </table>
@@ -103,7 +104,7 @@ export default function DetalhesEnvioPage() {
                         <dt>Início</dt><dd>{formatarDataHoraAviso(tentativa.iniciadaEm)}</dd>
                         <dt>Fim</dt><dd>{formatarDataHoraAviso(tentativa.finalizadaEm)}</dd>
                         <dt>Resultado</dt><dd>{tentativa.resultado === "CONFIRMADO_PELO_BOT" ? "Confirmado pelo bot" : "Sem confirmação"}</dd>
-                        <dt>Detalhe</dt><dd className="sice-avisos__mensagem-erro">{tentativa.detalheErro || "—"}</dd>
+                        <dt>Detalhe</dt><dd><DiagnosticoErroAviso diagnostico={tentativa.diagnosticoErro} erroTecnico={tentativa.detalheErro} /></dd>
                       </dl>
                     </div>
                   ))}

@@ -16,7 +16,7 @@ interface Props {
 
 /** O usuário decide de modo explícito qual endpoint invocar. */
 export default function ConfirmarCancelamentoEvento({ evento, onFechar, onConcluido }: Props) {
-  const [opcao, setOpcao] = useState<Opcao>("sem-aviso");
+  const [opcao, setOpcao] = useState<Opcao>("com-aviso");
   const [processando, setProcessando] = useState(false);
   const [erro, setErro] = useState("");
   const enviandoRef = useRef(false);
@@ -70,6 +70,7 @@ export default function ConfirmarCancelamentoEvento({ evento, onFechar, onConclu
       <section className="sice-cancelar__modal" role="dialog" aria-modal="true" aria-labelledby={tituloId} aria-describedby={descricaoId}>
         <h2 id={tituloId}>Cancelar evento</h2>
         <p id={descricaoId}>Confirme o cancelamento de <strong>{evento.titulo}</strong>, previsto para {formatarDataAviso(evento.dataInicio)} às {evento.horaInicio.slice(0, 5)}.</p>
+        <p className="sice-cancelar__observacao">Se algum grupo já recebeu o aviso original, recomendamos comunicar o cancelamento para evitar informações desatualizadas.</p>
         <fieldset disabled={processando} className="sice-cancelar__opcoes">
           <legend>Deseja comunicar o cancelamento aos grupos?</legend>
           <label>

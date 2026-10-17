@@ -7,18 +7,16 @@ import CampoPesquisa from "../../../../components/ui/CampoPesquisa";
 import EtiquetaStatusEvento from "../../../../components/eventos/EtiquetaStatusEvento";
 import ConfirmarCancelamentoEvento from "../../../../components/eventos/ConfirmarCancelamentoEvento";
 import type { Evento } from "../../../../types/evento";
-import { listarTodos, reativarEvento, desativarEvento } from "../../../../services/eventoService";
+import { listarTodos, excluirEvento } from "../../../../services/eventoService";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import { normalizarPesquisaListagem } from "../../../../utils/pesquisaListagem";
 import "../../../../components/ui/listagem-ui.css";
 import "../../../../components/ui/listagem-grupos-eventos.css";
 
-type AcaoEvento = "desativar" | "reativar";
-
 const situacaoPesquisa: Record<Evento["status"], string> = {
     ATIVO: "ativo",
     CANCELADO: "cancelado",
-    DESATIVADO: "desativado",
+    DESATIVADO: "desativado", // status legado, mantido para leitura dos registros existentes
 };
 
 /** Formatação textual de data ISO, sem converter fuso horário. */
@@ -36,13 +34,12 @@ function rotuloDestinos(evento: Evento) {
 type AcoesEventoProps = {
     evento: Evento;
     processandoId: number | null;
-    dataHoje: string;
     aoCancelar: (evento: Evento) => void;
-    aoAlterarStatus: (evento: Evento, acao: AcaoEvento) => Promise<void>;
+    aoExcluir: (evento: Evento) => Promise<void>;
 };
 
 /** Compartilha regras e ações entre tabela e cartões mobile. */
-function AcoesEvento({ evento, processandoId, dataHoje, aoCancelar, aoAlterarStatus }: AcoesEventoProps) {
+function AcoesEvento({ evento, processandoId, aoCancelar, aoExcluir }: AcoesEventoProps) {
     return (
         <div className="sice-listagem__acoes sice-listagem__acoes--eventos">
             <Link to={`/eventos/${evento.id}`} className="sice-listagem__link-acao">
@@ -67,24 +64,14 @@ function AcoesEvento({ evento, processandoId, dataHoje, aoCancelar, aoAlterarSta
             <Botao
                 type="button"
                 variante="secundario"
-                icone="bi-slash-circle"
+                icone="bi-trash"
                 className="sice-listagem__botao-acao"
-                aria-label={`Desativar evento ${evento.titulo}`}
-                disabled={processandoId !== null || evento.status === "DESATIVADO"}
-                onClick={() => void aoAlterarStatus(evento, "desativar")}
+                aria-label={`Excluir evento ${evento.titulo}`}
+                title="A exclusão só é permitida quando ainda não existe nenhum registro de aviso."
+                disabled={processandoId !== null}
+                onClick={() => void aoExcluir(evento)}
             >
-                Desativar
-            </Botao>
-            <Botao
-                type="button"
-                variante="secundario"
-                icone="bi-arrow-counterclockwise"
-                className="sice-listagem__botao-acao"
-                aria-label={`Reativar evento ${evento.titulo}`}
-                disabled={processandoId !== null || evento.status === "ATIVO" || evento.dataInicio < dataHoje}
-                onClick={() => void aoAlterarStatus(evento, "reativar")}
-            >
-                Reativar
+                Excluir
             </Botao>
             {processandoId === evento.id && <span role="status" className="sice-listagem__acao-aguardando">Atualizando...</span>}
         </div>
@@ -153,25 +140,24 @@ export default function ListarEventosPage() {
         ].join(" ")).includes(termo));
     }, [eventos, pesquisa]);
 
-    async function executarAcao(evento: Evento, acao: AcaoEvento) {
+    async function executarExclusao(evento: Evento) {
         if (processandoId !== null) return;
-        const confirmacao = acao === "desativar"
-            ? "Deseja desativar este evento?"
-            : "Deseja reativar este evento?";
-        if (!window.confirm(confirmacao)) return;
+        if (!window.confirm(
+            `Excluir definitivamente o evento "${evento.titulo}"?\n\n` +
+            "Isso só é permitido quando não existe nenhum registro de aviso. " +
+            "Se o aviso já foi criado, será necessário cancelar o evento."
+        )) return;
 
         setErroAcao("");
         setAviso("");
         setUltimoCanceladoId(null);
         setProcessandoId(evento.id);
         try {
-            const atualizado = acao === "desativar"
-                ? await desativarEvento(evento.id)
-                : await reativarEvento(evento.id);
-            setEventos((atuais) => atuais.map((item) => item.id === atualizado.id ? atualizado : item));
-            setAviso(`Evento ${acao === "desativar" ? "desativado" : "reativado"} com sucesso.`);
+            await excluirEvento(evento.id);
+            setEventos((atuais) => atuais.filter((item) => item.id !== evento.id));
+            setAviso("Evento excluído definitivamente.");
         } catch (falha) {
-            setErroAcao(mensagemErroApi(falha, "Não foi possível alterar o status do evento."));
+            setErroAcao(mensagemErroApi(falha, "Não foi possível excluir o evento."));
         } finally {
             setProcessandoId(null);
         }
@@ -184,8 +170,6 @@ export default function ListarEventosPage() {
         setEventoParaCancelar(evento);
     };
 
-    const hoje = new Date();
-    const dataHoje = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
     const total = eventos.length;
     const exibidos = eventosFiltrados.length;
     const possuiResultados = !loading && !erro && exibidos > 0;
@@ -278,7 +262,7 @@ export default function ListarEventosPage() {
                                             <td><EtiquetaStatusEvento status={evento.status} /></td>
                                             <td>{rotuloDestinos(evento)}</td>
                                             <td><AcoesEvento evento={evento} processandoId={processandoId}
-                                                dataHoje={dataHoje} aoCancelar={iniciarCancelamento} aoAlterarStatus={executarAcao} /></td>
+                                                aoCancelar={iniciarCancelamento} aoExcluir={executarExclusao} /></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -298,7 +282,7 @@ export default function ListarEventosPage() {
                                         <div><dt>Destinatários</dt><dd>{rotuloDestinos(evento)}</dd></div>
                                     </dl>
                                     <AcoesEvento evento={evento} processandoId={processandoId}
-                                        dataHoje={dataHoje} aoCancelar={iniciarCancelamento} aoAlterarStatus={executarAcao} />
+                                        aoCancelar={iniciarCancelamento} aoExcluir={executarExclusao} />
                                 </article>
                             ))}
                         </div>
