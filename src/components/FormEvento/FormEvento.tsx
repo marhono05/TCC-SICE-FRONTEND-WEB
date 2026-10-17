@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Evento } from "../../types/evento";
 import { eventoSchema, type EventoFormData, type PerfilDestinacao} from "../../schemas/eventoSchema";
 import type { Turma } from "../../types/turmas";
-import AlertaGruposEvento from "../AlertaGrupoEvento/AlertaGruposEvento";
+import AlertaGruposEvento from "../eventos/AlertaGruposEvento";
 import CampoFormulario from "../ui/CampoFormulario";
 import Botao from "../ui/Botao";
 import "./FormEvento.css";

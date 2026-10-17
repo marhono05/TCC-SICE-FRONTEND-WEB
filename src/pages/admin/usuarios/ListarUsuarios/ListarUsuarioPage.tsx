@@ -13,6 +13,7 @@ import {
     isPerfilUsuario, PERFIL_LABEL_PLURAL, PERFIL_LABEL_SINGULAR,
 } from "../../../../utils/perfilUsuario";
 import type { PerfilUsuario } from "../../../../schemas/perfilUsuarioSchema";
+import { normalizarPesquisaListagem } from "../../../../utils/pesquisaListagem";
 import "../../../../components/ui/listagem-ui.css";
 
 type AcoesUsuarioProps = {
@@ -50,11 +51,6 @@ function AcoesUsuario({ usuario, processando, aoAlterarStatus }: AcoesUsuarioPro
     );
 }
 
-/** Remove acentos apenas para comparação de texto na pesquisa local. */
-function normalizarPesquisa(valor: string) {
-    return valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
-}
-
 function ListagemPorPerfil({ perfil, aviso }: { perfil: PerfilUsuario; aviso?: string }) {
     const [pesquisa, setPesquisa] = useState("");
     const [processando, setProcessando] = useState<number | null>(null);
@@ -64,9 +60,9 @@ function ListagemPorPerfil({ perfil, aviso }: { perfil: PerfilUsuario; aviso?: s
     const { itens: usuarios, carregando, erro, carregar } = useListagemAdmin(buscar);
 
     const usuariosFiltrados = useMemo(() => {
-        const termo = normalizarPesquisa(pesquisa.trim());
+        const termo = normalizarPesquisaListagem(pesquisa.trim());
         if (!termo) return usuarios;
-        return usuarios.filter((usuario) => normalizarPesquisa(
+        return usuarios.filter((usuario) => normalizarPesquisaListagem(
             `${usuario.nome} ${usuario.identificador} ${usuario.email}`,
         ).includes(termo));
     }, [pesquisa, usuarios]);

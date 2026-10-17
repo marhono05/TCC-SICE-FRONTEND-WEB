@@ -10,7 +10,7 @@ import {
   type AlterarSenhaFormData,
 } from "../../../schemas/alterarSenhaSchema";
 import { alterarSenha } from "../../../services/usuarioService";
-import LayoutAutenticacao from "../../../components/ui/LayoutAutenticacao";
+import LayoutAutenticacao from "../../../layouts/LayoutAutenticacao/LayoutAutenticacao";
 import CampoFormulario from "../../../components/ui/CampoFormulario";
 import Botao from "../../../components/ui/Botao";
 import Aviso from "../../../components/ui/Aviso";

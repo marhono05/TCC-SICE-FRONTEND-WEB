@@ -6,7 +6,7 @@ import type { Curso } from "../../../../types/curso";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormCurso from "../../../../components/FormCurso/FormCurso";
 
-import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import PaginaFormulario from "../../../../layouts/PaginaFormulario/PaginaFormulario";
 import Aviso from "../../../../components/ui/Aviso";
 
 export default function EditarCursosPage() {

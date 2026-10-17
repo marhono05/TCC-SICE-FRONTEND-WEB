@@ -8,7 +8,7 @@ import type { EventoFormData } from "../../../../schemas/eventoSchema";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormEvento from "../../../../components/FormEvento/FormEvento";
 
-import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import PaginaFormulario from "../../../../layouts/PaginaFormulario/PaginaFormulario";
 import Aviso from "../../../../components/ui/Aviso";
 import Botao from "../../../../components/ui/Botao";
 

@@ -9,7 +9,7 @@ import { listarComunicacoesCancelamento } from "../../services/comunicacaoCancel
 import type { ComunicacaoCancelamento } from "../../types/comunicacaoCancelamento";
 import Botao from "../ui/Botao";
 import Aviso from "../ui/Aviso";
-import EtiquetaStatusAviso from "../ui/EtiquetaStatusAviso";
+import EtiquetaStatusAviso from "./EtiquetaStatusAviso";
 
 function HistoricoCancelamento({ comunicacao }: { comunicacao: ComunicacaoCancelamento }) {
   return (

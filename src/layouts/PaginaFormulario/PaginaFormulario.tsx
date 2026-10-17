@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import "./pagina-formulario.css";
+import "./PaginaFormulario.css";
 
 type Props = {
     titulo: string;

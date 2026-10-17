@@ -6,7 +6,7 @@ import { buscarEnvioPorId, listarTentativasDoEnvio } from "../../../../services/
 import type { EnvioAviso, TentativaEnvioAviso } from "../../../../types/envioAviso";
 import Botao from "../../../../components/ui/Botao";
 import Aviso from "../../../../components/ui/Aviso";
-import EtiquetaStatusAviso from "../../../../components/ui/EtiquetaStatusAviso";
+import EtiquetaStatusAviso from "../../../../components/avisos/EtiquetaStatusAviso";
 import CabecalhoListagem from "../../../../components/ui/CabecalhoListagem";
 import { formatarDataAviso, formatarDataHoraAviso } from "../../../../utils/datasAvisos";
 

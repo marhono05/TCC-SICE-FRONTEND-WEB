@@ -1,5 +1,5 @@
 import type { Evento } from "../../types/evento";
-import "./listagem-grupos-eventos.css";
+import "./EtiquetaStatusEvento.css";
 
 const situacoes: Record<Evento["status"], { rotulo: string; icone: string }> = {
     ATIVO: { rotulo: "Ativo", icone: "bi-check-circle" },

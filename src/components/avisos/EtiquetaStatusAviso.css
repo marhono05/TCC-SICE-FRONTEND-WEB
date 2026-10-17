@@ -1,0 +1,12 @@
+/* Etiqueta de status compartilhada entre listagem, detalhes e cancelamentos. */
+.sice-avisos__status {
+  display: inline-flex; align-items: center; gap: .42rem;
+  padding: .35rem .65rem; border: 1px solid transparent;
+  border-radius: 99px; font-size: .79rem; font-weight: 700; line-height: 1.35;
+  max-width: 100%; white-space: normal;
+}
+.sice-avisos__status .bi { flex-shrink: 0; }
+.sice-avisos__status--pendente { background: #fffbe0; color: #624d00; border-color: #e0d28a; }
+.sice-avisos__status--enviado { background: #e7f8ee; color: #00652f; border-color: #9ed9b9; }
+.sice-avisos__status--erro { background: #fff0f0; color: #a20810; border-color: #e8adaf; }
+.sice-avisos__status--cancelado { background: #eff1f4; color: #38445b; border-color: #cfd5de; }

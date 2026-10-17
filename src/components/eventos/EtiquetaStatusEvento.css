@@ -1,0 +1,14 @@
+/* Etiqueta de status reutilizada no calendário, nas listagens e nos detalhes. */
+.sice-etiqueta-evento {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border-radius: 999px;
+    padding: .3rem .7rem;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.sice-etiqueta-evento--ativo { background: #e4f6ea; color: #006b33; }
+.sice-etiqueta-evento--cancelado { background: #fdebee; color: #a40710; }
+.sice-etiqueta-evento--desativado { background: #edf0f5; color: #45546b; }

@@ -2,7 +2,7 @@ import { useState, type SubmitEvent } from "react";
 import { Navigate, useNavigate } from "react-router";
 import axios from "axios";
 import { useAuth } from "../../../hooks/useAuth";
-import LayoutAutenticacao from "../../../components/ui/LayoutAutenticacao";
+import LayoutAutenticacao from "../../../layouts/LayoutAutenticacao/LayoutAutenticacao";
 import CampoFormulario from "../../../components/ui/CampoFormulario";
 import Botao from "../../../components/ui/Botao";
 import Aviso from "../../../components/ui/Aviso";

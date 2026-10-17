@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import "./autenticacao.css";
+import "./LayoutAutenticacao.css";
 
 type Props = {
   titulo: string;

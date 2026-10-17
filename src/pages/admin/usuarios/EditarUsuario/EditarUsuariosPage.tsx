@@ -9,7 +9,7 @@ import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormUsuario from "../../../../components/FormUsuario/FormUsuario";
 import RedefinirSenhaUsuario from "../../../../components/FormRedefinirSenha/RedefinirSenhaUsuario";
 
-import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import PaginaFormulario from "../../../../layouts/PaginaFormulario/PaginaFormulario";
 import Aviso from "../../../../components/ui/Aviso";
 
 export default function EditarUsuarioPage() {

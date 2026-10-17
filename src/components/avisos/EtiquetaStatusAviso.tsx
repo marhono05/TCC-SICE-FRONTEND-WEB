@@ -1,5 +1,5 @@
 import type { StatusEnvioAviso } from "../../types/envioAviso";
-import "../../pages/admin/avisos/ListarAvisos/avisos.css";
+import "./EtiquetaStatusAviso.css";
 
 type Props = {
   status: StatusEnvioAviso;

@@ -17,7 +17,7 @@ import "./EventosPage.css";
 import { converterEventosParaCalendario } from "../../../utils/calendarioEventos";
 import Aviso from "../../../components/ui/Aviso";
 import Botao from "../../../components/ui/Botao";
-import EtiquetaStatusEvento from "../../../components/ui/EtiquetaStatusEvento";
+import EtiquetaStatusEvento from "../../../components/eventos/EtiquetaStatusEvento";
 
 const TELA_PEQUENA = "(max-width: 899px)";
 

@@ -8,7 +8,7 @@ import type { Turma } from "../../../../types/turmas";
 import { mensagemErroApi } from "../../../../utils/erroApi";
 import FormTurma from "../../../../components/FormTurma/FormTurma";
 
-import PaginaFormulario from "../../../../components/ui/PaginaFormulario";
+import PaginaFormulario from "../../../../layouts/PaginaFormulario/PaginaFormulario";
 import Aviso from "../../../../components/ui/Aviso";
 
 export default function EditarTurmasPage() {

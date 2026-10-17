@@ -11,8 +11,8 @@ import { mensagemErroApi } from "../../../../utils/erroApi";
 import CabecalhoListagem from "../../../../components/ui/CabecalhoListagem";
 import Botao from "../../../../components/ui/Botao";
 import Aviso from "../../../../components/ui/Aviso";
-import EtiquetaStatusAviso from "../../../../components/ui/EtiquetaStatusAviso";
-import ComunicacoesCancelamentoPainel from "../../../../components/ComunicacoesCancelamento/ComunicacoesCancelamentoPainel";
+import EtiquetaStatusAviso from "../../../../components/avisos/EtiquetaStatusAviso";
+import ComunicacoesCancelamentoPainel from "../../../../components/avisos/ComunicacoesCancelamentoPainel";
 import "./avisos.css";
 
 type Aba = "envios" | "programados" | "cancelamentos";
