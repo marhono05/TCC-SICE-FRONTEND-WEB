@@ -24,6 +24,14 @@
     border-radius: .75rem; cursor: pointer; font-size: .9375rem; font-weight: 500;
 }
 .sice-evento-form__opcao:hover { border-color: #5776b0; background: #f7f9fd; }
+.sice-evento-form__opcao:has(input:disabled) {
+    opacity: .6;
+    cursor: not-allowed;
+}
+.sice-evento-form__opcao:has(input:disabled):hover {
+    border-color: #c7d0df;
+    background: #fff;
+}
 .sice-evento-form__opcao:has(input:checked) { border-color: #1F4892; background: #edf3fc; }
 .sice-evento-form__opcao input, .sice-evento-form__turma input {
     flex-shrink: 0; width: 18px; height: 18px; margin: 0;

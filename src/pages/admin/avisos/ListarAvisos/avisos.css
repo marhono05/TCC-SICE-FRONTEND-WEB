@@ -187,3 +187,10 @@
 
 .sice-avisos__rolagem .sice-avisos__diagnostico { max-width: 340px; }
 .sice-avisos__diagnostico-tecnico summary:focus-visible { outline: 3px solid rgba(31,72,146,.35); outline-offset: 3px; border-radius: .25rem; }
+
+/* Orientacao exibida apenas apos esgotar as tres tentativas de envio normal. */
+.sice-avisos__orientacao-manual .sice-aviso__conteudo { display: grid; gap: .55rem; }
+.sice-avisos__orientacao-manual p { margin: 0; }
+.sice-avisos__orientacao-manual ol { margin: 0; padding-left: 1.4rem; }
+.sice-avisos__orientacao-manual li { padding-left: .1rem; margin-bottom: .25rem; }
+.sice-avisos__orientacao-manual li:last-child { margin-bottom: 0; }

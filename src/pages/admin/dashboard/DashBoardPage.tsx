@@ -271,14 +271,14 @@ export default function DashBoardPage() {
       {resumo && (
         <div className="sice-dashboard__colunas">
           <ListaEventos
-            titulo={podeGerenciar ? "Próximos eventos da escola" : "Seus próximos eventos (7 dias)"}
+            titulo={podeGerenciar ? "Próximos eventos da escola" : "Eventos nos próximos proximos 7 dias"}
             icone="bi-calendar-event"
             eventos={podeGerenciar ? resumo.proximos : resumo.proximosSemana}
             gerencia={podeGerenciar}
             vazio={podeGerenciar ? "Nenhum evento futuro encontrado." : "Nenhum evento nos próximos 7 dias."}
           />
           <ListaEventos
-            titulo="Cancelamentos nos próximos 7 dias"
+            titulo="Eventos cancelados nos próximos 7 dias"
             icone="bi-calendar-x"
             eventos={podeGerenciar ? resumo.cancelados.slice(0, 3) : resumo.cancelados}
             gerencia={podeGerenciar}

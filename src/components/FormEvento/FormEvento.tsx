@@ -257,6 +257,18 @@ export default function FormEvento({
 
         } else {
 
+            // A escolha de uma turma é uma destinação específica.
+            // Não a combine com filtros de etapa/modalidade, pois isso
+            // pode deixar o evento invisível no calendário dos alunos.
+            setValue(`destinos.${index}.etapas`, [], {
+                shouldValidate: true,
+                shouldDirty: true
+            });
+            setValue(`destinos.${index}.modalidades`, [], {
+                shouldValidate: true,
+                shouldDirty: true
+            });
+
             setValue(
                 `destinos.${index}.turmasIds`,
                 [
@@ -264,7 +276,8 @@ export default function FormEvento({
                     turmaId
                 ],
                 {
-                    shouldValidate: true
+                    shouldValidate: true,
+                    shouldDirty: true
                 }
             );
 
@@ -346,6 +359,7 @@ export default function FormEvento({
                         const destino = destinos[index];
                         const perfil = destino?.perfil ?? field.perfil;
                         const turmasSelecionadas = destino?.turmasIds ?? [];
+                        const possuiTurmaSelecionada = turmasSelecionadas.length > 0;
                         const turmasFiltradas = turmas.filter((turma) => {
                             const texto = `${turma.cursoNome} ${turma.anoLetivo} ${turma.modalidade} ${turma.etapa}`
                                 .toLowerCase().replace(/\s+/g, " ");
@@ -369,12 +383,12 @@ export default function FormEvento({
                                                         <h4>Modalidades</h4>
                                                         <div className="sice-evento-form__opcoes sice-evento-form__opcoes--coluna">
                                                             <label className="sice-evento-form__opcao">
-                                                                <input type="checkbox" value="MEDIO"
+                                                                <input type="checkbox" value="MEDIO" disabled={possuiTurmaSelecionada}
                                                                     {...register(`destinos.${index}.modalidades`)} />
                                                                 Ensino Médio
                                                             </label>
                                                             <label className="sice-evento-form__opcao">
-                                                                <input type="checkbox" value="TECNICO"
+                                                                <input type="checkbox" value="TECNICO" disabled={possuiTurmaSelecionada}
                                                                     {...register(`destinos.${index}.modalidades`)} />
                                                                 Ensino Técnico
                                                             </label>
@@ -384,17 +398,17 @@ export default function FormEvento({
                                                         <h4>Etapas</h4>
                                                         <div className="sice-evento-form__opcoes sice-evento-form__opcoes--coluna">
                                                             <label className="sice-evento-form__opcao">
-                                                                <input type="checkbox" value="PRIMEIRA"
+                                                                <input type="checkbox" value="PRIMEIRA" disabled={possuiTurmaSelecionada}
                                                                     {...register(`destinos.${index}.etapas`)} />
                                                                 Primeiro
                                                             </label>
                                                             <label className="sice-evento-form__opcao">
-                                                                <input type="checkbox" value="SEGUNDA"
+                                                                <input type="checkbox" value="SEGUNDA" disabled={possuiTurmaSelecionada}
                                                                     {...register(`destinos.${index}.etapas`)} />
                                                                 Segundo
                                                             </label>
                                                             <label className="sice-evento-form__opcao">
-                                                                <input type="checkbox" value="TERCEIRA"
+                                                                <input type="checkbox" value="TERCEIRA" disabled={possuiTurmaSelecionada}
                                                                     {...register(`destinos.${index}.etapas`)} />
                                                                 Terceiro
                                                             </label>
@@ -403,7 +417,11 @@ export default function FormEvento({
                                                 </div>
                                                 <div className="sice-evento-form__grupo">
                                                     <h4>Turmas</h4>
-                                                    <p>Pesquise e marque as turmas desejadas.</p>
+                                                    <p>
+                                                        {possuiTurmaSelecionada
+                                                            ? "Com turma selecionada, os filtros de etapa e modalidade ficam desabilitados. Desmarque todas as turmas para utilizá-los novamente."
+                                                            : "Ao selecionar uma turma, os filtros de etapa e modalidade serão limpos automaticamente."}
+                                                    </p>
                                                     <CampoFormulario id="evento-busca-turmas" rotulo="Pesquisar turma">
                                                         <input id="evento-busca-turmas" type="search"
                                                             className="sice-campo__controle" placeholder="Curso, ano ou etapa..."

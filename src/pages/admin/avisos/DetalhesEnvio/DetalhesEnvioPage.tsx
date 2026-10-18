@@ -77,6 +77,29 @@ export default function DetalhesEnvioPage() {
             <dt>Processado em</dt><dd>{formatarDataHoraAviso(envio.enviadoEm)}</dd>
             <dt>Último erro</dt><dd>{envio.ultimoErro ? <DiagnosticoErroAviso diagnostico={envio.diagnosticoErro} erroTecnico={envio.ultimoErro} /> : "Nenhum erro registrado."}</dd>
           </dl>
+          {envio.status === "ERRO" && envio.tentativas >= 3 && (
+            <Aviso
+              variante="alerta"
+              titulo="Envio sem confirmação após 3 tentativas"
+              className="sice-avisos__orientacao-manual"
+            >
+              <p>
+                O SICE esgotou as tentativas automáticas para este grupo, mas não recebeu
+                confirmação do bot. Isso não significa necessariamente que a mensagem não chegou ao WhatsApp.
+              </p>
+              <p><strong>O que fazer agora:</strong></p>
+              <ol>
+                <li>Verifique no grupo <strong>{envio.grupoNome}</strong> se o aviso já foi recebido.</li>
+                <li>Se não tiver sido recebido, envie o comunicado manualmente pelo WhatsApp.</li>
+                <li>Consulte o erro e o histórico abaixo para investigar a possível causa.</li>
+              </ol>
+              <p>
+                <strong>Importante:</strong> mensagens enviadas manualmente não são registradas
+                como envios confirmados pelo SICE. Se este evento for cancelado posteriormente,
+                a secretaria também precisará comunicar o cancelamento manualmente a esse grupo.
+              </p>
+            </Aviso>
+          )}
           <section className="sice-avisos__historico" aria-labelledby="sice-historico-envio">
             <div className="sice-avisos__titulo-bloco"><i className="bi bi-clock-history" aria-hidden="true" /><div><h3 id="sice-historico-envio">Histórico individual de tentativas</h3><p>Acompanhe cada tentativa realizada pelo sistema.</p></div></div>
             {tentativas.length === 0 ? (

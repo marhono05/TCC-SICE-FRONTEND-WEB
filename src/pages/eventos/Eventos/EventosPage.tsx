@@ -220,9 +220,9 @@ export default function EventosPage() {
                             locale={ptBrLocale}
                             initialView={telaPequena ? "listMonth" : "dayGridMonth"}
                             headerToolbar={{
-                                left: "prev,next today",
+                                left: telaPequena ? "prev,next" : "prev,next today",
                                 center: "title",
-                                right: telaPequena ? "" : "dayGridMonth,listMonth",
+                                right: telaPequena ? "today" : "dayGridMonth,listMonth",
                             }}
                             buttonText={{ month: "Mês", list: "Lista", today: "Hoje" }}
                             noEventsContent="Nenhum evento encontrado neste mês."
