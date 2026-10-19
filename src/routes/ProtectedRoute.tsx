@@ -5,6 +5,7 @@ function ProtectedRoute() {
   const { isAuthenticated, usuario } = useAuth();
   const { pathname } = useLocation();
 
+  // Se não estiver autenticado, vai para a página de login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
