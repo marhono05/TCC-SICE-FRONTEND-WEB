@@ -16,6 +16,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   async function entrar(event: SubmitEvent<HTMLFormElement>) {
+    // Serve para não recarregar a página e perder o estado do react. (O react router dom não funciona com recarregamento de página.)
     event.preventDefault();
     setErro("");
     setEntrando(true);
