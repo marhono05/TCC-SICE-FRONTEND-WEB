@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router";
 import type { RefObject } from "react";
+import logoSice from "../../assets/images/logo/logo.svg";
 import type { PerfilUsuario } from "../../schemas/perfilUsuarioSchema";
 import "./Sidebar.css";
 
@@ -33,6 +34,10 @@ const itensSecretaria: ItemNavegacao[] = [
   {
     caminho: "/avisos", rotulo: "Central de avisos", icone: "bell",
   },
+  {
+    caminho: "/gerenciarGruposWhatsapp", rotulo: "Grupos de WhatsApp", icone: "chat-dots",
+    caminhosRelacionados: ["/grupos-whatsapp/"],
+  },
 ];
 
 const itensAdmin: ItemNavegacao[] = [
@@ -51,10 +56,6 @@ const itensAdmin: ItemNavegacao[] = [
   {
     caminho: "/gerenciarCursos", rotulo: "Cursos", icone: "book",
     caminhosRelacionados: ["/cadastrarCursos", "/editarCursos"],
-  },
-  {
-    caminho: "/gerenciarGruposWhatsapp", rotulo: "Grupos de WhatsApp", icone: "chat-dots",
-    caminhosRelacionados: ["/grupos-whatsapp/"],
   },
 ];
 
@@ -118,8 +119,13 @@ export default function Sidebar({
     >
       <div className="sice-sidebar__marca">
         <NavLink to="/dashboard" className="sice-sidebar__logo" onClick={onFechar} aria-label="SICE, ir ao painel">
-          <span className="sice-sidebar__marca-sigla">SICE</span>
-          <span className="sice-sidebar__marca-descricao">Gestão de eventos escolares</span>
+          <span className="sice-sidebar__logo-quadro" aria-hidden="true">
+            <img className="sice-sidebar__logo-imagem" src={logoSice} alt="" />
+          </span>
+          <span className="sice-sidebar__logo-texto">
+            <span className="sice-sidebar__marca-sigla">SICE</span>
+            <span className="sice-sidebar__marca-descricao">Gestão de eventos escolares</span>
+          </span>
         </NavLink>
         <button
           ref={fecharRef}

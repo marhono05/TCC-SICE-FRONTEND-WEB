@@ -17,6 +17,7 @@ import EditarEventosPage from './pages/admin/eventos/EditarEventos/EditarEventos
 import DetalhesEventoPage from './pages/admin/eventos/DetalhesEvento/DetalhesEventoPage';
 import ListarAvisosPage from './pages/admin/avisos/ListarAvisos/ListarAvisosPage';
 import DetalhesEnvioPage from './pages/admin/avisos/DetalhesEnvio/DetalhesEnvioPage';
+import DetalhesCancelamentoPage from './pages/admin/avisos/DetalhesCancelamento/DetalhesCancelamentoPage';
 
 
 import ListarUsuariosPage from './pages/admin/usuarios/ListarUsuarios/ListarUsuarioPage';
@@ -78,6 +79,20 @@ function App() {
 
             <Route path='/avisos' element={<ListarAvisosPage />} />
             <Route path='/avisos/envios/:id' element={<DetalhesEnvioPage />} />
+            <Route path='/avisos/cancelamentos/:id' element={<DetalhesCancelamentoPage />} />
+
+            <Route
+                path="/gerenciarGruposWhatsapp"
+                element={<ListarGruposWhatsappPage />}
+              />
+              <Route
+                path="/grupos-whatsapp/cadastrar"
+                element={<CadastrarGrupoWhatsappPage />}
+              />
+              <Route
+                path="/grupos-whatsapp/editar/:id"
+                element={<EditarGrupoWhatsappPage />}
+              />
 
             <Route element={<AdminRoute />} >
 
@@ -129,20 +144,6 @@ function App() {
               <Route
                 path='/editarTurmas/:id'
                 element={<EditarTurmasPage />}
-              />
-
-
-              <Route
-                path="/gerenciarGruposWhatsapp"
-                element={<ListarGruposWhatsappPage />}
-              />
-              <Route
-                path="/grupos-whatsapp/cadastrar"
-                element={<CadastrarGrupoWhatsappPage />}
-              />
-              <Route
-                path="/grupos-whatsapp/editar/:id"
-                element={<EditarGrupoWhatsappPage />}
               />
 
             </Route>

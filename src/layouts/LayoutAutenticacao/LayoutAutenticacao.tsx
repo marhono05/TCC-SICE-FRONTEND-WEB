@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import logoSice from "../../assets/images/logo/logo.svg";
 import "./LayoutAutenticacao.css";
 
 type Props = {
@@ -16,10 +17,9 @@ export default function LayoutAutenticacao({ titulo, descricao, icone, children 
         <aside className="sice-auth__institucional" aria-label="Identidade do SICE">
           <div className="sice-auth__marca">
             <span className="sice-auth__marca-icone" aria-hidden="true">
-              <i className="bi bi-mortarboard" />
+              <img className="sice-auth__marca-imagem" src={logoSice} alt="" />
             </span>
             <div className="sice-auth__marca-texto">
-              {/* Marca tipográfica provisória: substituir pelo logotipo oficial futuramente. */}
               <strong>SICE</strong>
               <small>Gestão de eventos escolares</small>
             </div>

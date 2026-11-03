@@ -150,11 +150,10 @@ export default function DetalhesEventoPage() {
                     <section className="sice-detalhes__acoes-painel" aria-label="Ações do evento">
                         <div>
                             <h2>Ações do evento</h2>
-                            <p>Gerencie o evento ou consulte os avisos de cancelamento.</p>
+                            <p>Gerencie o evento</p>
                         </div>
                         <div className="sice-detalhes__acoes">
                             <Link className="sice-detalhes__link" to={`/editarEventos/${evento.id}`}><i className="bi bi-pencil-square" aria-hidden="true" /> Editar evento</Link>
-                            <Link className="sice-detalhes__link" to={`/avisos?aba=cancelamentos&eventoId=${evento.id}`}><i className="bi bi-megaphone" aria-hidden="true" /> Comunicações de cancelamento</Link>
                             {evento.status === "ATIVO" && <Botao type="button" variante="perigo" icone="bi-calendar-x" onClick={() => setConfirmandoCancelamento(true)}>Cancelar evento</Botao>}
                             <Botao type="button" variante="secundario" icone="bi-trash" disabled={excluindo} onClick={() => void confirmarExclusao()}>{excluindo ? "Excluindo..." : "Excluir evento"}</Botao>
                         </div>

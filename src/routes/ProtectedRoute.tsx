@@ -5,18 +5,16 @@ function ProtectedRoute() {
   const { isAuthenticated, usuario } = useAuth();
   const { pathname } = useLocation();
 
-  // Se não estiver autenticado, vai para a página de login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Impede que um primeiro acesso navegue pelas telas normais do sistema.
   if (usuario?.primeiroAcesso && pathname !== "/alterar-senha") {
     return <Navigate to="/alterar-senha" replace />;
   }
 
-  // Quem já alterou a senha não precisa voltar para a tela de primeiro acesso.
-  if (!usuario?.primeiroAcesso && pathname === "/alterar-senha") {
+  // Quem já alterou a senha não precisa voltar para a tela de primeiro acesso. 
+  if (!usuario?.primeiroAcesso && pathname === "/alterar-senha") {// vou ver se isso é necessário ainda.
     return <Navigate to={"/dashboard"} replace />;
   }
 

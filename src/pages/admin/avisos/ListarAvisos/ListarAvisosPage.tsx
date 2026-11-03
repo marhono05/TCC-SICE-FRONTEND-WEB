@@ -203,7 +203,7 @@ export default function ListarAvisosPage() {
           )}
         </section>
       ) : (
-        <ComunicacoesCancelamentoPainel key={eventoIdInicial ?? "selecionar"} eventoIdInicial={eventoIdInicial} />
+        <ComunicacoesCancelamentoPainel key={eventoIdInicial ?? "todos"} eventoIdInicial={eventoIdInicial} onLimparEvento={() => setParametros({ aba: "cancelamentos" })} />
       )}
     </main>
   );
