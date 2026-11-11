@@ -129,7 +129,7 @@ export default function AlterarSenhaPage() {
           id="novaSenha"
           rotulo="Nova senha"
           erro={errors.novaSenha?.message}
-          ajuda="Mínimo de 6 caracteres. Use uma senha diferente da atual."
+          ajuda="Mínimo de 6 caracteres, com letra maiúscula, minúscula, número e símbolo. A senha deve ser diferente da atual."
           obrigatorio
         >
           <div className="sice-auth__campo-icone">

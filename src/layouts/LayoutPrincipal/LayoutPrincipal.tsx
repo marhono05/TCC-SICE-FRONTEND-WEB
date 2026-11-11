@@ -7,6 +7,7 @@ import "./LayoutPrincipal.css";
 function nomeDaPagina(pathname: string): string {
   if (pathname === "/dashboard") return "Painel";
   if (pathname === "/eventos") return "Calendário escolar";
+  if (pathname === "/minha-conta/alterar-senha") return "Alterar senha";
   if (pathname.startsWith("/avisos")) return "Central de avisos";
   if (pathname.startsWith("/gerenciarEventos") || pathname.startsWith("/cadastrarEventos")
     || pathname.startsWith("/editarEventos") || pathname.startsWith("/eventos/")) return "Gerenciar eventos";
@@ -93,6 +94,7 @@ export default function LayoutPrincipal() {
   return (
     <div className="sice-layout">
       <Sidebar
+        nome={usuario.nome}
         perfil={usuario.perfil}
         aberta={menuAberto}
         onFechar={fecharMenu}

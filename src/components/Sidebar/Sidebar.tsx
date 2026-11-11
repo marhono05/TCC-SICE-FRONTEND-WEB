@@ -1,10 +1,12 @@
 import { NavLink, useLocation } from "react-router";
+import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import logoSice from "../../assets/images/logo/logo.svg";
 import type { PerfilUsuario } from "../../schemas/perfilUsuarioSchema";
 import "./Sidebar.css";
 
 type SidebarProps = {
+  nome: string;
   perfil: PerfilUsuario;
   aberta: boolean;
   onFechar: () => void;
@@ -106,10 +108,37 @@ function SecaoNavegacao({ titulo, itens, pathname, onFechar }: {
 }
 
 export default function Sidebar({
-  perfil, aberta, onFechar, onSair, saindo, erroSaida, fecharRef,
+  nome, perfil, aberta, onFechar, onSair, saindo, erroSaida, fecharRef,
 }: SidebarProps) {
   const { pathname } = useLocation();
   const gerencia = perfil === "ADMIN" || perfil === "SECRETARIA";
+  const [contaAberta, setContaAberta] = useState(false);
+  const contaRef = useRef<HTMLDivElement>(null);
+  const gatilhoContaRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!contaAberta) return;
+
+    function fecharAoClicarFora(evento: PointerEvent) {
+      if (!contaRef.current?.contains(evento.target as Node)) {
+        setContaAberta(false);
+      }
+    }
+
+    function fecharComEscape(evento: KeyboardEvent) {
+      if (evento.key === "Escape") {
+        setContaAberta(false);
+        gatilhoContaRef.current?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", fecharAoClicarFora);
+    document.addEventListener("keydown", fecharComEscape);
+    return () => {
+      document.removeEventListener("pointerdown", fecharAoClicarFora);
+      document.removeEventListener("keydown", fecharComEscape);
+    };
+  }, [contaAberta]);
 
   return (
     <aside
@@ -149,20 +178,55 @@ export default function Sidebar({
       </nav>
 
       <div className="sice-sidebar__rodape">
-        <div className="sice-sidebar__identidade">
-          <span className="sice-sidebar__avatar" aria-hidden="true">
-            <i className="bi bi-person-circle" />
-          </span>
-          <span className="sice-sidebar__perfil">
-            <strong>{nomesPerfil[perfil]}</strong>
-            <small>{perfil}</small>
-          </span>
+        <div className="sice-sidebar__conta" ref={contaRef}>
+          <button
+            ref={gatilhoContaRef}
+            type="button"
+            className="sice-sidebar__identidade"
+            aria-expanded={contaAberta}
+            aria-controls="sice-sidebar-menu-conta"
+            aria-label={`Opções da conta de ${nome}`}
+            onClick={() => setContaAberta((abertaAgora) => !abertaAgora)}
+          >
+            <span className="sice-sidebar__avatar" aria-hidden="true">
+              <i className="bi bi-person-circle" />
+            </span>
+            <span className="sice-sidebar__perfil">
+              <strong title={nome}>{nome}</strong>
+              <small>{nomesPerfil[perfil]}</small>
+            </span>
+            <i className={`bi bi-chevron-${contaAberta ? "down" : "up"} sice-sidebar__seta-conta`} aria-hidden="true" />
+          </button>
+          {contaAberta && (
+            <div className="sice-sidebar__menu-conta" id="sice-sidebar-menu-conta" aria-label="Opções da conta">
+              <NavLink
+                to="/minha-conta/alterar-senha"
+                className="sice-sidebar__opcao-conta"
+                onClick={() => {
+                  setContaAberta(false);
+                  onFechar();
+                }}
+              >
+                <i className="bi bi-key" aria-hidden="true" />
+                <span>Alterar senha</span>
+              </NavLink>
+              <div className="sice-sidebar__divisor-conta" />
+              <button
+                type="button"
+                className="sice-sidebar__opcao-conta sice-sidebar__opcao-conta--sair"
+                onClick={() => {
+                  setContaAberta(false);
+                  onSair();
+                }}
+                disabled={saindo}
+              >
+                <i className="bi bi-box-arrow-right" aria-hidden="true" />
+                <span>{saindo ? "Saindo..." : "Sair do sistema"}</span>
+              </button>
+            </div>
+          )}
         </div>
         {erroSaida && <p className="sice-sidebar__erro" role="alert">{erroSaida}</p>}
-        <button type="button" className="sice-sidebar__sair" onClick={onSair} disabled={saindo}>
-          <i className="bi bi-box-arrow-right" aria-hidden="true" />
-          <span>{saindo ? "Saindo..." : "Sair do sistema"}</span>
-        </button>
       </div>
     </aside>
   );

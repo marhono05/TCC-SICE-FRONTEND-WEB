@@ -7,6 +7,7 @@ import LayoutPrincipal from './layouts/LayoutPrincipal/LayoutPrincipal';
 
 import LoginPage from './pages/auth/Login/LoginPage';
 import AlterarSenhaPage from './pages/auth/AlterarSenha/AlterarSenhaPage';
+import AlterarSenhaContaPage from './pages/conta/AlterarSenhaConta/AlterarSenhaContaPage';
 
 import DashBoardPage from './pages/admin/dashboard/DashBoardPage';
 
@@ -52,6 +53,7 @@ function App() {
 
 
           <Route path='/dashboard' element={<DashBoardPage />} />
+          <Route path='/minha-conta/alterar-senha' element={<AlterarSenhaContaPage />} />
 
           <Route
             path='/eventos'

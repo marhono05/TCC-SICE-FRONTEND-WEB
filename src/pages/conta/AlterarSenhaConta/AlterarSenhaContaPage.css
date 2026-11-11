@@ -1,0 +1,2 @@
+.sice-alterar-senha__formulario { display: grid; gap: 1.25rem; max-width: 540px; }
+.sice-alterar-senha__acoes { display: flex; flex-wrap: wrap; gap: .75rem; }

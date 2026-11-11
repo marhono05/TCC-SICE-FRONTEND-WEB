@@ -6,6 +6,7 @@ export type LoginRequest = {
 };
 
 export type LoginResponse = {
+    nome: string;
     perfil: PerfilUsuario;
     primeiroAcesso: boolean;
 };
